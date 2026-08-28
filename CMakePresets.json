@@ -1,0 +1,48 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "idf-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/.build/${presetName}",
+      "cacheVariables": {
+        "IDF_TARGET": "esp32s3",
+        "SDKCONFIG": "${sourceDir}/.build/${presetName}/sdkconfig"
+      }
+    },
+    {
+      "name": "dev",
+      "inherits": "idf-base",
+      "displayName": "Default (development)",
+      "description": "Development configuration",
+      "cacheVariables": {
+        "SDKCONFIG_DEFAULTS": "${sourceDir}/sdkconfig.defaults;${sourceDir}/sdkconfig.defaults.dev"
+      }
+    },
+    {
+      "name": "prod",
+      "inherits": "idf-base",
+      "displayName": "Production",
+      "description": "Production configuration",
+      "cacheVariables": {
+        "SDKCONFIG_DEFAULTS": "${sourceDir}/sdkconfig.defaults;${sourceDir}/sdkconfig.defaults.prod"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev"
+    },
+    {
+      "name": "prod",
+      "configurePreset": "prod"
+    }
+  ]
+}
