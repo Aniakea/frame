@@ -100,9 +100,14 @@ add_executable(frame_strand_test tests/frame_strand_test.cc)
 target_link_libraries(frame_strand_test PRIVATE frame_poc_strand GTest::gtest_main)
 gtest_discover_tests(frame_strand_test)
 
+add_executable(frame_completion_test tests/frame_completion_test.cc)
+target_link_libraries(frame_completion_test PRIVATE frame_poc_strand GTest::gtest_main)
+gtest_discover_tests(frame_completion_test)
+
 if(ENABLE_CLANG_TIDY)
     find_program(CLANG_TIDY_EXECUTABLE NAMES clang-tidy-18 clang-tidy REQUIRED)
-    foreach(target frame_abi_test frame_handle_test lifecycle_state_test frame_strand_test)
+    foreach(target frame_abi_test frame_handle_test lifecycle_state_test frame_strand_test
+            frame_completion_test)
         set_property(TARGET ${target} PROPERTY CXX_CLANG_TIDY "${CLANG_TIDY_EXECUTABLE}")
     endforeach()
 endif()
