@@ -257,7 +257,7 @@ void console_service::print_status(bool json) const {
         char utc[32]{};
         if (value.rtc.valid) {
             const time_t seconds = static_cast<time_t>(value.rtc.unix_seconds);
-            struct tm utc_time{};
+            struct tm utc_time {};
             if (gmtime_r(&seconds, &utc_time) != nullptr) {
                 const unsigned year = static_cast<unsigned>(utc_time.tm_year + 1900);
                 std::snprintf(utc, sizeof(utc), "%04u-%02u-%02uT%02u:%02u:%02uZ", year,
@@ -297,7 +297,7 @@ void console_service::print_status(bool json) const {
     char rtc_text[32]{};
     if (value.rtc.valid) {
         const time_t seconds = static_cast<time_t>(value.rtc.unix_seconds);
-        struct tm utc_time{};
+        struct tm utc_time {};
         if (gmtime_r(&seconds, &utc_time) != nullptr) {
             const unsigned year = static_cast<unsigned>(utc_time.tm_year + 1900);
             std::snprintf(

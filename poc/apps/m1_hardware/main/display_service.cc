@@ -28,7 +28,7 @@ void format_rtc_time(const status_snapshot& value, char* output, std::size_t cap
         return;
     }
     const time_t seconds = static_cast<time_t>(value.rtc.unix_seconds);
-    struct tm utc_time{};
+    struct tm utc_time {};
     if (gmtime_r(&seconds, &utc_time) != nullptr) {
         const unsigned year = static_cast<unsigned>(utc_time.tm_year + 1900);
         std::snprintf(

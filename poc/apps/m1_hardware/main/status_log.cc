@@ -31,7 +31,7 @@ std::size_t format_status_log(const status_snapshot& status, uint64_t sequence, 
     char utc[32]{};
     if (status.rtc.valid) {
         const time_t seconds = static_cast<time_t>(status.rtc.unix_seconds);
-        struct tm utc_time{};
+        struct tm utc_time {};
         if (gmtime_r(&seconds, &utc_time) != nullptr) {
             const unsigned year = static_cast<unsigned>(utc_time.tm_year + 1900);
             std::snprintf(
