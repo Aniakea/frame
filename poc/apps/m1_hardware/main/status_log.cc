@@ -52,7 +52,8 @@ std::size_t format_status_log(const status_snapshot& status, uint64_t sequence, 
         "\"ap_setup\":%s,"
         "\"rtc\":%s,\"shtc3\":%s,\"sensor_valid\":%s,"
         "\"temperature_tenths_c\":%d,\"humidity_tenths_percent\":%u,"
-        "\"key_short\":%" PRIu64 ",\"key_long\":%" PRIu64,
+        "\"key_short\":%" PRIu64 ",\"key_long\":%" PRIu64 ",\"boot_short\":%" PRIu64
+        ",\"boot_long\":%" PRIu64,
         sequence, uptime_us, status.rtc.valid ? "true" : "false", utc, event, mode,
         hardware_status::health_name(hardware_status::overall_health(status)), status.device_id,
         status.app_version, status.idf_version, status.toolchain_version, status.image_sha256,
@@ -63,7 +64,8 @@ std::size_t format_status_log(const status_snapshot& status, uint64_t sequence, 
         status.sensor.valid ? "true" : "false",
         status.sensor.valid ? static_cast<int>(status.sensor.temperature_tenths_celsius) : 0,
         status.sensor.valid ? static_cast<unsigned>(status.sensor.humidity_tenths_percent) : 0U,
-        status.key_short_presses, status.key_long_presses);
+        status.key_short_presses, status.key_long_presses, status.boot_short_presses,
+        status.boot_long_presses);
     if (payload_length < 0 || static_cast<std::size_t>(payload_length) >= capacity) {
         output[0] = '\0';
         return 0;

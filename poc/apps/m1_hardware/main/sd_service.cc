@@ -142,7 +142,8 @@ void sd_service::unmount() {
 }
 
 esp_err_t sd_service::append_status_log() {
-    // Must exceed the ~550-byte payload: format_status_log returns 0 on truncation (= ESP_FAIL).
+    // Must exceed the ~595-byte payload (measured with boot counters; re-measure before adding
+    // JSONL fields): format_status_log returns 0 on truncation (= ESP_FAIL).
     char line[640];
     const status_snapshot snapshot = status_.snapshot();
     const std::size_t length =
