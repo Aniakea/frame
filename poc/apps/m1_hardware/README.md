@@ -87,12 +87,19 @@ prov scan
 storage probe
 storage status
 selftest
+metrics
 ```
 
 `rtc status` reports validity, unix time, formatted UTC, formatted UTC+8 local time, and the
 OS-bit state; `rtc raw` dumps PCF85063 registers 0x00-0x0A with a decode; `rtc set` parses
 `YYYY-MM-DD HH:MM:SS` as UTC+8 local time, validates the ranges (calendar round-trip), converts
 to UTC, writes the chip, and re-reads it to confirm.
+
+`metrics` prints machine-parseable memory lines: `heap internal free=<u> largest=<u>
+min_ever=<u>` and `heap psram ...` (8-bit-capable pools, `min_ever` from the boot-time
+watermark), then one `task <name> stack_hwm_bytes=<u>` line per FreeRTOS task, where the
+high-water mark is the minimum-ever free stack in bytes (on this ESP-IDF Xtensa port
+`StackType_t` is one byte, so the kernel reports the mark directly in bytes).
 
 Do not place real credentials in command transcripts or committed evidence. `wifi set` asks for the
 password after parsing the command so it is not stored in command history; terminal software must

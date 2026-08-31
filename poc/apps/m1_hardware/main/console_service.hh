@@ -25,8 +25,10 @@ class console_service {
     static int selftest_command(int argc, char** argv);
     static int prov_command(int argc, char** argv);
     static int rtc_command(int argc, char** argv);
+    static int metrics_command(int argc, char** argv);
     void print_status(bool json) const;
     void print_rtc_status() const;
+    void print_metrics() const;
     int print_rtc_raw() const;
     int run_rtc_set(const char* date_text, const char* time_text);
     void run_wifi_config_selftest() const;
