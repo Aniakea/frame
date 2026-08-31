@@ -76,6 +76,10 @@ endif()
 
 enable_testing()
 
+add_library(frame_poc_strand STATIC src/frame_strand.cc)
+target_include_directories(frame_poc_strand PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries(frame_poc_strand PUBLIC frame_poc_contract)
+
 add_executable(frame_abi_test tests/frame_abi_test.cc)
 target_link_libraries(frame_abi_test PRIVATE frame_poc_contract GTest::gtest_main)
 gtest_discover_tests(frame_abi_test)
@@ -92,9 +96,13 @@ add_executable(lifecycle_state_test tests/lifecycle_state_test.cc)
 target_link_libraries(lifecycle_state_test PRIVATE frame_poc_contract GTest::gtest_main)
 gtest_discover_tests(lifecycle_state_test)
 
+add_executable(frame_strand_test tests/frame_strand_test.cc)
+target_link_libraries(frame_strand_test PRIVATE frame_poc_strand GTest::gtest_main)
+gtest_discover_tests(frame_strand_test)
+
 if(ENABLE_CLANG_TIDY)
     find_program(CLANG_TIDY_EXECUTABLE NAMES clang-tidy-18 clang-tidy REQUIRED)
-    foreach(target frame_abi_test frame_handle_test lifecycle_state_test)
+    foreach(target frame_abi_test frame_handle_test lifecycle_state_test frame_strand_test)
         set_property(TARGET ${target} PROPERTY CXX_CLANG_TIDY "${CLANG_TIDY_EXECUTABLE}")
     endforeach()
 endif()
