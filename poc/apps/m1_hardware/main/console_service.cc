@@ -15,6 +15,10 @@ namespace {
 constexpr char kSelftestSsid[] = "frame-selftest";
 constexpr char kSelftestPassword[] = "frame-selftest-pass";
 
+uint8_t from_bcd(uint8_t value) {
+    return static_cast<uint8_t>((value >> 4U) * 10U + (value & 0x0FU));
+}
+
 } // namespace
 
 esp_err_t console_service::start() {
@@ -69,6 +73,15 @@ esp_err_t console_service::start() {
         .func_w_context = nullptr,
         .context = nullptr,
     };
+    const esp_console_cmd_t rtc_cmd{
+        .command = "rtc",
+        .help = "rtc status | rtc raw | rtc set YYYY-MM-DD HH:MM:SS (UTC)",
+        .hint = nullptr,
+        .func = &console_service::rtc_command,
+        .argtable = nullptr,
+        .func_w_context = nullptr,
+        .context = nullptr,
+    };
 
     esp_err_t result = esp_console_cmd_register(&status_cmd);
     if (result == ESP_OK) {
@@ -82,6 +95,9 @@ esp_err_t console_service::start() {
     }
     if (result == ESP_OK) {
         result = esp_console_cmd_register(&selftest_cmd);
+    }
+    if (result == ESP_OK) {
+        result = esp_console_cmd_register(&rtc_cmd);
     }
     if (result != ESP_OK) {
         return result;
@@ -215,6 +231,111 @@ int console_service::selftest_command(int argc, char** argv) {
     instance_->print_status(true);
     instance_->run_wifi_config_selftest();
     return 0;
+}
+
+int console_service::rtc_command(int argc, char** argv) {
+    if (argc == 2 && std::strcmp(argv[1], "status") == 0) {
+        instance_->print_rtc_status();
+        return 0;
+    }
+    if (argc == 2 && std::strcmp(argv[1], "raw") == 0) {
+        return instance_->print_rtc_raw();
+    }
+    if (argc == 4 && std::strcmp(argv[1], "set") == 0) {
+        return instance_->run_rtc_set(argv[2], argv[3]);
+    }
+    std::printf("usage: rtc status | rtc raw | rtc set YYYY-MM-DD HH:MM:SS\n");
+    return 1;
+}
+
+void console_service::print_rtc_status() const {
+    const status_snapshot value = status_.snapshot();
+    std::printf("RTC: %s\n", value.rtc_present ? "present (PCF85063 @0x51)" : "missing (0x51)");
+
+    uint8_t registers[11]{};
+    const esp_err_t raw_result = board_.read_rtc_raw(registers);
+    const char* os_state = "unknown (raw read failed)";
+    if (raw_result == ESP_OK) {
+        os_state = (registers[4] & 0x80U) != 0U ? "set (oscillator stopped)" : "clear";
+    }
+    std::printf("valid: %s  unix: %" PRId64 "\n", value.rtc.valid ? "true" : "false",
+                value.rtc.unix_seconds);
+
+    char utc[32]{};
+    if (value.rtc.valid) {
+        const time_t seconds = static_cast<time_t>(value.rtc.unix_seconds);
+        struct tm utc_time {};
+        if (gmtime_r(&seconds, &utc_time) != nullptr) {
+            const unsigned year = static_cast<unsigned>(utc_time.tm_year + 1900);
+            std::snprintf(
+                utc, sizeof(utc), "%04u-%02u-%02u %02u:%02u:%02u", year,
+                static_cast<unsigned>(utc_time.tm_mon + 1), static_cast<unsigned>(utc_time.tm_mday),
+                static_cast<unsigned>(utc_time.tm_hour), static_cast<unsigned>(utc_time.tm_min),
+                static_cast<unsigned>(utc_time.tm_sec));
+        }
+    }
+    std::printf("utc: %s\n", utc[0] == '\0' ? "-" : utc);
+    std::printf("OS bit: %s\n", os_state);
+}
+
+int console_service::print_rtc_raw() const {
+    uint8_t registers[11]{};
+    const esp_err_t result = board_.read_rtc_raw(registers);
+    if (result != ESP_OK) {
+        std::printf("rtc raw: %s\n", esp_err_to_name(result));
+        return 1;
+    }
+    static const char* names[11] = {"control_1", "control_2", "offset", "ram",
+                                    "seconds",   "minutes",   "hours",  "days",
+                                    "weekdays",  "months",    "years"};
+    for (unsigned index = 0; index < 11; ++index) {
+        std::printf("  0x%02X  %s\n", registers[index], names[index]);
+    }
+    std::printf("OS bit (0x04 bit7): %s\n", (registers[4] & 0x80U) != 0U ? "set" : "clear");
+    std::printf("decode: %04u-%02u-%02u %02u:%02u:%02u weekday %u\n",
+                2000 + from_bcd(registers[10]), from_bcd(registers[9] & 0x1FU),
+                from_bcd(registers[7] & 0x3FU), from_bcd(registers[6] & 0x3FU),
+                from_bcd(registers[5] & 0x7FU), from_bcd(registers[4] & 0x7FU),
+                from_bcd(registers[8] & 0x07U));
+    return 0;
+}
+
+int console_service::run_rtc_set(const char* date_text, const char* time_text) {
+    char text[40]{};
+    if (std::snprintf(text, sizeof(text), "%s %s", date_text, time_text) >=
+        static_cast<int>(sizeof(text))) {
+        std::printf("rtc set: input too long\n");
+        return 1;
+    }
+    struct tm parsed {};
+    if (strptime(text, "%Y-%m-%d %H:%M:%S", &parsed) == nullptr) {
+        std::printf("rtc set: unparseable, expected YYYY-MM-DD HH:MM:SS (UTC)\n");
+        return 1;
+    }
+    const int year = parsed.tm_year + 1900;
+    const unsigned month = static_cast<unsigned>(parsed.tm_mon) + 1U;
+    if (year < 2000 || year > 2099 || month < 1 || month > 12 || parsed.tm_mday < 1 ||
+        parsed.tm_mday > 31 || parsed.tm_hour < 0 || parsed.tm_hour > 23 || parsed.tm_min < 0 ||
+        parsed.tm_min > 59 || parsed.tm_sec < 0 || parsed.tm_sec > 59) {
+        std::printf("rtc set: value out of range\n");
+        return 1;
+    }
+    const int64_t unix_seconds = board_service::unix_from_utc(
+        year, month, static_cast<unsigned>(parsed.tm_mday), static_cast<unsigned>(parsed.tm_hour),
+        static_cast<unsigned>(parsed.tm_min), static_cast<unsigned>(parsed.tm_sec));
+    time_t check_seconds = static_cast<time_t>(unix_seconds);
+    struct tm check {};
+    if (gmtime_r(&check_seconds, &check) == nullptr || check.tm_year != parsed.tm_year ||
+        check.tm_mon != parsed.tm_mon || check.tm_mday != parsed.tm_mday ||
+        check.tm_hour != parsed.tm_hour || check.tm_min != parsed.tm_min ||
+        check.tm_sec != parsed.tm_sec) {
+        std::printf("rtc set: impossible calendar date\n");
+        return 1;
+    }
+
+    const esp_err_t result = board_.set_rtc_time(unix_seconds);
+    std::printf("rtc set: %s (unix %" PRId64 ")\n", esp_err_to_name(result), unix_seconds);
+    return result == ESP_OK ? 0 : 1;
 }
 
 void console_service::run_wifi_config_selftest() const {
