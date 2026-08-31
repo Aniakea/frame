@@ -48,6 +48,20 @@ poca_plugin(import_neg
     MANIFEST "${CMAKE_CURRENT_LIST_DIR}/../plugins/import_neg/manifest.json"
     IMPORTS "frame_unknown_symbol")
 
+# T7 IRAM probe: hot functions in .plugin_iram (gate 5 + objdump l32r check
+# in the corpus step below).
+string(REPLACE "-gcc" "-objdump" plugin_objdump "${CMAKE_C_COMPILER}")
+poca_plugin(iram_probe
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/../plugins/iram_probe/iram_probe.c"
+    VERSION "1.0.0"
+    ENTRY "frame_plugin_entry"
+    MANIFEST "${CMAKE_CURRENT_LIST_DIR}/../plugins/iram_probe/manifest.json"
+    IRAM)
+poca_iram_corpus(
+    PROBE_ELF "${CMAKE_BINARY_DIR}/plugins/iram_probe/iram_probe.elf"
+    OBJDUMP "${plugin_objdump}")
+add_dependencies(poca_iram_corpus poca_plugin_iram_probe)
+
 poca_negative_corpus(
     BASELINE_ELF "${CMAKE_BINARY_DIR}/plugins/baseline/baseline.elf")
 # negatives derive from the gated baseline ELF: gate first, then fabricate
@@ -100,6 +114,7 @@ add_dependencies(${COMPONENT_LIB}
     poca_plugin_globdat
     poca_plugin_plt
     poca_plugin_import_neg
+    poca_plugin_iram_probe
     poca_negative_corpus
     poca_cxx_probe_cxx_ctor
     poca_cxx_probe_cxx_dtor
@@ -107,11 +122,14 @@ add_dependencies(${COMPONENT_LIB}
     poca_cxx_probe_cxx_exceptions
     poca_cxx_probe_cxx_rtti
     poca_cxx_probe_cxx_unwind
-    poca_cxx_probe_corpus)
+    poca_cxx_probe_corpus
+    poca_iram_corpus)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/baseline.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/globdat.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/plt.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/import_neg.mpb" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/iram_probe.mpb" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/iram_mismatch.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_r32.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_s0op.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_phspan.mpb" BINARY)

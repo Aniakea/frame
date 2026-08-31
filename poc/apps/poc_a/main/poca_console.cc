@@ -2,6 +2,7 @@
 
 #include <cinttypes>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include "abi_smoke.hh"
@@ -9,6 +10,7 @@
 #include "esp_elf.h"
 #include "esp_heap_caps.h"
 #include "poca_plugin.hh"
+#include "private/elf_platform.h"
 #include "sdkconfig.h"
 
 #ifndef CONFIG_ELF_LOADER_LOAD_PSRAM
@@ -55,7 +57,10 @@ int poca_command(int argc, char** argv) {
         std::printf("  registered host imports: poca_host_sentinel poca_host_add\n");
         std::printf("  entry queries so far: %u (execution canary)\n",
                     static_cast<unsigned>(poca_entry_queries()));
+        std::printf("  iram cache syncs so far: %u (p5 counter)\n",
+                    static_cast<unsigned>(esp_elf_iram_cache_sync_count()));
         print_heap_caps("internal", MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+        print_heap_caps("iram-exec", MALLOC_CAP_EXEC | MALLOC_CAP_INTERNAL);
         print_heap_caps("psram", MALLOC_CAP_SPIRAM);
         return 0;
     }
@@ -74,8 +79,20 @@ int poca_command(int argc, char** argv) {
     if (argc == 2 && std::strcmp(argv[1], "unload") == 0) {
         return cmd_poca_unload();
     }
+    if ((argc == 2 || argc == 3) && std::strcmp(argv[1], "iram") == 0) {
+        unsigned iterations = 1;
+        if (argc == 3) {
+            const int parsed = std::atoi(argv[2]);
+            if (parsed < 1 || parsed > 100000) {
+                std::printf("[poca-iram] FAIL iteration count out of range (1..100000)\n");
+                return 1;
+            }
+            iterations = static_cast<unsigned>(parsed);
+        }
+        return cmd_poca_iram(iterations);
+    }
     std::printf("usage: poca status | poca abi | poca verify [name] | poca load [name] | "
-                "poca activate | poca unload\n");
+                "poca activate | poca unload | poca iram [n]\n");
     return 1;
 }
 
@@ -84,7 +101,7 @@ int poca_command(int argc, char** argv) {
 esp_err_t start_console() {
     const esp_console_cmd_t poca_cmd{
         .command = "poca",
-        .help = "poca status | abi | verify [name] | load [name] | activate | unload",
+        .help = "poca status | abi | verify [name] | load [name] | activate | unload | iram [n]",
         .hint = nullptr,
         .func = &poca_command,
         .argtable = nullptr,

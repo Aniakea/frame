@@ -5,9 +5,9 @@ f6db411fcc6bb9a02fa1f09919ddfb99374a11bc57942ac4df6f6188ef032c45  ./check_shared
 259f9e135559178b85ec6710ab6a17ab9a6a88c81187966eaa3ba614a455a7a9  ./idf_component.yml
 3406d27e7ae6b1b443d27bb69ee7e862f60238a8d8b55e3e4bea76d66d328b6f  ./include/esp_dlfcn.h
 f4cef04b710e4863670a159040de4435a7fc19790a293a6223d2656ee98eb006  ./include/esp_elf.h
-2cd943876e65ba5576006c6b18ef4228bf1085e87f147556ffc390700f0926a5  ./include/private/elf_platform.h
+4dcdcb6a11aaf5156ea978019acc484f687234bedaa32fb2fececc652cac3cfe  ./include/private/elf_platform.h
 288b180445016fc889a1aec0ece5693c9ba99d923f7ec82bc87b0f85b72bb719  ./include/private/elf_symbol.h
-13a6aa3f2977c9da9d83ed7101a6deed9c01e96d0c614be3f84963be0c1a3eda  ./include/private/elf_types.h
+b1e946cbb34dad91aa8913724022577154806ad32291d1ed4888e579d2897292  ./include/private/elf_types.h
 1555b1e6a6db5c07150df6492d069d925f8a362a980f70956c8d731d03efde90  ./include/private/esp_dlmod.h
 532cea3ef8cb7e9af97694c1f3bddec60a8453de6f7aabbbbcaca855168b3ca7  ./Kconfig
 cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30  ./license.txt
@@ -19,8 +19,8 @@ f342b33cab7a66eb49bafc5f711f9c9ec53ccf2d81731b4719f4efa630c695a7  ./src/arch/esp
 aa2a1d74a45726ac45cabf778a825b9328cf2c731b869de0e5dfe9523acd2ead  ./src/dlso/dlfcn.c
 02c9411d7993f7b6d13bca15094fbd58979e4fdb938a9470ef845d174a7f3bca  ./src/dlso/dlmod.c
 203376641eb31d39f5691865afbb6fab1eae2e8317e36e41f0a0192be206fb69  ./src/esp_all_symbol.c
-947bf046d3f788fb0144c989a18f0503f983794cecc1c8a261a07bd683cecfb1  ./src/esp_elf_adapter.c
-63162dbce031de712fd06f449a4f0b05a697c30354329cf5845490205438711d  ./src/esp_elf.c
+76bc197b51844110e73962c4a0be98965a0ed9028f4a27725185eabb332dcb2c  ./src/esp_elf_adapter.c
+e3aecd2dccd963440b28cee811158e917825bd59683898df0815014c529df40c  ./src/esp_elf.c
 81407e3dbbe7705cf3666c97ed23b5b4b9eefa7b1337de2059be85d08d0a0f4d  ./src/esp_elf_symbol.c
 163857a64578cf8bfbed900ea5168cd43a1db6a51b7921b7dec1b588b989e03e  ./src/soc/esp_elf_esp32s2.c
 81398e6eeb1bd381e0a8a1cb36d81452f6ea8f2d69a577e3a9599619c5e54246  ./tool/symbols.py

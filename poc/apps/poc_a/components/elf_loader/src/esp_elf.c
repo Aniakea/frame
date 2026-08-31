@@ -43,6 +43,41 @@ static const char *TAG = "ELF";
 static esp_elf_symbol_table_t *g_symbol_tables[SYMBOL_TABLES_NO];
 static _Atomic(symbol_resolver) current_resolver = elf_find_sym_default;
 
+/* [patch p5] Cache-sync observability counter (task T7): incremented every
+ * time the IRAM copy/relocation cache-sync routine runs; must advance with
+ * every .plugin_iram load. */
+static uint32_t g_iram_cache_syncs;
+
+uint32_t esp_elf_iram_cache_sync_count(void)
+{
+    return g_iram_cache_syncs;
+}
+
+/* [patch p5] Cache sync for the .plugin_iram copy + its relocations.
+ *
+ * Choice: the component's full-writeback convention (Cache_WriteBack_All +
+ * cross-core guard via esp_elf_arch_flush()), NOT the ranged
+ * esp_cache_msync() on the IRAM span. Justification from the pinned
+ * upstream evidence (commit 6526c5b1 "Use full cache flush instead of
+ * ranged API on ESP32-S31", the ADR-0002 archive note): the ranged cache
+ * APIs fault intermittently on unaligned addr/size spans, and a section
+ * copy is byte-granular by construction (sh_size is not line-aligned), so
+ * the IRAM span is exactly the hazard class that commit reverted away
+ * from. On ESP32-S3 internal SRAM sits behind no cache (the caches front
+ * external memory only), so D-side stores are already coherent with
+ * I-fetch and this sync is defense-in-depth for the same load's PSRAM
+ * .text side; on parts whose internal memory IS L1-cached the full
+ * writeback is the required sync. Called once per load after the
+ * relocation loop so both the copy and any relocations into the window
+ * are covered. */
+static void esp_elf_iram_cache_sync(void)
+{
+#ifdef CONFIG_ELF_LOADER_LOAD_PSRAM
+    esp_elf_arch_flush();
+#endif
+    g_iram_cache_syncs++;
+}
+
 /**
  * @brief Open and load an ELF file into memory.
  *
@@ -218,6 +253,31 @@ static int esp_elf_load_section(esp_elf_t *elf, const uint8_t *pbuf)
                 ESP_LOGD(TAG, ".data   offset is 0x%lx size is 0x%x",
                          elf->sec[ELF_SEC_DATA].offset,
                          elf->sec[ELF_SEC_DATA].size);
+            } else if (!strcmp(ELF_IRAM, name)) {
+                /* [patch p5] .plugin_iram (task T7, requirements 4.10.3/
+                 * 4.10.4): recorded like every other section with its TRUE
+                 * size - the recorded size is the map_sym()/elf_remap_text()
+                 * window and must never swallow the neighbouring section's
+                 * first vaddr(s) (patch p3 rationale). Duplicates and
+                 * non-executable spellings are rejected: the IRAM window is
+                 * only meaningful for code, and a silently ignored alias
+                 * would leave its relocations writing through
+                 * esp_elf_map_sym()==0 (the patch p4 crash pattern). */
+                if (!sflags(&shdr[i], SHF_EXECINSTR)) {
+                    ESP_LOGE(TAG, "Section %s lacks SHF_EXECINSTR; rejecting image", name);
+                    return -EINVAL;
+                }
+                if (elf->sec[ELF_SEC_IRAM].size) {
+                    ESP_LOGE(TAG, "Duplicate %s section; rejecting image", name);
+                    return -EINVAL;
+                }
+
+                ESP_LOGD(TAG, ".plugin_iram sec addr=0x%08x size=0x%08x offset=0x%08x",
+                         shdr[i].addr, shdr[i].size, shdr[i].offset);
+
+                elf->sec[ELF_SEC_IRAM].v_addr  = shdr[i].addr;
+                elf->sec[ELF_SEC_IRAM].size    = shdr[i].size;
+                elf->sec[ELF_SEC_IRAM].offset  = shdr[i].offset;
             } else if (!strcmp(ELF_RODATA, name)) {
                 ESP_LOGD(TAG, ".rodata sec addr=0x%08x size=0x%08x offset=0x%08x",
                          shdr[i].addr, shdr[i].size, shdr[i].offset);
@@ -263,6 +323,20 @@ static int esp_elf_load_section(esp_elf_t *elf, const uint8_t *pbuf)
         return -EINVAL;
     }
 
+    /* [patch p5] IRAM budget consistency (PLUG-009 / MEM 4.2.4): the
+     * manifest-declared iram_required_bytes (caller-copied from the
+     * verified mpb manifest view) must equal the section's measured sh_size
+     * exactly, in BOTH directions, checked before any allocation. An
+     * under-declared section would silently spend internal EXEC memory the
+     * admission layer never granted; an over-declared one hides the true
+     * footprint. Images without .plugin_iram must carry budget 0. */
+    if (elf->iram_required_bytes != elf->sec[ELF_SEC_IRAM].size) {
+        ESP_LOGE(TAG, ".plugin_iram budget mismatch: manifest=%" PRIu32
+                 " section=%" PRIu32 "; rejecting before allocation",
+                 elf->iram_required_bytes, (uint32_t)elf->sec[ELF_SEC_IRAM].size);
+        return -EINVAL;
+    }
+
     elf->ptext = esp_elf_malloc(elf->sec[ELF_SEC_TEXT].size, true);
     if (!elf->ptext) {
         ESP_LOGE(TAG, "Failed to malloc %"PRIu32" bytes for text section",
@@ -278,6 +352,23 @@ static int esp_elf_load_section(esp_elf_t *elf, const uint8_t *pbuf)
         elf->pdata = esp_elf_malloc(size, false);
         if (!elf->pdata) {
             ESP_LOGE(TAG, "Failed to malloc %"PRIu32" bytes for data section", size);
+            esp_elf_free(elf->ptext);
+            return -ENOMEM;
+        }
+    }
+
+    /* [patch p5] .plugin_iram copy target: internal EXEC memory (native
+     * 0x4037.. instruction window on ESP32-S3), NOT the PSRAM text window.
+     * Allocated through the adapter's explicit EXEC|INTERNAL selection
+     * because esp_elf_malloc() hard-routes to SPIRAM under
+     * CONFIG_ELF_LOADER_LOAD_PSRAM (the adapter's own internal-exec path,
+     * used upstream when PSRAM loading is disabled, is the analogue). */
+    if (elf->sec[ELF_SEC_IRAM].size) {
+        elf->piram = esp_elf_malloc_iram((uint32_t)elf->sec[ELF_SEC_IRAM].size);
+        if (!elf->piram) {
+            ESP_LOGE(TAG, "Failed to malloc %"PRIu32" bytes for plugin_iram section",
+                     (uint32_t)elf->sec[ELF_SEC_IRAM].size);
+            esp_elf_free(elf->pdata);
             esp_elf_free(elf->ptext);
             return -ENOMEM;
         }
@@ -337,6 +428,38 @@ static int esp_elf_load_section(esp_elf_t *elf, const uint8_t *pbuf)
             elf->sec[ELF_SEC_BSS].addr = (uint32_t)pdata;
             memset(pdata, 0, elf->sec[ELF_SEC_BSS].size);
         }
+    }
+
+    /* [patch p5] Dump ".plugin_iram" to the internal executable window.
+     * Recording sec[ELF_SEC_IRAM].addr extends esp_elf_map_sym() so the
+     * generic relocation loop resolves r_offsets inside the section's
+     * vaddr window to the IRAM copy, and value relocations whose addend is
+     * an IRAM vaddr produce the native 0x40.. address - elf_remap_text()
+     * correctly leaves those untouched (they are outside the PSRAM .text
+     * window, and the IRAM window needs no +0x06000000 bus mirror).
+     * The copy itself is WORD-WISE: on ESP32-S3 the data bus can touch the
+     * instruction-bus SRAM window only with 32-bit accesses (byte stores
+     * raise LoadStoreError - the same rule that makes IDF provide the
+     * separate MALLOC_CAP_IRAM_8BIT cap). Verified on target: ROM memcpy's
+     * tail s8i to the alias faulted with EXCCAUSE=3. Source bytes are read
+     * individually so no source alignment is assumed. */
+    if (elf->sec[ELF_SEC_IRAM].size) {
+        const uint8_t *src = pbuf + elf->sec[ELF_SEC_IRAM].offset;
+        volatile uint32_t *dst = (volatile uint32_t *)(uintptr_t)elf->piram;
+        const uint32_t total = (uint32_t)elf->sec[ELF_SEC_IRAM].size;
+        elf->sec[ELF_SEC_IRAM].addr = (Elf32_Addr)elf->piram;
+
+        for (uint32_t off = 0; off < total; off += 4u) {
+            uint32_t word = 0;
+            const uint32_t remain = total - off;
+            for (uint32_t b = 0; b < 4u && b < remain; b++) {
+                word |= (uint32_t)src[off + b] << (8u * b);
+            }
+            dst[off >> 2] = word;
+        }
+
+        ESP_LOGI(TAG, ".plugin_iram copied to 0x%08x size %"PRIu32,
+                 (uint32_t)(uintptr_t)elf->piram, (uint32_t)elf->sec[ELF_SEC_IRAM].size);
     }
 
     /* Set ELF entry */
@@ -742,8 +865,17 @@ int esp_elf_relocate(esp_elf_t *elf, const uint8_t *pbuf)
         }
     }
 
+    /* [patch p5] IRAM loads sync through esp_elf_iram_cache_sync() (which
+     * performs the same full writeback + cross-core guard and counts it);
+     * the plain flush stays on the no-IRAM path so its behaviour is
+     * unchanged. */
+    if (elf->piram) {
+        esp_elf_iram_cache_sync();
+    } else
 #ifdef CONFIG_ELF_LOADER_LOAD_PSRAM
-    esp_elf_arch_flush();
+    {
+        esp_elf_arch_flush();
+    }
 #endif
 
     return 0;
@@ -790,6 +922,13 @@ void esp_elf_deinit(esp_elf_t *elf)
     if (elf->pdata) {
         esp_elf_free(elf->pdata);
         elf->pdata = NULL;
+    }
+
+    /* [patch p5] release the .plugin_iram copy (mirrors ptext/pdata) so
+     * load/unload cycles return the internal EXEC watermark to baseline */
+    if (elf->piram) {
+        esp_elf_free(elf->piram);
+        elf->piram = NULL;
     }
 
     if (elf->ptext) {
@@ -946,8 +1085,11 @@ void esp_elf_print_shdr(const uint8_t *pbuf)
  */
 void esp_elf_print_sec(esp_elf_t *elf)
 {
+    /* [patch p5] ELF_SECS grew to 6 (ELF_SEC_IRAM); the name array must
+     * cover every slot or the loop below reads past it (it already
+     * under-counted ELF_SEC_DRLRO upstream). */
     const char *sec_names[ELF_SECS] = {
-        "text", "bss", "data", "rodata"
+        "text", "bss", "data", "rodata", "drlro", "iram"
     };
 
     for (int i = 0; i < ELF_SECS; i++) {

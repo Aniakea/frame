@@ -36,6 +36,14 @@ void *esp_elf_malloc(uint32_t n, bool exec);
  */
 void esp_elf_free(void *ptr);
 
+/* [patch p5] Allocate n bytes of internal executable memory for the
+ * .plugin_iram section copy (task T7). The regular esp_elf_malloc()
+ * hard-routes to SPIRAM under CONFIG_ELF_LOADER_LOAD_PSRAM, which is right
+ * for .text/.data but wrong for the IRAM budget; this helper keeps the
+ * allocation policy in the adapter like every other allocation of the
+ * component. */
+void *esp_elf_malloc_iram(uint32_t n);
+
 /**
  * @brief Relocates target architecture symbol of ELF
  *
@@ -69,6 +77,11 @@ uintptr_t elf_remap_text(esp_elf_t *elf, uintptr_t sym);
 #ifdef CONFIG_ELF_LOADER_LOAD_PSRAM
 void esp_elf_arch_flush(void);
 #endif
+
+/* [patch p5] Number of times the IRAM copy/relocation cache-sync routine
+ * has run (task T7 cache-sync observability: the counter must increment
+ * with every .plugin_iram load). */
+uint32_t esp_elf_iram_cache_sync_count(void);
 
 /**
  * @brief Initialize MMU hardware remapping function.

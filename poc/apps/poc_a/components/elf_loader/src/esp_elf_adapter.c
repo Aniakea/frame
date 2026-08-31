@@ -70,6 +70,29 @@ void esp_elf_free(void *ptr)
     heap_caps_free(ptr);
 }
 
+/* [patch p5] Internal-EXEC allocation for the .plugin_iram section copy
+ * (task T7). Mirrors the adapter's own internal-exec selection used when
+ * PSRAM loading is disabled (esp_elf_malloc()'s exec branch): explicit
+ * EXEC|INTERNAL caps, so the section copy lands in the native IRAM
+ * execution window (0x4037_0000..0x403E_0000 on ESP32-S3) instead of the
+ * PSRAM data window. MALLOC_CAP_EXEC exists only when the IDF exec heap is
+ * available (CONFIG_HEAP_HAS_EXEC_HEAP, i.e. CONFIG_ESP_SYSTEM_MEMPROT=n;
+ * the IDF Kconfig help states EXEC allocation is impossible under memory
+ * protection), EXEC cannot be combined with 8BIT/DMA, and heap_caps
+ * transparently returns the IRAM-alias pointer with a stash word that
+ * heap_caps_free() unconverts - so esp_elf_free() stays correct. Fail
+ * closed (NULL) when the exec heap is not configured. */
+void *esp_elf_malloc_iram(uint32_t n)
+{
+#ifdef MALLOC_CAP_EXEC
+    return heap_caps_malloc(n, MALLOC_CAP_EXEC | MALLOC_CAP_INTERNAL);
+#else
+    ESP_LOGE("elf_adapter", "MALLOC_CAP_EXEC unavailable (enable by setting "
+             "CONFIG_ESP_SYSTEM_MEMPROT=n); cannot load .plugin_iram");
+    return NULL;
+#endif
+}
+
 /**
  * @brief Remap symbol from ".data" to ".text" section.
  *

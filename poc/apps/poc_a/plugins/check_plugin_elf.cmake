@@ -27,6 +27,13 @@
 #   imports, appendix C 11.2).
 # Gate 3 (shape): ELF32, little-endian, Xtensa machine, ET_DYN, non-zero
 #   entry, and the exported query entry present as a defined GLOBAL FUNC.
+# Gate 5 (task T7, only with -D EXPECT_IRAM_SECTION=1): the image carries
+#   exactly one .plugin_iram PROGBITS ALLOC+EXEC section with no split
+#   .plugin_iram.* subsections (a leaked literal pool would be unreachable
+#   from the IRAM window), and no dynamic relocation patches a word inside
+#   the section span (relocation targets there would write through an
+#   unmapped window on any loader that does not know the section). Loader
+#   patch p5 maps the section; this gate keeps the producer honest.
 
 set(allowed_types R_XTENSA_NONE R_XTENSA_RELATIVE R_XTENSA_RTLD R_XTENSA_GLOB_DAT R_XTENSA_JMP_SLOT)
 
@@ -183,3 +190,62 @@ endif()
 
 string(REPLACE ";" " " summary_line "${summary}")
 message(STATUS "[poca-plugin] ${PLUGIN_NAME}: gates OK relocs(${summary_line}) undefined=0 entry=${EXPECT_ENTRY}")
+
+# Gate 5 (task T7): optional .plugin_iram contract, enabled per plugin with
+# -D EXPECT_IRAM_SECTION=1. Reuses the readelf -SW output from gate 4.
+if(EXPECT_IRAM_SECTION)
+    set(iram_size "")
+    set(iram_addr "")
+    foreach(line IN LISTS sec_lines)
+        if(line MATCHES "\\.plugin_iram(\\.[^ ]+)?[ \\t]")
+            # cols = "[ Nr] name type addr off size" (readelf -SW columns,
+            # token numbers 1..5 after the bracket index)
+            string(REGEX MATCH "\\[[ ]*[0-9]+\\][ ]+[^ ]+[ ]+[^ ]+[ ]+[^ ]+[ ]+[^ ]+[ ]+[^ ]+" cols "${line}")
+            if(cols)
+                string(REGEX REPLACE "^\\[[ ]*[0-9]+\\][ ]+([^ ]+)[ ]+([^ ]+)[ ]+([^ ]+)[ ]+([^ ]+)[ ]+([^ ]+).*$"
+                       "\\1;\\2;\\3;\\4;\\5" fields "${cols}")
+                list(GET fields 0 secname)
+                if(NOT secname STREQUAL ".plugin_iram")
+                    message(FATAL_ERROR
+                        "[poca-plugin] ${PLUGIN_NAME}: split IRAM subsection '${secname}' "
+                        "present (literal pools must stay out of the IRAM window)")
+                endif()
+                if(NOT iram_size STREQUAL "")
+                    message(FATAL_ERROR "[poca-plugin] ${PLUGIN_NAME}: duplicate .plugin_iram section")
+                endif()
+                list(GET fields 2 iram_addr)
+                list(GET fields 4 iram_size)
+                string(FIND "${line}" "AX" ax_idx)
+                if(ax_idx EQUAL -1)
+                    message(FATAL_ERROR "[poca-plugin] ${PLUGIN_NAME}: .plugin_iram is not ALLOC+EXEC")
+                endif()
+            endif()
+        endif()
+    endforeach()
+    if(iram_size STREQUAL "")
+        message(FATAL_ERROR "[poca-plugin] ${PLUGIN_NAME}: required .plugin_iram section missing")
+    endif()
+
+    math(EXPR iram_addr_dec "0x${iram_addr}")
+    math(EXPR iram_size_dec "0x${iram_size}")
+    math(EXPR iram_span_end "${iram_addr_dec} + ${iram_size_dec}")
+
+    set(offending_offsets "")
+    foreach(line IN LISTS reloc_lines)
+        string(REGEX MATCH "^([0-9a-fA-F]{6,})" off_col "${line}")
+        if(off_col)
+            math(EXPR off_dec "0x${off_col}")
+            if(off_dec GREATER_EQUAL "${iram_addr_dec}" AND off_dec LESS "${iram_span_end}")
+                list(APPEND offending_offsets "0x${off_col}")
+            endif()
+        endif()
+    endforeach()
+    if(offending_offsets)
+        message(FATAL_ERROR
+            "[poca-plugin] ${PLUGIN_NAME}: dynamic relocations patch inside the "
+            ".plugin_iram span [0x${iram_addr}, +0x${iram_size}): "
+            "${offending_offsets}")
+    endif()
+    message(STATUS "[poca-plugin] ${PLUGIN_NAME}: IRAM gate OK "
+        ".plugin_iram addr=0x${iram_addr} size=0x${iram_size} span-relocs=0")
+endif()

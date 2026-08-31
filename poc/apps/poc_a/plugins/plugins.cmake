@@ -1,5 +1,5 @@
 # poca_plugin(<name> SOURCE <file.c> VERSION <semver> ENTRY <symbol> MANIFEST <json>
-#             [IMPORTS <sym>...])
+#             [IMPORTS <sym>...] [IRAM])
 #
 # PoC-A plugin build pipeline (task T4 of poc-a-dynamic-elf). Produces, under
 # ${CMAKE_BINARY_DIR}/plugins/:
@@ -9,6 +9,10 @@
 #                      manifest_builder.py (frame-manifest-builder)
 #   generated/poca_<name>_meta.h   size + sha256 of the mpb, compiled into the
 #                      firmware so the device can detect a stale embed
+#
+# IRAM (T7): the plugin places hot functions in a .plugin_iram section;
+# enables gate 5 in check_plugin_elf.cmake (single ALLOC+EXEC section, no
+# split subsections, no relocations patching the section span).
 #
 # Flag provenance: the compile/link/strip flag sets mirror the vendored
 # component poc/apps/poc_a/components/elf_loader/elf_loader.cmake
@@ -46,12 +50,17 @@ set(POCA_PLUGINS_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set(POCA_REPO_ROOT "${POCA_PLUGINS_DIR}/../../../..")
 
 function(poca_plugin name)
-    cmake_parse_arguments(PLUGIN "" "SOURCE;VERSION;ENTRY;MANIFEST" "IMPORTS" ${ARGN})
+    cmake_parse_arguments(PLUGIN "IRAM" "SOURCE;VERSION;ENTRY;MANIFEST" "IMPORTS" ${ARGN})
     if(NOT PLUGIN_SOURCE OR NOT PLUGIN_VERSION OR NOT PLUGIN_ENTRY OR NOT PLUGIN_MANIFEST)
         message(FATAL_ERROR "poca_plugin(${name}): SOURCE, VERSION, ENTRY and MANIFEST are required")
     endif()
     if(NOT PLUGIN_IMPORTS)
         set(PLUGIN_IMPORTS "")
+    endif()
+    if(PLUGIN_IRAM)
+        set(iram_gate_args "-D" "EXPECT_IRAM_SECTION=1")
+    else()
+        set(iram_gate_args "-D" "EXPECT_IRAM_SECTION=0")
     endif()
 
     set(plugins_dir "${POCA_PLUGINS_DIR}")
@@ -131,6 +140,7 @@ function(poca_plugin name)
             -D "NM=${plugin_nm}"
             -D "EXPECT_ENTRY=${PLUGIN_ENTRY}"
             -D "EXPECT_UNDEFINED=${PLUGIN_IMPORTS}"
+            ${iram_gate_args}
             -P "${plugins_dir}/check_plugin_elf.cmake"
         COMMAND "${CMAKE_COMMAND}" -E touch "${stamp}"
         DEPENDS "${elf}"
@@ -357,6 +367,53 @@ function(poca_negative_corpus)
         COMMENT "[poca-corpus] handcrafted negative containers (gate-bypass by design)"
         VERBATIM)
     add_custom_target(poca_negative_corpus DEPENDS "${stamp}")
+endfunction()
+
+# poca_iram_corpus(PROBE_ELF <elf> OBJDUMP <tool>)
+#
+# T7 IRAM negative corpus: packages the budget-mismatch container
+# iram_mismatch (hostile assemble_mpb path, manifest declares
+# section_size+16) from the gate-approved probe ELF. Also runs the
+# objdump-level IRAM contract check on the probe ELF (no l32r inside
+# .plugin_iram - a literal pool there is unreachable across the IRAM/PSRAM
+# window split). The positive iram_probe.mpb comes from poca_plugin.
+function(poca_iram_corpus)
+    cmake_parse_arguments(CORPUS "" "PROBE_ELF;OBJDUMP" "" ${ARGN})
+    if(NOT CORPUS_PROBE_ELF OR NOT CORPUS_OBJDUMP)
+        message(FATAL_ERROR "poca_iram_corpus: PROBE_ELF and OBJDUMP are required")
+    endif()
+
+    set(out_dir "${CMAKE_BINARY_DIR}/plugins")
+    set(gen_dir "${out_dir}/generated")
+    set(corpus_names iram_mismatch)
+    set(corpus_outputs "")
+    foreach(name IN LISTS corpus_names)
+        list(APPEND corpus_outputs "${out_dir}/${name}.mpb" "${gen_dir}/poca_${name}_meta.h")
+    endforeach()
+    set(stamp "${out_dir}/iram_probe/corpus.stamp")
+
+    set(signing_key "${POCA_REPO_ROOT}/tools/frame_tools/testdata/keys/poc_a_test_signing_key.pem")
+    if(Python_EXECUTABLE)
+        set(corpus_python "${Python_EXECUTABLE}")
+    else()
+        set(corpus_python python3)
+    endif()
+
+    add_custom_command(
+        OUTPUT "${stamp}"
+        BYPRODUCTS ${corpus_outputs}
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${out_dir}/iram_probe"
+        COMMAND "${corpus_python}" "${POCA_PLUGINS_DIR}/iram_probe/build_iram_corpus.py"
+            --probe-elf "${CORPUS_PROBE_ELF}"
+            --objdump "${CORPUS_OBJDUMP}"
+            --key "${signing_key}"
+            --out-dir "${out_dir}"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${stamp}"
+        DEPENDS "${CORPUS_PROBE_ELF}"
+                "${POCA_PLUGINS_DIR}/iram_probe/build_iram_corpus.py" "${signing_key}"
+        COMMENT "[iram-corpus] probe + budget-mismatch containers (T7)"
+        VERBATIM)
+    add_custom_target(poca_iram_corpus DEPENDS "${stamp}")
 endfunction()
 
 # Generate the embedded TEST public key header (65-byte uncompressed point

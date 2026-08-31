@@ -42,6 +42,10 @@ static const poca_plugin_table_t k_unwind_table = {
     .state_schema_version = 0u,
     .host_sentinel = nullptr,
     .host_add = nullptr,
+    .iram_check = nullptr,
+    .iram_write = nullptr,
+    .data_word_ptr = nullptr,
+    .data_word_read = nullptr,
 };
 
 extern "C" __attribute__((visibility("default"))) const poca_plugin_table_t*

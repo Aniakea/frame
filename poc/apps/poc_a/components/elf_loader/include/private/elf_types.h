@@ -119,6 +119,11 @@ extern "C" {
 #define ELF_PLT         ".plt"          /*!< procedure linkage table. */
 #define ELF_GOT_PLT     ".got.plt"      /*!< a table where resolved addresses from external functions are stored */
 
+/* [patch p5] Plugin hot-function section (task T7 of poc-a-dynamic-elf,
+ * requirements 4.10.3/4.10.4): plugin code the manifest budgets into
+ * internal executable RAM. Parsed only on the BUS_ADDRESS_MIRROR path. */
+#define ELF_IRAM        ".plugin_iram"  /*!< plugin IRAM-resident code */
+
 /** @brief ELF section and symbol operation */
 
 #define ELF_SEC_TEXT            0
@@ -126,7 +131,8 @@ extern "C" {
 #define ELF_SEC_DATA            2
 #define ELF_SEC_RODATA          3
 #define ELF_SEC_DRLRO           4
-#define ELF_SECS                5
+#define ELF_SEC_IRAM            5 /* [patch p5] */
+#define ELF_SECS                6
 
 #define ELF_ST_BIND(_i)         ((_i) >> 4)
 #define ELF_ST_TYPE(_i)         ((_i) & 0xf)
@@ -241,6 +247,7 @@ typedef struct esp_elf {
 #ifdef CONFIG_ELF_LOADER_BUS_ADDRESS_MIRROR
     unsigned char   *ptext;             /*!< instruction buffer pointer */
     unsigned char   *pdata;             /*!< data buffer pointer */
+    unsigned char   *piram;             /*!< [patch p5] .plugin_iram buffer (internal EXEC) */
 #else
     unsigned char   *psegment;          /*!< segment buffer pointer */
     uint32_t         svaddr;            /*!< start virtual address of segment */
@@ -249,6 +256,15 @@ typedef struct esp_elf {
     esp_elf_sec_t   sec[ELF_SECS];      /*!< ".bss", "data", "rodata", ".text" */
 
     int (*entry)(int argc, char *argv[]);               /*!< Entry pointer of ELF */
+
+    /* [patch p5] Manifest-declared .plugin_iram budget (PLUG-009 / MEM
+     * 4.2.4): the caller copies iram_required_bytes from the verified mpb
+     * manifest view into this field between esp_elf_init() and
+     * esp_elf_relocate(); the load aborts with -EINVAL before any
+     * allocation unless it equals the section's measured sh_size. Zero
+     * (the esp_elf_init() reset) is the correct value for images without
+     * a .plugin_iram section. */
+    uint32_t        iram_required_bytes;
 
 #ifdef CONFIG_ELF_LOADER_SET_MMU
     uint32_t        text_off;           /*!< .text symbol offset */

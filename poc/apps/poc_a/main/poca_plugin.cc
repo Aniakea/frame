@@ -15,6 +15,8 @@
 #include "poca_cxx_tls_meta.h"
 #include "poca_globdat_meta.h"
 #include "poca_import_neg_meta.h"
+#include "poca_iram_mismatch_meta.h"
+#include "poca_iram_probe_meta.h"
 #include "poca_neg_ph64_meta.h"
 #include "poca_neg_phbe_meta.h"
 #include "poca_neg_phmach_meta.h"
@@ -24,6 +26,7 @@
 #include "poca_neg_tls_nosect_meta.h"
 #include "poca_plt_meta.h"
 #include "poca_pubkey.h"
+#include "private/elf_platform.h"
 #include "psa/crypto.h"
 
 /* Embedded signed plugin containers, produced by the plugins.cmake pipeline
@@ -55,18 +58,28 @@ extern "C" const uint8_t _binary_cxx_tls_mpb_start[];
 extern "C" const uint8_t _binary_cxx_tls_mpb_end[];
 extern "C" const uint8_t _binary_neg_tls_nosect_mpb_start[];
 extern "C" const uint8_t _binary_neg_tls_nosect_mpb_end[];
+extern "C" const uint8_t _binary_iram_probe_mpb_start[];
+extern "C" const uint8_t _binary_iram_probe_mpb_end[];
+extern "C" const uint8_t _binary_iram_mismatch_mpb_start[];
+extern "C" const uint8_t _binary_iram_mismatch_mpb_end[];
 
 namespace frame::poca {
 namespace {
 
 /* ESP32-S3 address windows: PSRAM data-bus mapping 0x3C000000..0x3E000000
  * (drom) and its instruction-bus alias used for execution 0x42000000..
- * 0x44000000 (irom = data window + 0x06000000 with ELF_LOADER_CACHE_OFFSET). */
+ * 0x44000000 (irom = data window + 0x06000000 with ELF_LOADER_CACHE_OFFSET).
+ * IRAM (internal SRAM through the instruction bus, soc.h SOC_IRAM_LOW..
+ * SOC_IRAM_HIGH) is a DIFFERENT window: .plugin_iram copies allocate
+ * MALLOC_CAP_EXEC|MALLOC_CAP_INTERNAL and execute natively at 0x4037.. with
+ * no bus mirror (T7). */
 constexpr uint32_t kPsramDataLow = 0x3C000000u;
 constexpr uint32_t kPsramDataHigh = 0x3E000000u;
 constexpr uint32_t kPsramExecLow = 0x42000000u;
 constexpr uint32_t kPsramExecHigh = 0x44000000u;
 constexpr uint32_t kPsramExecMirrorOffset = 0x06000000u;
+constexpr uint32_t kIramLow = 0x40370000u;
+constexpr uint32_t kIramHigh = 0x403E0000u;
 
 /* Host imports registered into the loader's symbol tables (T5 import
  * allowlist). Plugins resolve these names through GLOB_DAT/JMP_SLOT; every
@@ -115,6 +128,10 @@ const EmbeddedPackage k_packages[] = {
      POCA_CXX_TLS_MPB_SHA256},
     {"neg_tls_nosect", _binary_neg_tls_nosect_mpb_start, _binary_neg_tls_nosect_mpb_end,
      POCA_NEG_TLS_NOSECT_MPB_SIZE, POCA_NEG_TLS_NOSECT_MPB_SHA256},
+    {"iram_probe", _binary_iram_probe_mpb_start, _binary_iram_probe_mpb_end,
+     POCA_IRAM_PROBE_MPB_SIZE, POCA_IRAM_PROBE_MPB_SHA256},
+    {"iram_mismatch", _binary_iram_mismatch_mpb_start, _binary_iram_mismatch_mpb_end,
+     POCA_IRAM_MISMATCH_MPB_SIZE, POCA_IRAM_MISMATCH_MPB_SHA256},
 };
 
 /* Expected outcome per package: the on-board matrix rows. Every negative
@@ -142,6 +159,8 @@ const PackageExpect k_expects[] = {
     {"cxx_ctor", Expect::kRelocateErrno, -22},       /* -EINVAL: patch p4, .ctors */
     {"cxx_tls", Expect::kRelocateErrno, -22},        /* -EINVAL: patch p4, .tdata/.tbss */
     {"neg_tls_nosect", Expect::kRelocateErrno, -22}, /* -EINVAL: patch p1, TLSDESC relocs */
+    {"iram_probe", Expect::kLoadOk, 0},
+    {"iram_mismatch", Expect::kRelocateErrno, -22}, /* -EINVAL: patch p5, iram budget */
 };
 
 struct PluginRuntime {
@@ -206,6 +225,12 @@ const char* frame_err_name(int32_t err) {
 uint32_t psram_free_bytes() {
     multi_heap_info_t info{};
     heap_caps_get_info(&info, MALLOC_CAP_SPIRAM);
+    return static_cast<uint32_t>(info.total_free_bytes);
+}
+
+uint32_t iram_free_bytes() {
+    multi_heap_info_t info{};
+    heap_caps_get_info(&info, MALLOC_CAP_EXEC | MALLOC_CAP_INTERNAL);
     return static_cast<uint32_t>(info.total_free_bytes);
 }
 
@@ -631,6 +656,10 @@ int cmd_poca_load(const char* name) {
         release_plugin(true);
         return 1;
     }
+    /* T7 (PLUG-009/MEM 4.2.4): hand the manifest-declared IRAM budget from
+     * the verified mpb view to loader patch p5, which asserts it equals the
+     * .plugin_iram section's measured sh_size before any allocation. */
+    g_plugin.elf.iram_required_bytes = view.iram_required_bytes;
     /* Relocate from the same immutable staging buffer (PLUG-008). */
     const int relocate_err = esp_elf_relocate(&g_plugin.elf, elf_base);
     if (relocate_err != 0) {
@@ -775,6 +804,20 @@ int cmd_poca_load(const char* name) {
         return 1;
     }
 
+    /* T7: a .plugin_iram section must land in the internal EXEC window
+     * (native instruction-bus IRAM, distinct from both PSRAM windows). */
+    if (g_plugin.elf.sec[ELF_SEC_IRAM].size != 0) {
+        const uint32_t iram_addr = reinterpret_cast<uint32_t>(g_plugin.elf.piram);
+        const bool iram_window_ok = iram_addr >= kIramLow && iram_addr < kIramHigh;
+        std::printf("[poca-load] iram [0x%08" PRIx32 " .. +0x%zx) window0x40=%s\n", iram_addr,
+                    g_plugin.elf.sec[ELF_SEC_IRAM].size, iram_window_ok ? "PASS" : "FAIL");
+        if (!iram_window_ok || g_plugin.elf.piram == nullptr) {
+            std::printf("[poca-load] FAIL plugin_iram outside IRAM exec window\n");
+            release_plugin(true);
+            return 1;
+        }
+    }
+
     g_plugin.table = table;
     g_plugin.loaded = true;
     const uint32_t free_after = psram_free_bytes();
@@ -838,6 +881,114 @@ int cmd_poca_unload() {
         free_after, g_plugin.psram_free_before_load,
         static_cast<int32_t>(free_after) - static_cast<int32_t>(g_plugin.psram_free_before_load));
     std::printf("[poca-unload] PASS\n");
+    return 0;
+}
+
+int cmd_poca_iram(unsigned iterations) {
+    if (iterations == 0) {
+        iterations = 1;
+    }
+    std::printf("[poca-iram] %u iteration(s): load iram_probe -> IRAM proofs -> unload\n",
+                static_cast<unsigned>(iterations));
+    const uint32_t iram_free_baseline = iram_free_bytes();
+    std::printf("[poca-iram] iram free baseline=%" PRIu32 "\n", iram_free_baseline);
+
+    for (unsigned iter = 1; iter <= iterations; ++iter) {
+        if (cmd_poca_load("iram_probe") != 0) {
+            std::printf("[poca-iram] FAIL load iteration %u\n", iter);
+            return 1;
+        }
+        const poca_plugin_table_t* table = g_plugin.table;
+        if (table == nullptr || table->iram_check == nullptr || table->iram_write == nullptr ||
+            table->data_word_ptr == nullptr || table->data_word_read == nullptr) {
+            std::printf("[poca-iram] FAIL iram probe slots missing from entry table\n");
+            cmd_poca_unload();
+            return 1;
+        }
+
+        /* Proof 1 (address window): the returned iram_check pointer must be
+         * in the native instruction-bus IRAM window - a DIFFERENT window
+         * than the PSRAM data (0x3C..) and exec-mirror (0x42..) addresses
+         * of the rest of the image. */
+        const uint32_t iram_fn = reinterpret_cast<uint32_t>(table->iram_check);
+        const bool window_ok = iram_fn >= kIramLow && iram_fn < kIramHigh;
+        std::printf("[poca-iram] iram_check fn=0x%08" PRIx32 " window0x40=%s\n", iram_fn,
+                    window_ok ? "PASS" : "FAIL");
+        if (!window_ok) {
+            cmd_poca_unload();
+            return 1;
+        }
+
+        /* Proof 2 (cache-sync observability): the loader's IRAM cache-sync
+         * counter must have advanced by exactly one during this load. */
+        const uint32_t syncs = esp_elf_iram_cache_sync_count();
+        const bool counter_ok = syncs >= 1;
+        std::printf("[poca-iram] cache-sync counter=%" PRIu32 " (>0=%s)\n", syncs,
+                    counter_ok ? "PASS" : "FAIL");
+        if (!counter_ok) {
+            cmd_poca_unload();
+            return 1;
+        }
+
+        /* Proof 3 (value computed BY iram-resident code): the check value
+         * comes from executing the copy at 0x40..; the firmware recomputes
+         * the expected value with its own flash-resident code. */
+        const uint32_t returned =
+            table->iram_check(POCA_PLUGIN_MAGIC, POCA_IRAM_PROBE_MULT, POCA_IRAM_PROBE_SEED,
+                              POCA_IRAM_PROBE_POLY, POCA_IRAM_PROBE_WORDS);
+        const uint32_t expected = poca_iram_probe_value(POCA_PLUGIN_MAGIC);
+        std::printf("[poca-iram] iram_check returned=0x%08" PRIx32 " expected=0x%08" PRIx32 " %s\n",
+                    returned, expected, returned == expected ? "MATCH" : "MISMATCH");
+        if (returned != expected) {
+            cmd_poca_unload();
+            return 1;
+        }
+
+        /* Proof 4 (write visibility across windows): IRAM-resident stores
+         * into the plugin's PSRAM .data word must be readable back through
+         * the .text export and through the host pointer. */
+        uint32_t* word = table->data_word_ptr();
+        const uint32_t word_addr = reinterpret_cast<uint32_t>(word);
+        const bool word_window_ok = word_addr >= kPsramDataLow && word_addr < kPsramDataHigh;
+        const int32_t write_err = table->iram_write(word, POCA_IRAM_WRITE_PATTERN);
+        const uint32_t read_text = table->data_word_read();
+        const uint32_t read_host = *word;
+        std::printf("[poca-iram] write-probe .data=0x%08" PRIx32 " (psram=%s) wrote=0x%08" PRIx32
+                    " read_text=0x%08" PRIx32 " read_host=0x%08" PRIx32 " %s\n",
+                    word_addr, word_window_ok ? "PASS" : "FAIL",
+                    static_cast<uint32_t>(POCA_IRAM_WRITE_PATTERN), read_text, read_host,
+                    (write_err == 0 && read_text == POCA_IRAM_WRITE_PATTERN &&
+                     read_host == POCA_IRAM_WRITE_PATTERN && word_window_ok)
+                        ? "MATCH"
+                        : "MISMATCH");
+        if (write_err != 0 || read_text != POCA_IRAM_WRITE_PATTERN ||
+            read_host != POCA_IRAM_WRITE_PATTERN || !word_window_ok) {
+            cmd_poca_unload();
+            return 1;
+        }
+
+        if (cmd_poca_unload() != 0) {
+            std::printf("[poca-iram] FAIL unload iteration %u\n", iter);
+            return 1;
+        }
+        if (iter % 20u == 0u || iter == iterations) {
+            std::printf("[poca-iram] watermark iter=%u iram_free=%" PRIu32 " (baseline=%" PRIu32
+                        " delta=%+" PRId32 ")\n",
+                        iter, iram_free_bytes(), iram_free_baseline,
+                        static_cast<int32_t>(iram_free_bytes()) -
+                            static_cast<int32_t>(iram_free_baseline));
+        }
+    }
+
+    const uint32_t iram_free_final = iram_free_bytes();
+    const int32_t drift =
+        static_cast<int32_t>(iram_free_final) - static_cast<int32_t>(iram_free_baseline);
+    std::printf("[poca-iram] final iram free=%" PRIu32 " drift=%+" PRId32 " (%s)\n",
+                iram_free_final, drift, drift == 0 ? "no leak" : "LEAK");
+    if (drift != 0) {
+        return 1;
+    }
+    std::printf("[poca-iram] PASS (%u cycle(s))\n", static_cast<unsigned>(iterations));
     return 0;
 }
 

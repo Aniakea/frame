@@ -20,9 +20,11 @@
 #include <stdint.h>
 
 /* Entry-table ABI of the PoC-A plugin contract (plan section 4.14.2 minimal
- * subset: prepare/activate/unload, state_schema all zero). */
+ * subset: prepare/activate/unload, state_schema all zero). Minor 2 adds the
+ * IRAM probe slots at the end of the table (task T7); designated
+ * initializers leave them null for plugins without a .plugin_iram section. */
 #define POCA_PLUGIN_ABI_MAJOR 1
-#define POCA_PLUGIN_ABI_MINOR 1
+#define POCA_PLUGIN_ABI_MINOR 2
 
 /* The fixed name of the single exported query entry. The pipeline links the
  * plugin with -e frame_plugin_entry and every other symbol hidden. */
@@ -124,8 +126,56 @@ typedef struct poca_plugin_table {
      * can assert the exact relocation value by pointer comparison. */
     uint32_t (*host_sentinel)(void);
     uint32_t (*host_add)(uint32_t a, uint32_t b);
+    /* IRAM probe slots (task T7). iram_check/iram_write are compiled into
+     * the plugin's .plugin_iram section: after relocation these pointers
+     * carry native IRAM window addresses (0x4037.. on ESP32-S3), which is
+     * itself the address-window proof. data_word_ptr/data_word_read are
+     * ordinary .text exports over the plugin's .data word used for the
+     * write-visibility probe. Null for plugins without .plugin_iram. */
+    uint32_t (*iram_check)(uint32_t magic, uint32_t mult, uint32_t seed, uint32_t poly,
+                           uint32_t words);
+    int32_t (*iram_write)(uint32_t* dst, uint32_t value);
+    uint32_t* (*data_word_ptr)(void);
+    uint32_t (*data_word_read)(void);
 } poca_plugin_table_t;
 
 typedef const poca_plugin_table_t* (*poca_plugin_query_fn)(void);
+
+/*
+ * IRAM probe value contract (task T7): the check value computed by the
+ * IRAM-resident function. The implementation must stay LITERAL-FREE and
+ * free of static references - every large constant arrives as a parameter,
+ * because an xtensa l32r literal pool for .plugin_iram code would sit in a
+ * different load window than the code and l32r reach (256 KB, backward
+ * only) cannot span the IRAM/PSRAM split. The firmware computes the
+ * expected value with this same inline over flash-resident code; equality
+ * proves the IRAM-resident copy executed.
+ */
+#define POCA_IRAM_PROBE_MULT 1664525u
+#define POCA_IRAM_PROBE_SEED 0xC0FFEE57u
+#define POCA_IRAM_PROBE_POLY 0xEDB88320u
+#define POCA_IRAM_PROBE_WORDS 16u
+#define POCA_IRAM_WRITE_PATTERN 0x5CA1AB1Eu
+
+static inline uint32_t poca_iram_fold(uint32_t magic, uint32_t mult, uint32_t seed, uint32_t poly,
+                                      uint32_t words) {
+    uint32_t tbl[16];
+    uint32_t acc = seed;
+    for (uint32_t i = 0; i < words && i < 16u; ++i) {
+        acc = acc * mult + i + 1u;
+        tbl[i] = acc ^ (poly >> (i & 7u));
+    }
+    uint32_t v = magic;
+    for (uint32_t i = 0; i < words && i < 16u; ++i) {
+        v = (v << 3) | (v >> 29);
+        v ^= tbl[i] + magic;
+    }
+    return v ^ seed;
+}
+
+static inline uint32_t poca_iram_probe_value(uint32_t magic) {
+    return poca_iram_fold(magic, POCA_IRAM_PROBE_MULT, POCA_IRAM_PROBE_SEED, POCA_IRAM_PROBE_POLY,
+                          POCA_IRAM_PROBE_WORDS);
+}
 
 #endif /* POC_A_PLUGINS_PLUGIN_ABI_H */

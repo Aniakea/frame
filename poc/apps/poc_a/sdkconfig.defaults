@@ -19,3 +19,12 @@ CONFIG_COMPILER_OPTIMIZATION_DEBUG=y
 CONFIG_COMPILER_CXX_EXCEPTIONS=n
 CONFIG_COMPILER_CXX_RTTI=n
 CONFIG_LOG_DEFAULT_LEVEL_INFO=y
+
+# T7 (.plugin_iram loader patch): dynamic executable-memory allocation
+# (MALLOC_CAP_EXEC, the loader's esp_elf_malloc_iram) exists only with the
+# IDF exec heap, which memory protection disables per its own Kconfig help
+# ("allocating memory with MALLOC_CAP_EXEC capability is not possible when
+# this config is enabled"). Software-only PMP config, no eFuse involved;
+# reversed for the PoC harness because requirements 4.10.3/4.10.4 require
+# plugin hot functions in IRAM.
+CONFIG_ESP_SYSTEM_MEMPROT=n
