@@ -11,6 +11,7 @@ requires-python = ">=3.11"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 dependencies = [
+    "cryptography>=50.0.1",
     "jsonschema>=4.23,<5",
     "PyYAML>=6.0.2,<7",
     "rfc3339-validator>=0.1.4,<1",
@@ -21,6 +22,7 @@ frame-coverage = "frame_tools.coverage:main"
 frame-doc-links = "frame_tools.doc_links:main"
 frame-evidence = "frame_tools.evidence:main"
 frame-m1-capture = "frame_tools.m1_capture:main"
+frame-manifest-builder = "frame_tools.manifest_builder:main"
 frame-sbom = "frame_tools.sbom:main"
 frame-partitions = "frame_tools.partitions:main"
 frame-pr-title = "frame_tools.pr_title:main"

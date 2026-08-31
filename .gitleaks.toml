@@ -14,6 +14,11 @@ keywords = ["frame_", "wifi_"]
 [allowlist]
 description = "Published immutable dependency and CI identities"
 regexTarget = "match"
+paths = [
+  # TEST-ONLY PoC-A development signing key, sanctioned by plan poc-a-dynamic-elf
+  # (SEC-003: production keys never live in the repository; see the README in this directory).
+  '''^tools/frame_tools/testdata/keys/.*''',
+]
 regexes = [
   '''3d3c42e5aac5ba805825da76410c181273ba90b1''',
   '''043fb46d1a93c77aae656e7c1c64a875d1fc6a0a''',
