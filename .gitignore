@@ -15,6 +15,7 @@
 
 # Log files
 *.log
+!poc/evidence/**/*.log
 
 # Build artifacts and directories
 **/build/

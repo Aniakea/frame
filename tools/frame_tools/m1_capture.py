@@ -190,15 +190,30 @@ class CaptureSettings:
     duration: float
     out_dir: Path
     status_interval: float
+    command: str | None = None
+    command_interval: float = 0.0
 
 
 def _pump(port: SerialPort, writer: CaptureWriter, settings: CaptureSettings) -> None:
     deadline = time.monotonic() + settings.duration
     next_status = time.monotonic() + settings.status_interval
+    command_bytes = (
+        settings.command.encode("ascii") + b"\r\n" if settings.command is not None else None
+    )
+    next_command = (
+        time.monotonic() + settings.command_interval if command_bytes is not None else None
+    )
     while time.monotonic() < deadline:
         if time.monotonic() >= next_status:
             port.write(STATUS_COMMAND)
             next_status += settings.status_interval
+        if (
+            command_bytes is not None
+            and next_command is not None
+            and time.monotonic() >= next_command
+        ):
+            port.write(command_bytes)
+            next_command += settings.command_interval
         line = port.readline()
         if line:
             writer.process_line(line.decode("utf-8", errors="replace"))
@@ -238,7 +253,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=120.0,
         help="seconds between status --json polls (default: %(default)s)",
     )
+    parser.add_argument(
+        "--command",
+        help="extra console command sent periodically during the soak (e.g. 'wifi reconnect')",
+    )
+    parser.add_argument(
+        "--command-interval",
+        type=float,
+        default=0.0,
+        help="seconds between --command sends; required and >0 when --command is set",
+    )
     args = parser.parse_args(argv)
+    if args.command is not None and args.command_interval <= 0:
+        parser.error("--command requires --command-interval > 0")
 
     settings = CaptureSettings(
         port=args.port,
@@ -246,6 +273,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         duration=args.duration,
         out_dir=args.out,
         status_interval=args.status_interval,
+        command=args.command,
+        command_interval=args.command_interval,
     )
     try:
         manifest_path = run_capture(settings, load_serial())

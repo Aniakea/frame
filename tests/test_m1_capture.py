@@ -152,6 +152,51 @@ def test_run_capture_collects_artifacts_and_polls_status(tmp_path: Path) -> None
     assert (tmp_path / "run" / "status.json").read_text(encoding="utf-8") == f"{STATUS_LINE}\n"
 
 
+def test_run_capture_sends_periodic_command(tmp_path: Path) -> None:
+    port_obj = FakeSerialPort([])
+    settings = CaptureSettings(
+        port="/dev/fake",
+        baud=115200,
+        duration=0.05,
+        out_dir=tmp_path / "run",
+        status_interval=0.01,
+        command="wifi reconnect",
+        command_interval=0.01,
+    )
+
+    def open_port(port: str, baudrate: int, timeout: float) -> FakeSerialPort:
+        return port_obj
+
+    run_capture(settings, open_port)
+
+    assert port_obj.written.count(b"wifi reconnect\r\n") >= 1
+
+
+def test_run_capture_without_command_sends_only_status(tmp_path: Path) -> None:
+    port_obj = FakeSerialPort([])
+    settings = CaptureSettings(
+        port="/dev/fake",
+        baud=115200,
+        duration=0.05,
+        out_dir=tmp_path / "run",
+        status_interval=0.01,
+    )
+
+    def open_port(port: str, baudrate: int, timeout: float) -> FakeSerialPort:
+        return port_obj
+
+    run_capture(settings, open_port)
+
+    assert port_obj.written
+    assert all(chunk == b"status --json\r\n" for chunk in port_obj.written)
+
+
+def test_main_requires_command_interval_with_command(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit) as excinfo:
+        main(["--duration", "1", "--out", str(tmp_path), "--command", "wifi reconnect"])
+    assert excinfo.value.code == 2
+
+
 def test_main_requires_duration_and_out(tmp_path: Path) -> None:
     with pytest.raises(SystemExit) as excinfo:
         main(["--out", str(tmp_path)])

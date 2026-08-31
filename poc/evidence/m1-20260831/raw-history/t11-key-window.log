@@ -1,0 +1,93 @@
+"schema_version":1,"sequence":35,"uptime_us":342733248,"utc_valid":true,"utc":"2026-01-06T21:37:47Z","source":"m1","event":"status","mode":"normal","status":"OESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037dece
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16bc
+load:0x403c8700,len:0xf00
+load:0x403cb700,len:0x3238
+entry 0x403c892c
+I (24) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (24) boot: compile time Aug 31 2026 06:30:58
+I (25) boot: Multicore bootloader
+I (25) boot: chip revision: v0.2
+I (25) boot: efuse block revision: v1.4
+I (25) qio_mode: Enabling default flash chip QIO
+I (25) boot.esp32s3: Boot SPI Speed : 80MHz
+I (26) boot.esp32s3: SPI Mode       : QIO
+I (26) boot.esp32s3: SPI Flash Size : 16MB
+I (26) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (26) boot: ## Label            Usage          Type ST Offset   Length
+I (27) boot:  0 nvs              WiFi data        01 02 00009000 00014000
+I (27) boot:  1 nvs_keys         NVS keys         01 04 0001d000 00001000
+I (27) boot:  2 otadata          OTA data         01 00 0001e000 00002000
+I (28) boot:  3 coredump         Unknown data     01 03 00020000 00020000
+I (28) boot:  4 ota_0            OTA app          00 10 00040000 00500000
+I (29) boot:  5 ota_1            OTA app          00 11 00540000 00500000
+I (29) boot:  6 plugin_fs        Unknown data     01 83 00a40000 004c0000
+I (29) boot:  7 system_fs        Unknown data     01 83 00f00000 00100000
+I (30) boot: End of partition table
+I (30) esp_image: segment 0: paddr=00040020 vaddr=3c100020 size=3af54h (241492) map
+I (68) esp_image: segment 1: paddr=0007af7c vaddr=3fc9cc00 size=0509ch ( 20636) load
+I (72) esp_image: segment 2: paddr=00080020 vaddr=42000020 size=f5df0h (1007088) map
+I (228) esp_image: segment 3: paddr=00175e18 vaddr=3fca1c9c size=00b44h (  2884) load
+I (229) esp_image: segment 4: paddr=00176964 vaddr=40374000 size=18b60h (101216) load
+I (250) esp_image: segment 5: paddr=0018f4cc vaddr=50000000 size=00024h (    36) load
+I (261) boot: Loaded app from partition at offset 0x40000
+I (261) boot: Disabling RNG early entropy source...
+I (262) octal_psram: vendor id    : 0x0d (AP)
+I (262) octal_psram: dev id       : 0x02 (generation 3)
+I (262) octal_psram: density      : 0x03 (64 Mbit)
+I (263) octal_psram: good-die     : 0x01 (Pass)
+I (263) octal_psram: Latency      : 0x01 (Fixed)
+I (263) octal_psram: VCC          : 0x01 (3V)
+I (263) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (264) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (264) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (264) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (264) octal_psram: DriveStrength: 0x00 (1/1)
+I (264) MSPI Timing: Enter psram timing tuning
+I (265) esp_psram: Found 8MB PSRAM device
+I (266) esp_psram: Speed: 80MHz
+I (266) cpu_start: Multicore app
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4200a147
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16bc
+load:0x403c8700,len:0xf00
+load:0x403cb700,len:0x3238
+entry 0x403c892c
+I (24) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (24) boot: compile time Aug 31 2026 06:30:58
+I (25) boot: Multicore bootloader
+I (25) boot: chip revision: v0.2
+I (25) boot: efuse block revision: v1.4
+I (25) qio_mode: Enabling default flash chip QIO
+I (25) boot.esp32s3: Boot SPI Speed : 80MHz
+I (26) boot.esp32s3: SPI Mode       : QIO
+I (26) boot.esp32s3: SPI Flash Size : 16MB
+I (26) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (26) boot: ## Label            Usage          Type ST Offset   Length
+I (27) boot:  0 nvs              WiFi data        01 02 00009000 00014000
+I (27) boot:  1 nvs_keys         NVS keys         01 04 0001d000 00001000
+I (27) boot:  2 otadata          OTA data         01 00 0001e000 00002000
+I (28) boot:  3 coredump         Unknown data     01 03 00020000 00020000
+I (28) boot:  4 ota_0            OTA app          00 10 00040000 00500000
+I (29) boot:  5 ota_1            OTA app          00 11 00540000 00500000
+I (29) boot:  6 plugin_fs        Unknown data     01 83 00a40000 004c0000
+I (29) boot:  7 system_fs        Unknown data     01 83 00f00000 00100000
+I (30) boot: End of partition table
+I (30) esp_image: segment 0: paddr=00040020 vaddr=3c100020 size=3af54h (241492) map
+I (68) esp_image: segment 1: paddr=0007af7c vaddr=3fc9cc00 size=0509ch ( 20636) load
+I (72) esp_image: segment 2: paddr=00080020 vaddr=42000020 size=f5df0h (1007088) map
+I (228) esp_image: segment 3: paddr=00175e18 vaddr=3fca1c9c size=00b44h (  2884) load
+I (229) esp_image: segment 4: paddr=00176964 vaddr=40374000 size=18b60h (101216) load
+I (250) esp_image: segment 5: paddr=0018f4cc vaddr=50000000 size=00024h (    36) load
+I (261) boot: Loaded app from partition at offset 0x40000
+I (261) boot: Disabling RNG early entropy source...

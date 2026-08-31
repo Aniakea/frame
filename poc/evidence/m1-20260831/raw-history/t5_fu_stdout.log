@@ -1,0 +1,9 @@
+18:17:36 followup: PASS-b rerun (15s spacing), DEFERRED-d record, fresh PASS-e/PASS-d window
+18:17:46 b-rerun round 1 taken; waiting 15s (> board_service read_rtc 10s cadence)
+18:18:05 [note-b] earlier [FAIL-b] superseded: harness sampled utc 3s apart while board_service.cc:256 refreshes rtc.unix_seconds every 10s; device utc is live (telemetry timeline advances 10s/line). rerun utc r1=2026-01-06T08:05:39Z r2=2026-01-06T08:05:59Z
+18:18:05 [PASS-b] rerun 15s-spaced rounds: rtc_valid=True, utc=2026-01-06T08:05:39Z -> 2026-01-06T08:05:59Z (advanced=True), partitions_ok=True, sensor_valid=True, temp=274, hum=380
+18:18:05 [note-d] original d-window (18:13:26-18:14:56) saw no TF state change for 90s (user unavailable); capture script then crashed on a None-format bug before writing the marker - defect is in the throwaway harness, not the device
+18:18:05 >>> FOR BOOT TEST (PASS-e): PLEASE PULL TF CARD NOW AND KEEP IT OUT
+18:20:05 [DEFERRED-d] no TF state change observed in either d-window (user unavailable); deferred
+18:20:05 [DEFERRED-e] no TF state change observed after pull request (user unavailable); deferred
+SUMMARY: {'b': 'PASS', 'd': 'DEFERRED', 'e': 'DEFERRED'}

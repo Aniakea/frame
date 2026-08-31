@@ -1,0 +1,193 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037dec6
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16bc
+load:0x403c8700,len:0xf00
+load:0x403cb700,len:0x3238
+entry 0x403c892c
+I (24) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (24) boot: compile time Aug 30 2026 07:33:21
+I (25) boot: Multicore bootloader
+I (25) boot: chip revision: v0.2
+I (25) boot: efuse block revision: v1.4
+I (25) qio_mode: Enabling default flash chip QIO
+I (25) boot.esp32s3: Boot SPI Speed : 80MHz
+I (26) boot.esp32s3: SPI Mode       : QIO
+I (26) boot.esp32s3: SPI Flash Size : 16MB
+I (26) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (26) boot: ## Label            Usage          Type ST Offset   Length
+I (27) boot:  0 nvs              WiFi data        01 02 00009000 00014000
+I (27) boot:  1 nvs_keys         NVS keys         01 04 0001d000 00001000
+I (27) boot:  2 otadata          OTA data         01 00 0001e000 00002000
+I (28) boot:  3 coredump         Unknown data     01 03 00020000 00020000
+I (28) boot:  4 ota_0            OTA app          00 10 00040000 00500000
+I (29) boot:  5 ota_1            OTA app          00 11 00540000 00500000
+I (29) boot:  6 plugin_fs        Unknown data     01 83 00a40000 004c0000
+I (29) boot:  7 system_fs        Unknown data     01 83 00f00000 00100000
+I (30) boot: End of partition table
+I (30) esp_image: segment 0: paddr=00040020 vaddr=3c0f0020 size=357a8h (219048) map
+I (65) esp_image: segment 1: paddr=000757d0 vaddr=3fc9cb00 size=05b50h ( 23376) load
+I (69) esp_image: segment 2: paddr=0007b328 vaddr=40374000 size=04cf0h ( 19696) load
+I (74) esp_image: segment 3: paddr=00080020 vaddr=42000020 size=e1274h (922228) map
+I (217) esp_image: segment 4: paddr=0016129c vaddr=40378cf0 size=13d74h ( 81268) load
+I (233) esp_image: segment 5: paddr=00175018 vaddr=50000000 size=00024h (    36) load
+I (244) boot: Loaded app from partition at offset 0x40000
+I (244) boot: Disabling RNG early entropy source...
+I (245) octal_psram: vendor id    : 0x0d (AP)
+I (245) octal_psram: dev id       : 0x02 (generation 3)
+I (246) octal_psram: density      : 0x03 (64 Mbit)
+I (246) octal_psram: good-die     : 0x01 (Pass)
+I (246) octal_psram: Latency      : 0x01 (Fixed)
+I (246) octal_psram: VCC          : 0x01 (3V)
+I (247) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (247) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (247) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (247) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (248) octal_psram: DriveStrength: 0x00 (1/1)
+I (248) MSPI Timing: Enter psram timing tuning
+I (249) esp_psram: Found 8MB PSRAM device
+I (249) esp_psram: Speed: 80MHz
+I (249) cpu_start: Multicore app
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x42009a4f
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16bc
+load:0x403c8700,len:0xf00
+load:0x403cb700,len:0x3238
+entry 0x403c892c
+I (24) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (24) boot: compile time Aug 30 2026 07:33:21
+I (25) boot: Multicore bootloader
+I (25) boot: chip revision: v0.2
+I (25) boot: efuse block revision: v1.4
+I (25) qio_mode: Enabling default flash chip QIO
+I (25) boot.esp32s3: Boot SPI Speed : 80MHz
+I (26) boot.esp32s3: SPI Mode       : QIO
+I (26) boot.esp32s3: SPI Flash Size : 16MB
+I (26) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (26) boot: ## Label            Usage          Type ST Offset   Length
+I (27) boot:  0 nvs              WiFi data        01 02 00009000 00014000
+I (27) boot:  1 nvs_keys         NVS keys         01 04 0001d000 00001000
+I (27) boot:  2 otadata          OTA data         01 00 0001e000 00002000
+I (28) boot:  3 coredump         Unknown data     01 03 00020000 00020000
+I (28) boot:  4 ota_0            OTA app          00 10 00040000 00500000
+I (29) boot:  5 ota_1            OTA app          00 11 00540000 00500000
+I (29) boot:  6 plugin_fs        Unknown data     01 83 00a40000 004c0000
+I (29) boot:  7 system_fs        Unknown data     01 83 00f00000 00100000
+I (30) boot: End of partition table
+I (30) esp_image: segment 0: paddr=00040020 vaddr=3c0f0020 size=357a8h (219048) map
+I (65) esp_image: segment 1: paddr=000757d0 vaddr=3fc9cb00 size=05b50h ( 23376) load
+I (69) esp_image: segment 2: paddr=0007b328 vaddr=40374000 size=04cf0h ( 19696) load
+I (74) esp_image: segment 3: paddr=00080020 vaddr=42000020 size=e1274h (922228) map
+I (217) esp_image: segment 4: paddr=0016129c vaddr=40378cf0 size=13d74h ( 81268) load
+I (233) esp_image: segment 5: paddr=00175018 vaddr=50000000 size=00024h (    36) load
+I (244) boot: Loaded app from partition at offset 0x40000
+I (244) boot: Disabling RNG early entropy source...
+I (245) octal_psram: vendor id    : 0x0d (AP)
+I (245) octal_psram: dev id       : 0x02 (generation 3)
+I (246) octal_psram: density      : 0x03 (64 Mbit)
+I (246) octal_psram: good-die     : 0x01 (Pass)
+I (246) octal_psram: Latency      : 0x01 (Fixed)
+I (246) octal_psram: VCC          : 0x01 (3V)
+I (247) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (247) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (247) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (247) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (247) octal_psram: DriveStrength: 0x00 (1/1)
+I (248) MSPI Timing: Enter psram timing tuning
+I (249) esp_psram: Found 8MB PSRAM device
+I (249) esp_psram: Speed: 80MHz
+I (249) cpu_start: Multicore app
+I (675) esp_psram: SPI SRAM memory test OK
+I (684) cpu_start: Pro cpu start user code
+I (684) cpu_start: cpu freq: 240000000 Hz
+I (684) app_init: Application information:
+I (684) app_init: Project name:     frame_m1_hardware
+I (684) app_init: App version:      7bae861-dirty
+I (685) app_init: Compile time:     Aug 30 2026 07:29:56
+I (685) app_init: ELF file SHA256:  9490d6d64...
+I (685) app_init: ESP-IDF:          v6.0.2
+I (685) efuse_init: Min chip rev:     v0.0
+I (685) efuse_init: Max chip rev:     v0.99 
+I (685) efuse_init: Chip rev:         v0.2
+I (685) heap_init: Initializing. RAM available for dynamic allocation:
+I (686) heap_init: At 3FCB7890 len 00031E80 (199 KiB): RAM
+I (686) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (686) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (686) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+I (686) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (687) spi_flash: detected chip: generic
+I (687) spi_flash: flash io: qio
+I (688) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (688) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (688) esp_core_dump_flash: Init core dump to flash
+I (689) esp_core_dump_flash: Found partition 'coredump' @ 20000 131072 bytes
+I (706) esp_core_dump_flash: Core dump data checksum is correct
+I (707) esp_core_dump_flash: Found core dump 19328 bytes in flash @ 0x20000
+I (707) main_task: Started on CPU0
+I (707) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+I (708) main_task: Calling app_main()
+I (763) frame-m1: Frame M1 0.1.0-dev.1; IDF v6.0.2; toolchain gcc-15.2.0
+I (763) frame-m1: board=Waveshare ESP32-S3-RLCD-4.2 module=ESP32-S3-WROOM-1-N16R8 device=c1810c76790e
+I (763) frame-m1: cores=2 flash=16777216 psram=8388608 part=OK reset=11 image_sha256=e706ca63ec22261f
+I (783) pp: pp rom version: e7ae62f
+I (783) net80211: net80211 rom version: e7ae62f
+I (785) wifi:wifi driver task: 3fcc6db0, prio:23, stack:6656, core=0
+I (792) wifi:wifi firmware version: 00ad238
+I (792) wifi:wifi certification version: v7.0
+I (792) wifi:config NVS flash: enabled
+I (792) wifi:config nano formatting: disabled
+I (792) wifi:Init data frame dynamic rx buffer num: 32
+I (792) wifi:Init static rx mgmt buffer num: 5
+I (793) wifi:Init management short buffer num: 32
+I (793) wifi:Init dynamic tx buffer num: 32
+I (793) wifi:Init static tx FG buffer num: 2
+I (793) wifi:Init static rx buffer size: 1600
+I (793) wifi:Init static rx buffer num: 10
+I (793) wifi:Init dynamic rx buffer num: 32
+I (794) wifi_init: rx ba win: 6
+I (794) wifi_init: accept mbox: 6
+I (794) wifi_init: tcpip mbox: 32
+I (795) wifi_init: udp mbox: 6
+I (795) wifi_init: tcp mbox: 6
+I (795) wifi_init: tcp tx win: 5760
+I (795) wifi_init: tcp rx win: 5760
+I (795) wifi_init: tcp mss: 1440
+I (795) wifi_init: WiFi IRAM OP enabled
+I (795) wifi_init: WiFi RX IRAM OP enabled
+I (796) phy_init: phy_version 712,87e8c20e,Apr 13 2026,18:51:10
+W (822) SD_HOST: input line delay not supported, fallback to 0 delay
+I (831) wifi:mode : sta (a4:cb:8f:cf:cd:5c)
+I (831) wifi:enable tsf
+[5nI (3625) frame-m1: services board=ESP_OK storage=ESP_OK wifi=ESP_OK display=ESP_OK console=ESP_OK
+
+Type 'help' to get the list of commands.
+Use UP/DOWN arrows to navigate through command history.
+Press TAB when typing command name to auto-complete.
+
+Your terminal application does not support escape sequences.
+
+Line editing and history features are disabled.
+
+On Windows, try using Windows Terminal or Putty instead.
+I (3626) main_task: Returned from app_main()
+frame>  
+frame>  
+frame>  status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T07:41:36Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","credentials_persisted":false,"tf_logging":false,"logging_error":-1,"temperature_tenths_c":275,"humidity_tenths_percent":362,"key_short":0,"key_long":0,"elf_sha256":"9490d6d642b96b729a21b3fd6e93c9f9fbc5f7aa4ee50ffc2702f81a3e597d42","image_sha256":"e706ca63ec22261f09c9e691399f7f4870d22632bcfe0a01d11b9284c65c6e88"}
+frame>  
+frame>  status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T07:41:46Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","credentials_persisted":false,"tf_logging":false,"logging_error":-1,"temperature_tenths_c":274,"humidity_tenths_percent":362,"key_short":0,"key_long":0,"elf_sha256":"9490d6d642b96b729a21b3fd6e93c9f9fbc5f7aa4ee50ffc2702f81a3e597d42","image_sha256":"e706ca63ec22261f09c9e691399f7f4870d22632bcfe0a01d11b9284c65c6e88"}
+frame>  
+frame>  status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T07:41:56Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","credentials_persisted":false,"tf_logging":false,"logging_error":-1,"temperature_tenths_c":275,"humidity_tenths_percent":362,"key_short":0,"key_long":0,"elf_sha256":"9490d6d642b96b729a21b3fd6e93c9f9fbc5f7aa4ee50ffc2702f81a3e597d42","image_sha256":"e706ca63ec22261f09c9e691399f7f4870d22632bcfe0a01d11b9284c65c6e88"}
+frame>  
+frame>  
