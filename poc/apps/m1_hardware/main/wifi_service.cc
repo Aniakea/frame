@@ -133,7 +133,11 @@ esp_err_t wifi_service::reconnect() {
         return ESP_ERR_INVALID_STATE;
     }
     status_.update([](status_snapshot& value) { value.wifi = wifi_state::connecting; });
-    return esp_wifi_connect();
+    const esp_err_t result = esp_wifi_disconnect();
+    if (result == ESP_ERR_WIFI_NOT_CONNECT) {
+        return esp_wifi_connect();
+    }
+    return result;
 }
 
 void wifi_service::event_handler(void* context, esp_event_base_t base, int32_t id, void* data) {
