@@ -65,6 +65,18 @@
       "note": "Photo of the live Frame status page (UTC+8 time line, KEY/BOOT/RST counters, WiFi CONNECTED 192.168.50.178, TF READY/log OK). Screen timestamp 16:28:52 UTC+8 correlates with the capture filename epoch 2026-08-31T08:29:02.935Z. Converted full-resolution from iOS source 20260831_082902935_iOS.HEIC (sha256 62b86a8c0316fcd4ef5fbcc3ca59e308982627db5ef18d9b71bf9409cc446b9e; HEIC itself stays out of the repository)."
     },
     {
+      "name": "board_front_20260831.jpg",
+      "uri": "photos/board_front_20260831.jpg",
+      "sha256": "87d232943d4328a15f3d6047fc25d2acd53fea210e29889836df47c44b8c9dcf",
+      "note": "Photo of the M1 board front/button face; silkscreen BOOT / KEY / PWR visible (the buttons driven in the M1 assist windows). EXIF 2026:08:31 16:38:17 UTC+8 correlates with the capture filename epoch 2026-08-31T08:38:17.376Z. Converted full-resolution from iOS source 20260831_083817376_iOS.heic (sha256 a849979c49cfcf4c94805309019ce75f39e071f047ff012ec8da9bc068e7deb7; HEIC itself stays out of the repository)."
+    },
+    {
+      "name": "board_back_module_20260831.jpg",
+      "uri": "photos/board_back_module_20260831.jpg",
+      "sha256": "6576c98d54097f85554f013c34f96922082de96cb7413f654d074d04fe376b60",
+      "note": "Photo of the M1 board back face with the module shield: ESPRESSIF logo and marking lines ESP32-S3-WROOM-1 / N16R8 / FCC ID:2AC7Z-ESP32S3WROOM1 / IC:21008-ESP32S3WROOM1 / CMIIT ID:20220P20920 (uncertain reading). Cross-check: marking N16R8 (16 MiB flash, 8 MiB PSRAM) matches the M1-002 boot-log assertions flash=16777216 bytes and psram=8388608 bytes. M1-008 photo requirements now complete: status page + board front + module marking. EXIF 2026:08:31 16:38:21 UTC+8 correlates with the capture filename epoch 2026-08-31T08:38:21.798Z. Converted full-resolution from iOS source 20260831_083821798_iOS.heic (sha256 67b0e24720c263653202b92515a15f1bd1e5b4dd3ac8151f64ebac05516d9da2; HEIC itself stays out of the repository)."
+    },
+    {
       "name": "boot.log",
       "uri": "raw-history/boot.log",
       "sha256": "69e2b329708dda9625de196a1057639e073b432e7732e79a2fc1f40f48e791b3"
