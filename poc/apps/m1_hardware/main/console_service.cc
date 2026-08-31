@@ -218,6 +218,11 @@ int console_service::selftest_command(int argc, char** argv) {
 }
 
 void console_service::run_wifi_config_selftest() const {
+    char prior_ssid[33]{};
+    char prior_password[64]{};
+    bool prior_hidden = false;
+    const bool had_config =
+        provision_.config_load(prior_ssid, prior_password, prior_hidden) == ESP_OK;
     const esp_err_t save_result = provision_.config_save(kSelftestSsid, kSelftestPassword, false);
     char ssid[33]{};
     char password[64]{};
@@ -230,7 +235,13 @@ void console_service::run_wifi_config_selftest() const {
                             std::strcmp(ssid, kSelftestSsid) == 0 &&
                             std::strcmp(password, kSelftestPassword) == 0 && !hidden;
     std::printf("wifi_config: %s\n", round_trip ? "ok" : "FAIL");
-    provision_.config_clear();
+    if (had_config) {
+        provision_.config_save(prior_ssid, prior_password, prior_hidden);
+    } else {
+        provision_.config_clear();
+    }
+    std::memset(prior_ssid, 0, sizeof(prior_ssid));
+    std::memset(prior_password, 0, sizeof(prior_password));
     char bad_ssid[33]{};
     char bad_password[64]{};
     bool bad_hidden = false;

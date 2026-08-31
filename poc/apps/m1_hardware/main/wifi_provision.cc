@@ -444,6 +444,7 @@ esp_err_t wifi_provision::start_provision() {
     } else {
         ESP_LOGW(kTag, "provision AP start failed: %s", esp_err_to_name(result));
         status_.update([](status_snapshot& value) { value.ap_active = false; });
+        // best-effort recovery: return codes deliberately ignored
         esp_wifi_set_mode(WIFI_MODE_STA);
         esp_wifi_start();
     }
@@ -562,12 +563,24 @@ void wifi_provision::monitor_loop() {
         vTaskDelay(pdMS_TO_TICKS(kMonitorTickMs));
         const pending_action action = pending_.exchange(pending_action::none);
         if (action == pending_action::sta_connect) {
+            // the pending_* handoff from the portal task is serialized by mutex_
+            char ssid[33]{};
+            char password[64]{};
+            bool hidden = false;
+            xSemaphoreTake(mutex_, portMAX_DELAY);
+            std::memcpy(ssid, pending_ssid_, sizeof(ssid));
+            std::memcpy(password, pending_password_, sizeof(password));
+            hidden = pending_hidden_;
+            std::memset(pending_ssid_, 0, sizeof(pending_ssid_));
+            std::memset(pending_password_, 0, sizeof(pending_password_));
+            pending_hidden_ = false;
+            xSemaphoreGive(mutex_);
             stop_provision();
             disconnect_count_.store(0);
             no_ip_ticks_.store(0);
-            wifi_.connect_stored(pending_ssid_, pending_password_, pending_hidden_);
-            std::memset(pending_ssid_, 0, sizeof(pending_ssid_));
-            std::memset(pending_password_, 0, sizeof(pending_password_));
+            wifi_.connect_stored(ssid, password, hidden);
+            std::memset(ssid, 0, sizeof(ssid));
+            std::memset(password, 0, sizeof(password));
             continue;
         }
         if (action == pending_action::restart_ap) {
@@ -709,7 +722,10 @@ esp_err_t wifi_provision::root_handler(httpd_req_t* request) {
         const int written =
             std::snprintf(option, sizeof(option), "<option value=\"%s\">%s (%d dBm)</option>\n",
                           escaped_value, escaped_text, networks[entry].rssi);
-        if (written > 0) {
+        if (written < 0) {
+            return ESP_FAIL;
+        }
+        if (static_cast<std::size_t>(written) < sizeof(option)) {
             httpd_resp_send_chunk(request, option, static_cast<std::size_t>(written));
         }
     }
@@ -792,10 +808,17 @@ esp_err_t wifi_provision::connect_handler(httpd_req_t* request) {
         return httpd_resp_send_err(request, HTTPD_500_INTERNAL_SERVER_ERROR,
                                    "save failed on device storage");
     }
+    if (xSemaphoreTake(self->mutex_, pdMS_TO_TICKS(5000)) != pdTRUE) {
+        std::memset(ssid, 0, sizeof(ssid));
+        std::memset(password, 0, sizeof(password));
+        return httpd_resp_send_err(request, HTTPD_500_INTERNAL_SERVER_ERROR,
+                                   "provisioning busy, retry");
+    }
     std::memcpy(self->pending_ssid_, ssid, ssid_length + 1);
     std::memcpy(self->pending_password_, password, password_length + 1);
     self->pending_hidden_ = hidden;
     self->pending_.store(pending_action::sta_connect);
+    xSemaphoreGive(self->mutex_);
     std::memset(ssid, 0, sizeof(ssid));
     std::memset(password, 0, sizeof(password));
 

@@ -83,6 +83,7 @@ esp_err_t wifi_service::connect_sta(const char* ssid, const char* password, bool
     config.sta.sae_pwe_h2e = WPA3_SAE_PWE_BOTH;
 
     configured_.store(false);
+    // deliberate ignore: the upcoming set_config/connect supersedes any pending link
     esp_wifi_disconnect();
     esp_err_t result = esp_wifi_set_config(WIFI_IF_STA, &config);
     if (result == ESP_OK) {
