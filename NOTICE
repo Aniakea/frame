@@ -1,0 +1,11 @@
+Frame
+
+Except where otherwise noted, this project is distributed under the GNU General Public License,
+version 3 or (at your option) any later version. See LICENSE.
+
+This repository integrates or refers to separately licensed third-party software, including
+ESP-IDF and the joltwallet/littlefs ESP-IDF component. Those works retain their own copyright and
+license notices; review their supplied license terms when redistributing a combined work.
+
+CODE_OF_CONDUCT.md is adapted from Contributor Covenant 3.0, stewarded by the Organization for
+Ethical Source and licensed under CC BY-SA 4.0.

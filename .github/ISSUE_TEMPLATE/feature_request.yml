@@ -1,0 +1,41 @@
+name: Feature request
+description: Propose a focused capability or improvement.
+title: "feat: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What concrete problem should be solved?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe observable behavior, not only an implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What existing behavior or smaller approaches did you consider?
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation needs
+      description: Identify host tests, hardware, evidence, compatibility, or security concerns.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and pull requests.
+          required: true
+        - label: I can describe the expected behavior independently of a specific implementation.
+          required: true

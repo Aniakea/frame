@@ -1,0 +1,287 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  repository-gates:
+    name: Repository gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        with:
+          version: "0.12.5"
+          python-version: "3.11"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install locked Python environment
+        run: |
+          set -euo pipefail
+          uv sync --frozen
+      - name: Validate pull request title
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -euo pipefail
+          uv run frame-pr-title
+      - name: Lint and test repository tools
+        run: |
+          set -euo pipefail
+          uv run ruff format --check tools tests
+          uv run ruff check tools tests
+          uv run pyright
+          uv run pytest
+      - name: Check C and C++ formatting
+        run: |
+          set -euo pipefail
+          mapfile -t sources < <(git ls-files 'poc/common/**' 'poc/host/**' \
+            'poc/apps/m1_hardware/main/**' | grep -E '\.(c|cc|h|hh)$' | sort)
+          clang-format-18 --dry-run --Werror "${sources[@]}"
+      - name: Validate repository data and documentation
+        run: |
+          set -euo pipefail
+          uv run frame-partitions
+          uv run frame-evidence
+          uv run frame-doc-links
+          uv run frame-sbom --output .build/reports/sbom.cdx.json
+      - name: Upload repository reports
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: repository-reports
+          path: .build/reports/
+          if-no-files-found: error
+          retention-days: 14
+
+  host-clang-sanitizers:
+    name: Host Clang ASan and UBSan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Configure, build, and test
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          set -euo pipefail
+          cmake -S poc/host -B .build/host-clang -DENABLE_SANITIZERS=ON
+          cmake --build .build/host-clang --parallel 2
+          ctest --test-dir .build/host-clang --output-on-failure
+
+  host-gcc:
+    name: Host GCC compatibility
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Configure, build, and test
+        env:
+          CC: gcc
+          CXX: g++
+        run: |
+          set -euo pipefail
+          cmake -S poc/host -B .build/host-gcc
+          cmake --build .build/host-gcc --parallel 2
+          ctest --test-dir .build/host-gcc --output-on-failure
+
+  host-clang-tidy:
+    name: Host clang-tidy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Configure and run clang-tidy
+        env:
+          CC: clang-18
+          CXX: clang++-18
+        run: |
+          set -euo pipefail
+          cmake -S poc/host -B .build/host-tidy -DENABLE_CLANG_TIDY=ON
+          cmake --build .build/host-tidy --parallel 2
+
+  host-coverage:
+    name: Host branch coverage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        with:
+          version: "0.12.5"
+          python-version: "3.11"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install locked Python environment
+        run: |
+          set -euo pipefail
+          uv sync --frozen
+      - name: Build and collect LLVM coverage
+        env:
+          CC: clang
+          CXX: clang++
+          LLVM_PROFILE_FILE: ${{ github.workspace }}/.build/coverage/profile-%p.profraw
+        run: |
+          set -euo pipefail
+          cmake -S poc/host -B .build/coverage -DENABLE_COVERAGE=ON
+          cmake --build .build/coverage --parallel 2
+          ctest --test-dir .build/coverage --output-on-failure
+          llvm-profdata merge -sparse .build/coverage/*.profraw -o .build/coverage/coverage.profdata
+          llvm-cov export .build/coverage/frame_abi_test \
+            -object=.build/coverage/frame_handle_test \
+            -object=.build/coverage/lifecycle_state_test \
+            -object=.build/coverage/frame_abi_c_test \
+            -instr-profile=.build/coverage/coverage.profdata \
+            -sources poc/common/components/frame_poc_runtime/include/frame_poc/frame_abi.h \
+              poc/common/components/frame_poc_runtime/include/frame_poc/frame_handle.hh \
+              poc/common/components/frame_poc_runtime/include/frame_poc/lifecycle_state.hh \
+            > .build/coverage/coverage.json
+          uv run frame-coverage .build/coverage/coverage.json --minimum 90
+
+  secrets:
+    name: Gitleaks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Scan repository history
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_ENABLE_COMMENTS: "false"
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+
+  firmware-dev:
+    name: ESP-IDF dev firmware
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    container:
+      image: docker.io/espressif/idf@sha256:0d8c9773d48a327233f9c1d7c654ff0bcf133ae24503ea2e97a57cfe02b8cb67
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Configure and build dev firmware
+        run: |
+          set -euo pipefail
+          cmake --preset dev
+          cmake --build --preset dev --parallel 2
+      - name: Upload dev firmware
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: firmware-dev
+          path: |
+            .build/dev/*.bin
+            .build/dev/*.elf
+            .build/dev/*.map
+            .build/dev/bootloader/*.bin
+            .build/dev/partition_table/*.bin
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+
+  firmware-m1:
+    name: ESP-IDF M1 hardware firmware
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    container:
+      image: docker.io/espressif/idf@sha256:0d8c9773d48a327233f9c1d7c654ff0bcf133ae24503ea2e97a57cfe02b8cb67
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Configure and build M1 firmware
+        working-directory: poc/apps/m1_hardware
+        run: |
+          set -euo pipefail
+          cmake --preset default
+          cmake --build --preset default --parallel 2
+      - name: Upload M1 firmware
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: firmware-m1
+          path: |
+            poc/apps/m1_hardware/build/default/*.bin
+            poc/apps/m1_hardware/build/default/*.elf
+            poc/apps/m1_hardware/build/default/*.map
+            poc/apps/m1_hardware/build/default/bootloader/*.bin
+            poc/apps/m1_hardware/build/default/partition_table/*.bin
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+
+  required:
+    name: required
+    runs-on: ubuntu-24.04
+    if: always()
+    needs:
+      - repository-gates
+      - host-clang-sanitizers
+      - host-gcc
+      - host-clang-tidy
+      - host-coverage
+      - secrets
+      - firmware-dev
+      - firmware-m1
+    steps:
+      - name: Confirm required jobs passed
+        env:
+          FIRMWARE_DEV_RESULT: ${{ needs.firmware-dev.result }}
+          HOST_CLANG_RESULT: ${{ needs.host-clang-sanitizers.result }}
+          HOST_GCC_RESULT: ${{ needs.host-gcc.result }}
+          HOST_TIDY_RESULT: ${{ needs.host-clang-tidy.result }}
+          HOST_COVERAGE_RESULT: ${{ needs.host-coverage.result }}
+          SECRETS_RESULT: ${{ needs.secrets.result }}
+          REPOSITORY_GATES_RESULT: ${{ needs.repository-gates.result }}
+          FIRMWARE_M1_RESULT: ${{ needs.firmware-m1.result }}
+        run: |
+          set -euo pipefail
+          test "${REPOSITORY_GATES_RESULT}" = success
+          test "${HOST_CLANG_RESULT}" = success
+          test "${HOST_GCC_RESULT}" = success
+          test "${HOST_TIDY_RESULT}" = success
+          test "${HOST_COVERAGE_RESULT}" = success
+          test "${SECRETS_RESULT}" = success
+          test "${FIRMWARE_DEV_RESULT}" = success
+          test "${FIRMWARE_M1_RESULT}" = success
+          printf '%s\n' 'All required CI jobs passed.'

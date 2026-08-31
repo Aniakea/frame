@@ -1,0 +1,62 @@
+name: Bug report
+description: Report a reproducible defect. Do not report security vulnerabilities here.
+title: "fix: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a problem. For vulnerabilities, follow SECURITY.md.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide the smallest reliable sequence of steps.
+      placeholder: |
+        1. Build revision ...
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: Repository revision
+      description: Commit SHA or branch and whether the tree was dirty.
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware
+      description: Board, revision, attached peripherals, or "host only".
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Toolchain and environment
+      description: ESP-IDF tag and compiler, or host OS and compiler.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output
+      description: Remove credentials, device secrets, private keys, and unrelated personal data.
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and pull requests.
+          required: true
+        - label: This report does not contain a security vulnerability or secret.
+          required: true

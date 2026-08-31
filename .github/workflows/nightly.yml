@@ -1,0 +1,196 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  host-smoke:
+    name: Host smoke test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        with:
+          version: "0.12.5"
+          python-version: "3.11"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install locked Python environment
+        run: |
+          set -euo pipefail
+          uv sync --frozen
+      - name: Configure, build, and run smoke tests
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          set -euo pipefail
+          cmake -S poc/host -B .build/nightly-host -DENABLE_SANITIZERS=ON
+          cmake --build .build/nightly-host --parallel 2
+          ctest --test-dir .build/nightly-host --output-on-failure
+      - name: Run ThreadSanitizer build
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          set -euo pipefail
+          cmake -S poc/host -B .build/nightly-tsan -DENABLE_TSAN=ON
+          cmake --build .build/nightly-tsan --parallel 2
+          ctest --test-dir .build/nightly-tsan --output-on-failure
+      - name: Run libFuzzer contract smoke test
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          set -euo pipefail
+          cmake -S poc/host -B .build/nightly-fuzz -DENABLE_FUZZER=ON
+          cmake --build .build/nightly-fuzz --target frame_contract_fuzz --parallel 2
+          .build/nightly-fuzz/frame_contract_fuzz -max_total_time=60 -max_len=64
+      - name: Generate dependency SBOM
+        run: |
+          set -euo pipefail
+          uv run frame-sbom --output .build/nightly-reports/sbom.cdx.json
+      - name: Upload nightly reports
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: nightly-reports
+          path: .build/nightly-reports/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Report deferred nightly checks
+        run: |
+          set -euo pipefail
+          printf '%s\n' 'External link checking is deferred until a repository checker exists.'
+
+  firmware:
+    name: ESP-IDF ${{ matrix.profile }} firmware
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    container:
+      image: docker.io/espressif/idf@sha256:0d8c9773d48a327233f9c1d7c654ff0bcf133ae24503ea2e97a57cfe02b8cb67
+    strategy:
+      fail-fast: false
+      matrix:
+        profile:
+          - dev
+          - prod
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Configure and build firmware
+        env:
+          BUILD_PROFILE: ${{ matrix.profile }}
+        run: |
+          set -euo pipefail
+          cmake --preset "${BUILD_PROFILE}"
+          cmake --build --preset "${BUILD_PROFILE}" --parallel 2
+      - name: Upload firmware
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: firmware-${{ matrix.profile }}
+          path: |
+            .build/${{ matrix.profile }}/*.bin
+            .build/${{ matrix.profile }}/*.elf
+            .build/${{ matrix.profile }}/*.map
+            .build/${{ matrix.profile }}/bootloader/*.bin
+            .build/${{ matrix.profile }}/partition_table/*.bin
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+
+  m1-firmware:
+    name: ESP-IDF M1 hardware firmware
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    container:
+      image: docker.io/espressif/idf@sha256:0d8c9773d48a327233f9c1d7c654ff0bcf133ae24503ea2e97a57cfe02b8cb67
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Configure and build M1 firmware
+        working-directory: poc/apps/m1_hardware
+        run: |
+          set -euo pipefail
+          cmake --preset default
+          cmake --build --preset default --parallel 2
+      - name: Upload M1 firmware
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: firmware-m1-nightly
+          path: |
+            poc/apps/m1_hardware/build/default/*.bin
+            poc/apps/m1_hardware/build/default/*.elf
+            poc/apps/m1_hardware/build/default/*.map
+            poc/apps/m1_hardware/build/default/bootloader/*.bin
+            poc/apps/m1_hardware/build/default/partition_table/*.bin
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+
+  result:
+    name: Track nightly result
+    if: always()
+    needs:
+      - host-smoke
+      - firmware
+      - m1-firmware
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Create, update, or close the nightly issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HOST_RESULT: ${{ needs.host-smoke.result }}
+          FIRMWARE_RESULT: ${{ needs.firmware.result }}
+          M1_RESULT: ${{ needs.m1-firmware.result }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          title='ci: nightly checks are failing'
+          issue_number="$(gh issue list --repo "${REPOSITORY}" --state open \
+            --search "${title} in:title" --json number,title \
+            --jq 'map(select(.title == "ci: nightly checks are failing"))[0].number // empty')"
+
+          if [[ "${HOST_RESULT}" == success && "${FIRMWARE_RESULT}" == success && "${M1_RESULT}" == success ]]; then
+            if [[ -n "${issue_number}" ]]; then
+              gh issue comment "${issue_number}" --repo "${REPOSITORY}" \
+                --body "Nightly recovered: ${RUN_URL}"
+              gh issue close "${issue_number}" --repo "${REPOSITORY}" \
+                --reason completed
+            fi
+            exit 0
+          fi
+
+          body="Nightly failed. Host=${HOST_RESULT}, firmware=${FIRMWARE_RESULT}, M1=${M1_RESULT}. ${RUN_URL}"
+          if [[ -n "${issue_number}" ]]; then
+            gh issue comment "${issue_number}" --repo "${REPOSITORY}" --body "${body}"
+          else
+            gh issue create --repo "${REPOSITORY}" --title "${title}" --body "${body}"
+          fi
+          exit 1

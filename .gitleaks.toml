@@ -1,0 +1,25 @@
+title = "Frame secret scanning"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "frame-configured-credential"
+description = "Frame credential assigned in source or configuration"
+regex = '''(?i)\b(?:frame_(?:api_token|ota_signing_key|plugin_signing_key|private_key|secret)|wifi_(?:passphrase|password))\b\s*(?::|=)\s*["']?([^"'\s]{8,})'''
+secretGroup = 1
+entropy = 3.0
+keywords = ["frame_", "wifi_"]
+
+[allowlist]
+description = "Published immutable dependency and CI identities"
+regexTarget = "match"
+regexes = [
+  '''3d3c42e5aac5ba805825da76410c181273ba90b1''',
+  '''043fb46d1a93c77aae656e7c1c64a875d1fc6a0a''',
+  '''20cfd1bf945f4377ade1205e4dbc17946fc9a30d''',
+  '''cdf488f595d80d6e07e03d4674febd5ab45fa938''',
+  '''0d8c9773d48a327233f9c1d7c654ff0bcf133ae24503ea2e97a57cfe02b8cb67''',
+  '''3af20a3d75c49db9dc2286fd50862c34055c9f578419ad1f2bf7ed3ed01391fe''',
+  '''25f711fa39d438b5d864dd7aeb4896a3f989485a893f69e56fc846156a31272a''',
+]

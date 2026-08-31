@@ -1,0 +1,18 @@
+{
+  "folders": [
+    {
+      "name": "poc-a",
+      "path": "apps/poc_a"
+    },
+    {
+      "name": "poc-common",
+      "path": "common"
+    }
+  ],
+  "settings": {
+    "idf.extensionActivationMode": "always",
+    "idf.openOcdConfigs": [
+      "board/esp32s3-builtin.cfg"
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13"]
+build-backend = "uv_build"
+
+[project]
+name = "frame-tools"
+version = "0.1.0"
+description = "Repository validation tools for Frame"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+dependencies = [
+    "jsonschema>=4.23,<5",
+    "PyYAML>=6.0.2,<7",
+    "rfc3339-validator>=0.1.4,<1",
+]
+
+[project.scripts]
+frame-coverage = "frame_tools.coverage:main"
+frame-doc-links = "frame_tools.doc_links:main"
+frame-evidence = "frame_tools.evidence:main"
+frame-m1-capture = "frame_tools.m1_capture:main"
+frame-sbom = "frame_tools.sbom:main"
+frame-partitions = "frame_tools.partitions:main"
+frame-pr-title = "frame_tools.pr_title:main"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.400",
+    "pytest>=8.4",
+    "ruff>=0.12",
+]
+
+[tool.uv.build-backend]
+module-name = "frame_tools"
+module-root = "tools"
+
+[tool.pyright]
+include = ["tools/frame_tools", "tests"]
+pythonVersion = "3.11"
+typeCheckingMode = "standard"
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "SIM", "UP"]
