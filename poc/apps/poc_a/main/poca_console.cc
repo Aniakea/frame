@@ -8,6 +8,7 @@
 #include "esp_console.h"
 #include "esp_elf.h"
 #include "esp_heap_caps.h"
+#include "poca_plugin.hh"
 #include "sdkconfig.h"
 
 #ifndef CONFIG_ELF_LOADER_LOAD_PSRAM
@@ -58,7 +59,20 @@ int poca_command(int argc, char** argv) {
     if (argc == 2 && std::strcmp(argv[1], "abi") == 0) {
         return run_abi_smoke();
     }
-    std::printf("usage: poca status | poca abi\n");
+    if (argc == 2 && std::strcmp(argv[1], "verify") == 0) {
+        return cmd_poca_verify();
+    }
+    if (argc == 2 && std::strcmp(argv[1], "load") == 0) {
+        return cmd_poca_load();
+    }
+    if (argc == 2 && std::strcmp(argv[1], "activate") == 0) {
+        return cmd_poca_activate();
+    }
+    if (argc == 2 && std::strcmp(argv[1], "unload") == 0) {
+        return cmd_poca_unload();
+    }
+    std::printf(
+        "usage: poca status | poca abi | poca verify | poca load | poca activate | poca unload\n");
     return 1;
 }
 
@@ -67,7 +81,7 @@ int poca_command(int argc, char** argv) {
 esp_err_t start_console() {
     const esp_console_cmd_t poca_cmd{
         .command = "poca",
-        .help = "poca status | poca abi",
+        .help = "poca status | poca abi | poca verify | poca load | poca activate | poca unload",
         .hint = nullptr,
         .func = &poca_command,
         .argtable = nullptr,
