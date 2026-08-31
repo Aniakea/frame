@@ -59,6 +59,12 @@
       "sha256": "039cb776675bbb1b6023c7066b22bf1c3a9642f0fda168d3a23cec41b72277ee"
     },
     {
+      "name": "status_page_20260831.jpg",
+      "uri": "photos/status_page_20260831.jpg",
+      "sha256": "03817e0424452eba786768960645aa9e369bdfef08fe1da9883a7b9b035e82ec",
+      "note": "Photo of the live Frame status page (UTC+8 time line, KEY/BOOT/RST counters, WiFi CONNECTED 192.168.50.178, TF READY/log OK). Screen timestamp 16:28:52 UTC+8 correlates with the capture filename epoch 2026-08-31T08:29:02.935Z. Converted full-resolution from iOS source 20260831_082902935_iOS.HEIC (sha256 62b86a8c0316fcd4ef5fbcc3ca59e308982627db5ef18d9b71bf9409cc446b9e; HEIC itself stays out of the repository)."
+    },
+    {
       "name": "boot.log",
       "uri": "raw-history/boot.log",
       "sha256": "69e2b329708dda9625de196a1057639e073b432e7732e79a2fc1f40f48e791b3"

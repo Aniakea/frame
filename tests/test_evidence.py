@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import cast
 
 from frame_tools.evidence import discover_manifests, validate_evidence
 
@@ -67,6 +68,16 @@ def test_invalid_date_time_is_rejected(tmp_path: Path) -> None:
 
     assert errors
     assert "['started_at']" in errors[0]
+
+
+def test_artifact_note_passes(tmp_path: Path) -> None:
+    manifest = valid_manifest()
+    artifacts = cast(list[dict[str, object]], manifest["artifacts"])
+    artifacts[0]["note"] = "photo artifact with provenance note"
+    path = tmp_path / "manifest.json"
+    path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    assert validate_evidence(SCHEMA, [path]) == []
 
 
 def test_schema_is_not_discovered_as_a_manifest() -> None:
