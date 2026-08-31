@@ -1,0 +1,11 @@
+Checks: >
+  -*,
+  bugprone-*,
+  performance-*,
+  portability-*,
+  modernize-use-nullptr,
+  -bugprone-reserved-identifier,
+  -modernize-use-nullptr,
+  -performance-enum-size
+WarningsAsErrors: '*'
+HeaderFilterRegex: '(^|/)(poc/common|poc/host)/'

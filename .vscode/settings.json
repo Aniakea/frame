@@ -29,5 +29,18 @@
     "--background-index",
     "--query-driver=**",
     "--compile-commands-dir=/home/lain/Projects/esp_study/esp_study/.build/dev"
-  ]
+  ],
+  "chat.tools.terminal.autoApprove": {
+    "/^awk '/\\^FRAME_ERR_\\[A-Z_\\]\\+ -\\[0-9\\]\\+ / \\{ defs\\[\\$1\\]\\+\\+; values\\[\\$2\\]\\+\\+ \\} \\{ rest=\\$0; while \\(match\\(rest, /FRAME_ERR_\\[A-Z_\\]\\+/\\)\\) \\{ refs\\[substr\\(rest, RSTART, RLENGTH\\)\\]=1; rest=substr\\(rest, RSTART\\+RLENGTH\\) \\} \\} END \\{ for \\(code in refs\\) if \\(!\\(code in defs\\)\\) \\{ print \"missing: \" code; bad=1 \\} for \\(code in defs\\) if \\(defs\\[code\\] != 1\\) \\{ print \"duplicate definition: \" code; bad=1 \\} for \\(value in values\\) if \\(values\\[value\\] != 1\\) \\{ print \"duplicate value: \" value; bad=1 \\} exit bad \\}' _doc/project\\.md; and set fences \\(rg -c '\\^```' _doc/project\\.md\\); printf 'fences=%s\\\\n' \"\\$fences\"; and test \\(math \"\\$fences % 2\"\\) -eq 0; and git diff --no-index --check /dev/null _doc/project\\.md; set diff_code \\$status; test \\$diff_code -eq 1$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^git --no-pager status --short && printf 'document-lines=' && wc -l < _doc/project\\.md && printf 'document-bytes=' && wc -c < _doc/project\\.md$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  },
+  "idf.customExtraVars": {
+    "IDF_TARGET": "esp32s3"
+  }
 }

@@ -7,30 +7,26 @@
   },
   "configurePresets": [
     {
-      "name": "idf-base",
-      "hidden": true,
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/.build/${presetName}",
-      "cacheVariables": {
-        "IDF_TARGET": "esp32s3",
-        "SDKCONFIG": "${sourceDir}/.build/${presetName}/sdkconfig"
-      }
-    },
-    {
       "name": "dev",
-      "inherits": "idf-base",
       "displayName": "Default (development)",
       "description": "Development configuration",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/.build/dev",
       "cacheVariables": {
+        "IDF_TARGET": "esp32s3",
+        "SDKCONFIG": "${sourceDir}/.build/dev/sdkconfig",
         "SDKCONFIG_DEFAULTS": "${sourceDir}/sdkconfig.defaults;${sourceDir}/sdkconfig.defaults.dev"
       }
     },
     {
       "name": "prod",
-      "inherits": "idf-base",
       "displayName": "Production",
       "description": "Production configuration",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/.build/prod",
       "cacheVariables": {
+        "IDF_TARGET": "esp32s3",
+        "SDKCONFIG": "${sourceDir}/.build/prod/sdkconfig",
         "SDKCONFIG_DEFAULTS": "${sourceDir}/sdkconfig.defaults;${sourceDir}/sdkconfig.defaults.prod"
       }
     }

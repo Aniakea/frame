@@ -1,8 +1,9 @@
 # Name,     Type, SubType, Offset,   Size,     Flags
-nvs,        data, nvs,     0x9000,   0x15000,
+nvs,        data, nvs,     0x9000,   0x14000,
+nvs_keys,   data, nvs_keys,0x1D000,  0x1000,  encrypted
 otadata,    data, ota,     0x1E000,  0x2000,
 coredump,   data, coredump,0x20000,  0x20000,
 ota_0,      app,  ota_0,   0x40000,  0x500000,
 ota_1,      app,  ota_1,   0x540000, 0x500000,
-plugin_fs,  data, littlefs,0xA40000, 0x200000,
-assets_fs,  data, littlefs,0xC40000, 0x3C0000,
+plugin_fs,  data, littlefs,0xA40000, 0x4C0000,
+system_fs,  data, littlefs,0xF00000, 0x100000,
