@@ -54,12 +54,20 @@ CTestTestfile.cmake
 *.pyo
 *.pyd
 __pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage/
 *.egg-info/
 dist/
+.pytest_cache/
+.ruff_cache/
 
 # Virtual environment folders
 venv/
 .venv/
+.venv-idf/
 env/
 
 # Language Servers
@@ -82,3 +90,7 @@ Desktop.ini
 .build
 
 .cache
+
+# Agent session state (local harness data; never commit)
+.omo/
+.opencode/
