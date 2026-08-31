@@ -265,7 +265,7 @@ jobs:
           include-hidden-files: true
 
   required:
-    name: required
+    name: CI / required
     runs-on: ubuntu-24.04
     if: always()
     needs:
