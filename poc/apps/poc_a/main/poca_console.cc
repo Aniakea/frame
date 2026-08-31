@@ -52,6 +52,9 @@ void print_heap_caps(const char* label, uint32_t caps) {
 int poca_command(int argc, char** argv) {
     if (argc == 2 && std::strcmp(argv[1], "status") == 0) {
         print_loader_config();
+        std::printf("  registered host imports: poca_host_sentinel poca_host_add\n");
+        std::printf("  entry queries so far: %u (execution canary)\n",
+                    static_cast<unsigned>(poca_entry_queries()));
         print_heap_caps("internal", MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
         print_heap_caps("psram", MALLOC_CAP_SPIRAM);
         return 0;
@@ -59,11 +62,11 @@ int poca_command(int argc, char** argv) {
     if (argc == 2 && std::strcmp(argv[1], "abi") == 0) {
         return run_abi_smoke();
     }
-    if (argc == 2 && std::strcmp(argv[1], "verify") == 0) {
-        return cmd_poca_verify();
+    if ((argc == 2 || argc == 3) && std::strcmp(argv[1], "verify") == 0) {
+        return cmd_poca_verify(argc == 3 ? argv[2] : "baseline");
     }
-    if (argc == 2 && std::strcmp(argv[1], "load") == 0) {
-        return cmd_poca_load();
+    if ((argc == 2 || argc == 3) && std::strcmp(argv[1], "load") == 0) {
+        return cmd_poca_load(argc == 3 ? argv[2] : "baseline");
     }
     if (argc == 2 && std::strcmp(argv[1], "activate") == 0) {
         return cmd_poca_activate();
@@ -71,8 +74,8 @@ int poca_command(int argc, char** argv) {
     if (argc == 2 && std::strcmp(argv[1], "unload") == 0) {
         return cmd_poca_unload();
     }
-    std::printf(
-        "usage: poca status | poca abi | poca verify | poca load | poca activate | poca unload\n");
+    std::printf("usage: poca status | poca abi | poca verify [name] | poca load [name] | "
+                "poca activate | poca unload\n");
     return 1;
 }
 
@@ -81,7 +84,7 @@ int poca_command(int argc, char** argv) {
 esp_err_t start_console() {
     const esp_console_cmd_t poca_cmd{
         .command = "poca",
-        .help = "poca status | poca abi | poca verify | poca load | poca activate | poca unload",
+        .help = "poca status | abi | verify [name] | load [name] | activate | unload",
         .hint = nullptr,
         .func = &poca_command,
         .argtable = nullptr,

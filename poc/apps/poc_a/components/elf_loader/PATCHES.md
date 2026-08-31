@@ -54,11 +54,116 @@ manifest stays recomputable. Manifest-file sha256:
 
 All local modifications to the vendored tree MUST be registered here as
 numbered patches (`p1`, `p2`, ...) with motivation, diff, and post-patch
-`tree.sha256` recomputation. The tree as vendored carries **no patches**.
+`tree.sha256` recomputation.
 
 | Patch | Task | Scope | Diff | Post-patch tree.sha256 |
 | ----- | ---- | ----- | ---- | ---------------------- |
-| (none yet — T7 will add p1: `.plugin_iram` section support) | | | | |
+| p1 fail-closed arch relocate | T5 | `src/esp_elf.c` (1 hunk) | below | manifest sha256 `16f67a5112e08e40cda6db67873dd5ce8c5c2b82fe24580aa3a32caada3a6524` (p1+p2 only) |
+| p2 ELF header validation | T5 | `src/esp_elf.c` (1 hunk) | below | (as above; both patches touch only `src/esp_elf.c`) |
+| p3 true .text window size | T5 | `src/esp_elf.c` (1 hunk) | below | manifest sha256 `77a95ceccd65bcdf773d0f415f5136d17e2d9382f9b04fe005545c02d5547637`; `src/esp_elf.c` sha256 `c13652c1f2921bb516d6dc206816d20b59d21c7e2771738f4da9a4ae4040f024` (current, p1+p2+p3) |
+
+### p1 — fail-closed relocation (T5)
+
+**Rationale:** upstream `esp_elf_relocate()` called
+`esp_elf_arch_relocate()` and **ignored its return value**; the arch layer
+returns `-EINVAL` for every relocation type outside
+{RELATIVE, RTLD, GLOB_DAT, JMP_SLOT}, but the load only logged
+`elf_arch: info=N is not supported` and continued with unrelocated words
+(FAIL-OPEN, verified during T4). TEST-003 requires "unknown relocation
+types are rejected before any plugin code executes", so the error must
+propagate. Cleanup mirrors the existing `-ENOSYS` failure path in the same
+loop (no internal free; the caller releases via `esp_elf_deinit()`, which
+the poc_a harness does on every load failure).
+
+```diff
+@@ -620,7 +620,17 @@ int esp_elf_relocate(esp_elf_t *elf, const uint8_t *pbuf)
+                     ESP_LOGD(TAG, "Find function %s addr=%x", func_name, addr);
+                 }
+ 
+-                esp_elf_arch_relocate(elf, &rela_buf, sym, addr);
++                /* [patch p1] Fail closed on unsupported relocations: upstream
++                 * ignored esp_elf_arch_relocate()'s -EINVAL, so out-of-allowlist
++                 * relocation types only logged an error and loading continued
++                 * with unrelocated words. Abort the load instead (TEST-003:
++                 * unknown types are rejected before any plugin code runs). */
++                ret = esp_elf_arch_relocate(elf, &rela_buf, sym, addr);
++                if (ret) {
++                    ESP_LOGE(TAG, "Failed to relocate type=%d offset=0x%x ret=%d",
++                             ELF_R_TYPE(rela_buf.info), rela_buf.offset, ret);
++                    return ret;
++                }
+             }
+ #if CONFIG_ELF_DYNAMIC_LOAD_SHARED_OBJECT
+         } else {
+```
+
+### p2 — ELF header validation before parse/copy (T5)
+
+**Rationale:** upstream `esp_elf_relocate()` cast the payload to
+`elf32_hdr_t` and started parsing with **no** validation of `e_ident`
+magic, EI_CLASS, EI_DATA or `e_machine`. On ESP32-S3 (BUS_ADDRESS_MIRROR
+section path) a big-endian-marked, ELF64-marked or non-Xtensa payload is
+indistinguishable from a valid image at the byte level the loader reads
+(LE field reads are unaffected by the EI_DATA flag), so such images were
+**loaded and executed** (verified by construction in T5: the build-time
+gates and the manifest builder's `extract_plugin_iram_size()` both reject
+these images, but a hand-crafted signed container reaches the loader with
+them). Minimal fail-closed gate before any header-driven access. This is
+also the loader-side half of T14's 14th tamper class (ELF class/machine).
+
+```diff
+@@ -531,6 +531,23 @@ int esp_elf_relocate(esp_elf_t *elf, const uint8_t *pbuf)
+     }
+ 
+     ehdr    = (const elf32_hdr_t *)pbuf;
++
++    /* [patch p2] Fail closed on malformed or foreign-architecture images
++     * before any header-driven parsing or segment copy: ELF magic,
++     * ELFCLASS32, little-endian data encoding and an Xtensa machine type
++     * are required. Without this check the loader happily interprets
++     * arbitrary bytes as section/program headers (verified in T5). */
++    if (ehdr->ident[0] != 0x7f || ehdr->ident[1] != 'E' ||
++            ehdr->ident[2] != 'L' || ehdr->ident[3] != 'F' ||
++            ehdr->ident[4] != 1 /* ELFCLASS32 */ ||
++            ehdr->ident[5] != 1 /* ELFDATA2LSB */ ||
++            ehdr->machine != 94 /* EM_XTENSA */) {
++        ESP_LOGE(TAG, "Invalid ELF image: magic/class/data/machine mismatch "
++                 "(class=%u data=%u machine=%u)",
++                 ehdr->ident[4], ehdr->ident[5], ehdr->machine);
++        return -EINVAL;
++    }
++
+     shdr    = (const elf32_shdr_t *)(pbuf + ehdr->shoff);
+     shstrab = (const char *)pbuf + shdr[ehdr->shstrndx].offset;
+```
+
+### p3 — record true .text window size (T5)
+
+**Rationale:** upstream recorded `sec[TEXT].size = ELF_ALIGN(shdr.size, 4)`.
+That recorded size is also the `esp_elf_map_sym()` / `elf_remap_text()`
+window. Xtensa places `.rodata` (alignment 1) directly after `.text`, so
+when the true `.text` size is not a multiple of 4 the rounded-up window
+swallows the first vaddr(s) of `.rodata`: a data pointer with such a vaddr
+is mapped into the `.text` window and then mirrored into the instruction
+alias (`+0x06000000`), and the first data load through it takes a
+LoadStoreError. Observed on target with the T5 `globdat` probe (`.text`
+size 0xd3 → `.rodata` vaddr 0x2ab inside the aligned window [0x1d8,
+0x2ac)); T4's baseline survived only because its `.text` size happened to
+be 4-aligned. Every other recorded section already uses the true size;
+allocation is unaffected (the allocator returns aligned blocks regardless
+of requested size). Note for T7: `.plugin_iram` handling must copy this
+pattern (true size, never a rounded window).
+
+```diff
+@@ -190,7 +190,7 @@ static int esp_elf_load_section(esp_elf_t *elf, const uint8_t
+                 elf->sec[ELF_SEC_TEXT].v_addr  = shdr[i].addr;
+-                elf->sec[ELF_SEC_TEXT].size    = ELF_ALIGN(shdr[i].size, 4);
++                elf->sec[ELF_SEC_TEXT].size    = shdr[i].size;
+                 elf->sec[ELF_SEC_TEXT].offset  = shdr[i].offset;
+```
+
+(the hunk carries the `[patch p3]` comment block verbatim from the source)
 
 Upstream files are NEVER edited in place without a registry entry; the
-unpatched state must always be reproducible from this table.
+unpatched state must always be reproducible from this table (apply the
+hunks above in reverse to `git show 6526c5b1:components/elf_loader/src/esp_elf.c`).

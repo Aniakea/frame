@@ -1,4 +1,5 @@
-# poca_plugin(<name> SOURCE <file.c> VERSION <semver> ENTRY <symbol> MANIFEST <json>)
+# poca_plugin(<name> SOURCE <file.c> VERSION <semver> ENTRY <symbol> MANIFEST <json>
+#             [IMPORTS <sym>...])
 #
 # PoC-A plugin build pipeline (task T4 of poc-a-dynamic-elf). Produces, under
 # ${CMAKE_BINARY_DIR}/plugins/:
@@ -25,12 +26,17 @@
 #     plugin is a single freestanding C file with no newlib/libgcc references
 #     (the upstream macros compile inside a full ESP-IDF component context).
 #
+# IMPORTS (T5): declares the plugin's host imports (the allowlisted
+# undefined symbols that gate 2 accepts). This is a BUILD-side intent
+# declaration only; the device still refuses to load the plugin unless the
+# same names are registered at runtime through esp_elf_register_symbol().
+#
 # The pipeline additionally enforces what the vendored loader expects but does
 # not itself guarantee (check_plugin_elf.cmake, feeds the T5 allowlist work):
 #   1. every emitted dynamic relocation type is inside
 #      {R_XTENSA_RELATIVE, R_XTENSA_RTLD, R_XTENSA_GLOB_DAT, R_XTENSA_JMP_SLOT}
 #      (plus R_XTENSA_NONE);
-#   2. the plugin has zero undefined symbols (closed-world imports);
+#   2. undefined symbols are exactly the declared IMPORTS set;
 #   3. ELF32 / little-endian / Xtensa / ET_DYN with a live <ENTRY> symbol.
 
 # Capture the directory of this file at include time; CMAKE_CURRENT_LIST_DIR
@@ -40,9 +46,12 @@ set(POCA_PLUGINS_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set(POCA_REPO_ROOT "${POCA_PLUGINS_DIR}/../../../..")
 
 function(poca_plugin name)
-    cmake_parse_arguments(PLUGIN "" "SOURCE;VERSION;ENTRY;MANIFEST" "" ${ARGN})
+    cmake_parse_arguments(PLUGIN "" "SOURCE;VERSION;ENTRY;MANIFEST" "IMPORTS" ${ARGN})
     if(NOT PLUGIN_SOURCE OR NOT PLUGIN_VERSION OR NOT PLUGIN_ENTRY OR NOT PLUGIN_MANIFEST)
         message(FATAL_ERROR "poca_plugin(${name}): SOURCE, VERSION, ENTRY and MANIFEST are required")
+    endif()
+    if(NOT PLUGIN_IMPORTS)
+        set(PLUGIN_IMPORTS "")
     endif()
 
     set(plugins_dir "${POCA_PLUGINS_DIR}")
@@ -121,7 +130,9 @@ function(poca_plugin name)
             -D "READELF=${plugin_readelf}"
             -D "NM=${plugin_nm}"
             -D "EXPECT_ENTRY=${PLUGIN_ENTRY}"
+            -D "EXPECT_UNDEFINED=${PLUGIN_IMPORTS}"
             -P "${plugins_dir}/check_plugin_elf.cmake"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${stamp}"
         DEPENDS "${elf}"
         COMMENT "[poca-plugin] allowlist/import gates on ${name}.elf"
         VERBATIM)
@@ -141,6 +152,7 @@ function(poca_plugin name)
     # step also runs inside the plain ESP-IDF CI container (no uv there).
     add_custom_command(
         OUTPUT "${mpb}"
+        BYPRODUCTS "${meta_header}"
         COMMAND "${CMAKE_COMMAND}" -E env "PYTHONPATH=${repo_root}/tools"
             "${plugin_python}" -m frame_tools.manifest_builder build
             --elf "${elf}" --name "${name}" --version "${PLUGIN_VERSION}"
@@ -157,6 +169,53 @@ function(poca_plugin name)
 
     add_custom_target("poca_plugin_${name}" DEPENDS "${mpb}")
     message(STATUS "[poca-plugin] registered ${name} (entry ${PLUGIN_ENTRY}, version ${PLUGIN_VERSION})")
+endfunction()
+
+# poca_negative_corpus(BASELINE_ELF <elf> ...)
+#
+# T5 negative corpus: runs build_negative_corpus.py against the gated
+# baseline.elf to fabricate the handcrafted negative containers (out-of-
+# allowlist relocation types, malformed ELF identity, inflated PT_LOAD
+# budget). These .mpb files deliberately bypass the check_plugin_elf.cmake
+# gates - the gates protect positive builds, negatives are handcrafted -
+# and are signed with the same TEST-only key so device-side mpb
+# verification still passes and the rejection must come from the loader
+# (patches p1/p2) or the harness program-header admission check.
+function(poca_negative_corpus)
+    cmake_parse_arguments(CORPUS "" "BASELINE_ELF" "" ${ARGN})
+    if(NOT CORPUS_BASELINE_ELF)
+        message(FATAL_ERROR "poca_negative_corpus: BASELINE_ELF is required")
+    endif()
+
+    set(out_dir "${CMAKE_BINARY_DIR}/plugins")
+    set(gen_dir "${out_dir}/generated")
+    set(corpus_names neg_r32 neg_s0op neg_phspan neg_phbe neg_ph64 neg_phmach)
+    set(corpus_outputs "")
+    foreach(name IN LISTS corpus_names)
+        list(APPEND corpus_outputs "${out_dir}/${name}.mpb" "${gen_dir}/poca_${name}_meta.h")
+    endforeach()
+    set(stamp "${out_dir}/negative/corpus.stamp")
+
+    set(signing_key "${POCA_REPO_ROOT}/tools/frame_tools/testdata/keys/poc_a_test_signing_key.pem")
+    if(Python_EXECUTABLE)
+        set(corpus_python "${Python_EXECUTABLE}")
+    else()
+        set(corpus_python python3)
+    endif()
+
+    add_custom_command(
+        OUTPUT "${stamp}"
+        BYPRODUCTS ${corpus_outputs}
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${out_dir}/negative"
+        COMMAND "${corpus_python}" "${POCA_PLUGINS_DIR}/negative/build_negative_corpus.py"
+            --baseline-elf "${CORPUS_BASELINE_ELF}"
+            --key "${signing_key}"
+            --out-dir "${out_dir}"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${stamp}"
+        DEPENDS "${CORPUS_BASELINE_ELF}" "${POCA_PLUGINS_DIR}/negative/build_negative_corpus.py" "${signing_key}"
+        COMMENT "[poca-corpus] handcrafted negative containers (gate-bypass by design)"
+        VERBATIM)
+    add_custom_target(poca_negative_corpus DEPENDS "${stamp}")
 endfunction()
 
 # Generate the embedded TEST public key header (65-byte uncompressed point

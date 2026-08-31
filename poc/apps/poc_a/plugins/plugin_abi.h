@@ -22,7 +22,7 @@
 /* Entry-table ABI of the PoC-A plugin contract (plan section 4.14.2 minimal
  * subset: prepare/activate/unload, state_schema all zero). */
 #define POCA_PLUGIN_ABI_MAJOR 1
-#define POCA_PLUGIN_ABI_MINOR 0
+#define POCA_PLUGIN_ABI_MINOR 1
 
 /* The fixed name of the single exported query entry. The pipeline links the
  * plugin with -e frame_plugin_entry and every other symbol hidden. */
@@ -30,6 +30,30 @@
 
 /* 32-bit magic stamped into every activate() self-check value. */
 #define POCA_PLUGIN_MAGIC 0x504F4341u /* "POCA" */
+
+/* Host-side import contract (task T5 relocation/import allowlist matrix).
+ * The firmware registers these under their exact C names through
+ * esp_elf_register_symbol(); plugins that import them get GLOB_DAT
+ * (address taken into the entry table) and JMP_SLOT (direct call) dynamic
+ * relocations, both inside the loader allowlist. The pure integer
+ * implementations live here so the firmware can compute the expected
+ * activate() value without calling plugin code. */
+#define POCA_HOST_SENTINEL_VALUE 0x5EEDC0DEu
+#define POCA_HOST_ADD_MUL 7u
+#define POCA_HOST_ADD_DELTA 1234u
+
+static inline uint32_t poca_host_sentinel_value(void) { return POCA_HOST_SENTINEL_VALUE; }
+
+static inline uint32_t poca_host_add_value(uint32_t a, uint32_t b) {
+    return a * POCA_HOST_ADD_MUL + b;
+}
+
+/* frame_err_t-style result codes for plugin self-checks (poc/common/
+ * frame_poc_runtime frame_abi.h values; kept literal to keep the plugin
+ * decoupled from firmware headers). */
+#define POCA_ERR_ABI_MISMATCH (-7)
+#define POCA_ERR_PACKAGE_INVALID (-18)
+#define POCA_ERR_HASH_MISMATCH (-19)
 
 /* 64 fixed pattern bytes over which the plugin computes its CRC32 at
  * activation time. The firmware computes the CRC over its own identical copy
@@ -93,6 +117,13 @@ typedef struct poca_plugin_table {
     int32_t (*unload)(void);
     uint32_t state_schema_id;      /* 0: stateless baseline plugin */
     uint32_t state_schema_version; /* 0: stateless baseline plugin */
+    /* Host-import probe slots (T5 matrix). Null for plugins that import
+     * nothing (baseline). For importing plugins these words are the
+     * R_XTENSA_GLOB_DAT relocation slots: the loader writes the firmware
+     * address of the registered host function into them, so the harness
+     * can assert the exact relocation value by pointer comparison. */
+    uint32_t (*host_sentinel)(void);
+    uint32_t (*host_add)(uint32_t a, uint32_t b);
 } poca_plugin_table_t;
 
 typedef const poca_plugin_table_t* (*poca_plugin_query_fn)(void);

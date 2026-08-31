@@ -11,14 +11,41 @@
 #include "frame_poc/mpb_parser.h"
 #include "plugin_abi.h"
 #include "poca_baseline_meta.h"
+#include "poca_globdat_meta.h"
+#include "poca_import_neg_meta.h"
+#include "poca_neg_ph64_meta.h"
+#include "poca_neg_phbe_meta.h"
+#include "poca_neg_phmach_meta.h"
+#include "poca_neg_phspan_meta.h"
+#include "poca_neg_r32_meta.h"
+#include "poca_neg_s0op_meta.h"
+#include "poca_plt_meta.h"
 #include "poca_pubkey.h"
 #include "psa/crypto.h"
 
-/* Embedded signed plugin container, produced by the plugins.cmake pipeline
- * and linked in via target_add_binary_data(). The IDF embed wrapper names
- * the symbols from the file name: baseline.mpb -> _binary_baseline_mpb_*. */
+/* Embedded signed plugin containers, produced by the plugins.cmake pipeline
+ * and negative/build_negative_corpus.py, linked via target_add_binary_data().
+ * The IDF embed wrapper names the symbols from the file names. */
 extern "C" const uint8_t _binary_baseline_mpb_start[];
 extern "C" const uint8_t _binary_baseline_mpb_end[];
+extern "C" const uint8_t _binary_globdat_mpb_start[];
+extern "C" const uint8_t _binary_globdat_mpb_end[];
+extern "C" const uint8_t _binary_plt_mpb_start[];
+extern "C" const uint8_t _binary_plt_mpb_end[];
+extern "C" const uint8_t _binary_import_neg_mpb_start[];
+extern "C" const uint8_t _binary_import_neg_mpb_end[];
+extern "C" const uint8_t _binary_neg_r32_mpb_start[];
+extern "C" const uint8_t _binary_neg_r32_mpb_end[];
+extern "C" const uint8_t _binary_neg_s0op_mpb_start[];
+extern "C" const uint8_t _binary_neg_s0op_mpb_end[];
+extern "C" const uint8_t _binary_neg_phspan_mpb_start[];
+extern "C" const uint8_t _binary_neg_phspan_mpb_end[];
+extern "C" const uint8_t _binary_neg_phbe_mpb_start[];
+extern "C" const uint8_t _binary_neg_phbe_mpb_end[];
+extern "C" const uint8_t _binary_neg_ph64_mpb_start[];
+extern "C" const uint8_t _binary_neg_ph64_mpb_end[];
+extern "C" const uint8_t _binary_neg_phmach_mpb_start[];
+extern "C" const uint8_t _binary_neg_phmach_mpb_end[];
 
 namespace frame::poca {
 namespace {
@@ -32,8 +59,76 @@ constexpr uint32_t kPsramExecLow = 0x42000000u;
 constexpr uint32_t kPsramExecHigh = 0x44000000u;
 constexpr uint32_t kPsramExecMirrorOffset = 0x06000000u;
 
+/* Host imports registered into the loader's symbol tables (T5 import
+ * allowlist). Plugins resolve these names through GLOB_DAT/JMP_SLOT; every
+ * other import fails the load with -ENOSYS before execute. */
+extern "C" uint32_t poca_host_sentinel(void) { return poca_host_sentinel_value(); }
+
+extern "C" uint32_t poca_host_add(uint32_t a, uint32_t b) { return poca_host_add_value(a, b); }
+
+const esp_elf_symbol_table_t k_host_symbols[] = {
+    {"poca_host_sentinel", reinterpret_cast<const void*>(&poca_host_sentinel)},
+    {"poca_host_add", reinterpret_cast<const void*>(&poca_host_add)},
+    ESP_ELFSYM_END,
+};
+
+struct EmbeddedPackage {
+    const char* name;
+    const uint8_t* start;
+    const uint8_t* end;
+    unsigned meta_size;
+    const char* meta_sha256;
+};
+
+const EmbeddedPackage k_packages[] = {
+    {"baseline", _binary_baseline_mpb_start, _binary_baseline_mpb_end, POCA_BASELINE_MPB_SIZE,
+     POCA_BASELINE_MPB_SHA256},
+    {"globdat", _binary_globdat_mpb_start, _binary_globdat_mpb_end, POCA_GLOBDAT_MPB_SIZE,
+     POCA_GLOBDAT_MPB_SHA256},
+    {"plt", _binary_plt_mpb_start, _binary_plt_mpb_end, POCA_PLT_MPB_SIZE, POCA_PLT_MPB_SHA256},
+    {"import_neg", _binary_import_neg_mpb_start, _binary_import_neg_mpb_end,
+     POCA_IMPORT_NEG_MPB_SIZE, POCA_IMPORT_NEG_MPB_SHA256},
+    {"neg_r32", _binary_neg_r32_mpb_start, _binary_neg_r32_mpb_end, POCA_NEG_R32_MPB_SIZE,
+     POCA_NEG_R32_MPB_SHA256},
+    {"neg_s0op", _binary_neg_s0op_mpb_start, _binary_neg_s0op_mpb_end, POCA_NEG_S0OP_MPB_SIZE,
+     POCA_NEG_S0OP_MPB_SHA256},
+    {"neg_phspan", _binary_neg_phspan_mpb_start, _binary_neg_phspan_mpb_end,
+     POCA_NEG_PHSPAN_MPB_SIZE, POCA_NEG_PHSPAN_MPB_SHA256},
+    {"neg_phbe", _binary_neg_phbe_mpb_start, _binary_neg_phbe_mpb_end, POCA_NEG_PHBE_MPB_SIZE,
+     POCA_NEG_PHBE_MPB_SHA256},
+    {"neg_ph64", _binary_neg_ph64_mpb_start, _binary_neg_ph64_mpb_end, POCA_NEG_PH64_MPB_SIZE,
+     POCA_NEG_PH64_MPB_SHA256},
+    {"neg_phmach", _binary_neg_phmach_mpb_start, _binary_neg_phmach_mpb_end,
+     POCA_NEG_PHMACH_MPB_SIZE, POCA_NEG_PHMACH_MPB_SHA256},
+};
+
+/* Expected outcome per package: the on-board matrix rows. Every negative
+ * must be rejected at its designated stage and the entry-query canary must
+ * stay untouched across the whole corpus (nothing may execute). */
+enum class Expect : uint8_t { kLoadOk, kRelocateErrno, kPhdrReject };
+
+struct PackageExpect {
+    const char* name;
+    Expect expect;
+    int errno_value;
+};
+
+const PackageExpect k_expects[] = {
+    {"baseline", Expect::kLoadOk, 0},
+    {"globdat", Expect::kLoadOk, 0},
+    {"plt", Expect::kLoadOk, 0},
+    {"import_neg", Expect::kRelocateErrno, -88}, /* -ENOSYS (newlib xtensa) */
+    {"neg_r32", Expect::kRelocateErrno, -22},    /* -EINVAL: patch p1, R_XTENSA_32 */
+    {"neg_s0op", Expect::kRelocateErrno, -22},   /* -EINVAL: patch p1, SLOT0_OP */
+    {"neg_phbe", Expect::kRelocateErrno, -22},   /* -EINVAL: patch p2, EI_DATA */
+    {"neg_ph64", Expect::kRelocateErrno, -22},   /* -EINVAL: patch p2, EI_CLASS */
+    {"neg_phmach", Expect::kRelocateErrno, -22}, /* -EINVAL: patch p2, e_machine */
+    {"neg_phspan", Expect::kPhdrReject, 0},      /* admission: budget > manifest */
+};
+
 struct PluginRuntime {
     bool loaded = false;
+    const EmbeddedPackage* package = nullptr;
     uint8_t* staging = nullptr;
     size_t staging_size = 0;
     uint32_t psram_free_before_load = 0;
@@ -44,6 +139,28 @@ struct PluginRuntime {
 PluginRuntime g_plugin;
 mpb_crypto_t g_crypto{};
 bool g_crypto_ready = false;
+bool g_host_symbols_registered = false;
+/* Execution canary: incremented exactly once per entry-table query. It must
+ * stay unchanged across every negative probe (fail-before-execute proof). */
+uint32_t g_entry_queries = 0;
+
+const EmbeddedPackage* find_package(const char* name) {
+    for (const EmbeddedPackage& package : k_packages) {
+        if (std::strcmp(package.name, name) == 0) {
+            return &package;
+        }
+    }
+    return nullptr;
+}
+
+const PackageExpect* find_expect(const char* name) {
+    for (const PackageExpect& expect : k_expects) {
+        if (std::strcmp(expect.name, name) == 0) {
+            return &expect;
+        }
+    }
+    return nullptr;
+}
 
 const char* frame_err_name(int32_t err) {
     switch (err) {
@@ -98,6 +215,19 @@ bool ensure_crypto() {
     return true;
 }
 
+bool ensure_host_symbols() {
+    if (g_host_symbols_registered) {
+        return true;
+    }
+    const int ret = esp_elf_register_symbol(const_cast<esp_elf_symbol_table_t*>(k_host_symbols));
+    if (ret != 0) {
+        std::printf("[poca] FAIL esp_elf_register_symbol ret=%d\n", ret);
+        return false;
+    }
+    g_host_symbols_registered = true;
+    return true;
+}
+
 bool sha256_hex(const uint8_t* data, size_t size, char* out_hex65) {
     uint8_t digest[32];
     size_t produced = 0;
@@ -146,6 +276,100 @@ mpb_policy_t device_policy() {
         .abi_minor = FRAME_ABI_MINOR,
         .device_features = 0u,
     };
+}
+
+/* Program-header admission arithmetic (T5, plan §4 item 2): the computed
+ * segment budget = sum(PT_LOAD p_memsz) + sum(inter-segment padding) must
+ * fit the manifest's max_memory_bytes, and every PT_LOAD span must stay
+ * inside the verified payload bytes. On ESP32-S3 the loader's
+ * BUS_ADDRESS_MIRROR path loads by sections, so this phdr policy is an
+ * admission-layer check (fail-closed before esp_elf_init), documented in
+ * ALLOWLIST.md. */
+struct PhBudget {
+    bool ok = false;
+    uint32_t loads = 0;
+    uint64_t memsz_total = 0;
+    uint64_t pad_total = 0;
+    char reason[64] = {0};
+};
+
+PhBudget compute_ph_budget(const uint8_t* elf, size_t size) {
+    PhBudget out{};
+    if (size < sizeof(elf32_hdr_t)) {
+        std::snprintf(out.reason, sizeof(out.reason), "elf smaller than ehdr");
+        return out;
+    }
+    elf32_hdr_t ehdr{};
+    std::memcpy(&ehdr, elf, sizeof(ehdr));
+    if (ehdr.phentsize < sizeof(elf32_phdr_t) || ehdr.phnum == 0) {
+        std::snprintf(out.reason, sizeof(out.reason), "no usable program headers");
+        return out;
+    }
+    if (static_cast<size_t>(ehdr.phoff) +
+            static_cast<size_t>(ehdr.phnum) * static_cast<size_t>(ehdr.phentsize) >
+        size) {
+        std::snprintf(out.reason, sizeof(out.reason), "phdr table out of bounds");
+        return out;
+    }
+    bool have_prev = false;
+    uint64_t prev_end = 0;
+    for (uint32_t i = 0; i < ehdr.phnum; ++i) {
+        elf32_phdr_t phdr{};
+        std::memcpy(&phdr, elf + ehdr.phoff + i * ehdr.phentsize, sizeof(phdr));
+        if (phdr.type != PT_LOAD) {
+            continue;
+        }
+        out.loads += 1;
+        if (phdr.filesz > phdr.memsz) {
+            std::snprintf(out.reason, sizeof(out.reason), "LOAD[%u] filesz>memsz",
+                          static_cast<unsigned>(i));
+            return out;
+        }
+        if (static_cast<uint64_t>(phdr.offset) + static_cast<uint64_t>(phdr.filesz) > size) {
+            std::snprintf(out.reason, sizeof(out.reason), "LOAD[%u] span exceeds payload",
+                          static_cast<unsigned>(i));
+            return out;
+        }
+        if (static_cast<uint64_t>(phdr.vaddr) + static_cast<uint64_t>(phdr.memsz) > 0xFFFFFFFFull) {
+            std::snprintf(out.reason, sizeof(out.reason), "LOAD[%u] vaddr+memsz overflow",
+                          static_cast<unsigned>(i));
+            return out;
+        }
+        if (have_prev && phdr.vaddr > prev_end) {
+            out.pad_total += phdr.vaddr - prev_end;
+        }
+        out.memsz_total += phdr.memsz;
+        prev_end = static_cast<uint64_t>(phdr.vaddr) + phdr.memsz;
+        have_prev = true;
+    }
+    if (out.loads == 0) {
+        std::snprintf(out.reason, sizeof(out.reason), "no PT_LOAD segments");
+        return out;
+    }
+    out.ok = true;
+    return out;
+}
+
+int check_ph_budget(const uint8_t* elf_base, const mpb_view_t& view, bool negative_expected) {
+    const PhBudget budget = compute_ph_budget(elf_base, view.payloads[0].length);
+    if (!budget.ok) {
+        std::printf("[poca] phdr budget INVALID: %s\n", budget.reason);
+    } else {
+        std::printf("[poca] phdr loads=%" PRIu32 " memsz=%" PRIu64 " pad=%" PRIu64
+                    " budget=%" PRIu64 " manifest max_mem=%" PRIu32 "\n",
+                    budget.loads, budget.memsz_total, budget.pad_total,
+                    budget.memsz_total + budget.pad_total, view.max_memory_bytes);
+    }
+    if (!budget.ok || budget.memsz_total + budget.pad_total > view.max_memory_bytes) {
+        if (negative_expected) {
+            std::printf("[poca-load] NEGATIVE %s PASS (phdr admission rejected before load)\n",
+                        g_plugin.package->name);
+            return 0;
+        }
+        std::printf("[poca] FAIL phdr admission\n");
+        return 1;
+    }
+    return 0;
 }
 
 /* Find <name> in the plugin ELF's symbol tables: defined GLOBAL/WEAK FUNC.
@@ -234,9 +458,9 @@ int parse_mpb(const uint8_t* buffer, size_t size, mpb_view_t* out_view) {
     return 0;
 }
 
-int check_embedded_digest(size_t size, const char* hex) {
-    const int digest_ok = std::strcmp(hex, POCA_BASELINE_MPB_SHA256) == 0 &&
-                          size == static_cast<size_t>(POCA_BASELINE_MPB_SIZE);
+int check_embedded_digest(const EmbeddedPackage& package, size_t size, const char* hex) {
+    const int digest_ok = std::strcmp(hex, package.meta_sha256) == 0 &&
+                          size == static_cast<size_t>(package.meta_size);
     std::printf("[poca] mpb digest %s\n", digest_ok ? "MATCH" : "MISMATCH");
     return digest_ok ? 0 : 1;
 }
@@ -249,47 +473,72 @@ void release_plugin(bool free_staging) {
         g_plugin.staging_size = 0;
     }
     g_plugin.table = nullptr;
+    g_plugin.package = nullptr;
     g_plugin.loaded = false;
 }
 
 } // namespace
 
-int cmd_poca_verify() {
+uint32_t poca_entry_queries() { return g_entry_queries; }
+
+int cmd_poca_verify(const char* name) {
     if (g_plugin.loaded) {
         std::printf("[poca-verify] FAIL plugin loaded; unload first\n");
         return 1;
     }
-    const size_t size = static_cast<size_t>(_binary_baseline_mpb_end - _binary_baseline_mpb_start);
+    const EmbeddedPackage* package = find_package(name);
+    if (package == nullptr) {
+        std::printf("[poca-verify] FAIL unknown package '%s'\n", name);
+        return 1;
+    }
+    const size_t size = static_cast<size_t>(package->end - package->start);
     char hex[65];
-    if (!sha256_hex(_binary_baseline_mpb_start, size, hex)) {
+    if (!sha256_hex(package->start, size, hex)) {
         std::printf("[poca-verify] FAIL sha256\n");
         return 1;
     }
-    std::printf("[poca-verify] mpb size=%zu sha256=%s\n", size, hex);
-    std::printf("[poca-verify] meta size=%u sha256=%s (build)\n",
-                static_cast<unsigned>(POCA_BASELINE_MPB_SIZE), POCA_BASELINE_MPB_SHA256);
-    if (check_embedded_digest(size, hex) != 0) {
+    std::printf("[poca-verify] %s size=%zu sha256=%s\n", package->name, size, hex);
+    if (check_embedded_digest(*package, size, hex) != 0) {
         std::printf("[poca-verify] FAIL stale embed\n");
         return 1;
     }
     mpb_view_t view{};
-    if (parse_mpb(_binary_baseline_mpb_start, size, &view) != 0) {
+    if (parse_mpb(package->start, size, &view) != 0) {
         std::printf("[poca-verify] FAIL\n");
         return 1;
     }
     print_view(view);
+    const uint8_t* elf_base = package->start + view.payloads[0].offset;
+    g_plugin.package = package;
+    const int ph = check_ph_budget(elf_base, view, false);
+    g_plugin.package = nullptr;
+    if (ph != 0) {
+        std::printf("[poca-verify] FAIL\n");
+        return 1;
+    }
     std::printf("[poca-verify] PASS\n");
     return 0;
 }
 
-int cmd_poca_load() {
+int cmd_poca_load(const char* name) {
     if (g_plugin.loaded) {
         std::printf("[poca-load] FAIL plugin already loaded; run poca unload first\n");
         return 1;
     }
-    std::printf("[poca-load] begin\n");
-    const size_t embed_size =
-        static_cast<size_t>(_binary_baseline_mpb_end - _binary_baseline_mpb_start);
+    const EmbeddedPackage* package = find_package(name);
+    if (package == nullptr) {
+        std::printf("[poca-load] FAIL unknown package '%s'\n", name);
+        return 1;
+    }
+    const PackageExpect* expect = find_expect(name);
+    if (expect == nullptr) {
+        std::printf("[poca-load] FAIL no expectation registered for '%s'\n", name);
+        return 1;
+    }
+    g_plugin.package = package;
+    const uint32_t canary_before = g_entry_queries;
+    std::printf("[poca-load] begin %s (entry_queries=%" PRIu32 ")\n", package->name, canary_before);
+    const size_t embed_size = static_cast<size_t>(package->end - package->start);
     g_plugin.psram_free_before_load = psram_free_bytes();
     std::printf("[poca-load] psram free before=%" PRIu32 "\n", g_plugin.psram_free_before_load);
 
@@ -299,10 +548,11 @@ int cmd_poca_load() {
         static_cast<uint8_t*>(heap_caps_malloc(embed_size, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
     if (g_plugin.staging == nullptr) {
         std::printf("[poca-load] FAIL staging alloc %zu bytes\n", embed_size);
+        g_plugin.package = nullptr;
         return 1;
     }
     g_plugin.staging_size = embed_size;
-    std::memcpy(g_plugin.staging, _binary_baseline_mpb_start, embed_size);
+    std::memcpy(g_plugin.staging, package->start, embed_size);
 
     char hex[65];
     if (!sha256_hex(g_plugin.staging, g_plugin.staging_size, hex)) {
@@ -311,9 +561,7 @@ int cmd_poca_load() {
         return 1;
     }
     std::printf("[poca-load] mpb size=%zu sha256=%s\n", g_plugin.staging_size, hex);
-    std::printf("[poca-load] meta size=%u sha256=%s (build)\n",
-                static_cast<unsigned>(POCA_BASELINE_MPB_SIZE), POCA_BASELINE_MPB_SHA256);
-    if (check_embedded_digest(g_plugin.staging_size, hex) != 0) {
+    if (check_embedded_digest(*package, g_plugin.staging_size, hex) != 0) {
         std::printf("[poca-load] FAIL stale staging copy\n");
         release_plugin(true);
         return 1;
@@ -337,6 +585,29 @@ int cmd_poca_load() {
 
     const uint8_t* elf_base = g_plugin.staging + view.payloads[0].offset;
     const size_t elf_size = view.payloads[0].length;
+    if (expect->expect == Expect::kPhdrReject) {
+        const int ph = check_ph_budget(elf_base, view, true);
+        const uint32_t canary_after = g_entry_queries;
+        std::printf("[poca-load] entry_queries=%" PRIu32 " (unchanged=%s)\n", canary_after,
+                    canary_after == canary_before ? "yes" : "NO");
+        release_plugin(true);
+        if (ph == 0 && canary_after == canary_before) {
+            return 0;
+        }
+        std::printf("[poca-load] NEGATIVE %s FAIL\n", package->name);
+        return 1;
+    }
+    if (check_ph_budget(elf_base, view, false) != 0) {
+        std::printf("[poca-load] FAIL phdr admission\n");
+        release_plugin(true);
+        return 1;
+    }
+
+    if (!ensure_host_symbols()) {
+        std::printf("[poca-load] FAIL host symbol registration\n");
+        release_plugin(true);
+        return 1;
+    }
     if (esp_elf_init(&g_plugin.elf) != 0) {
         std::printf("[poca-load] FAIL esp_elf_init\n");
         release_plugin(true);
@@ -346,6 +617,22 @@ int cmd_poca_load() {
     const int relocate_err = esp_elf_relocate(&g_plugin.elf, elf_base);
     if (relocate_err != 0) {
         std::printf("[poca-load] FAIL esp_elf_relocate err=%d\n", relocate_err);
+        const uint32_t canary_after = g_entry_queries;
+        std::printf("[poca-load] entry_queries=%" PRIu32 " (unchanged=%s)\n", canary_after,
+                    canary_after == canary_before ? "yes" : "NO");
+        if (expect->expect == Expect::kRelocateErrno) {
+            const bool pass = relocate_err == expect->errno_value && canary_after == canary_before;
+            std::printf("[poca-load] NEGATIVE %s %s (errno %d, expected %d)\n", package->name,
+                        pass ? "PASS" : "FAIL", relocate_err, expect->errno_value);
+            release_plugin(true);
+            return pass ? 0 : 1;
+        }
+        release_plugin(true);
+        return 1;
+    }
+    if (expect->expect != Expect::kLoadOk) {
+        std::printf("[poca-load] NEGATIVE %s FAIL (load succeeded, rejection expected)\n",
+                    package->name);
         release_plugin(true);
         return 1;
     }
@@ -393,6 +680,7 @@ int cmd_poca_load() {
     const auto query =
         reinterpret_cast<poca_plugin_query_fn>(reinterpret_cast<void*>(g_plugin.elf.entry));
     std::printf("[poca-load] query fn ptr=0x%08" PRIx32 "\n", reinterpret_cast<uint32_t>(query));
+    g_entry_queries += 1;
     const poca_plugin_table_t* table = query();
     if (table == nullptr) {
         std::printf("[poca-load] FAIL query returned null\n");
@@ -417,6 +705,35 @@ int cmd_poca_load() {
         return 1;
     }
     std::printf("[poca-load] prepare()=0 OK\n");
+
+    /* Relocation VALUE assertions for the importing plugins (T5 matrix):
+     * the GLOB_DAT slots in the entry table must hold exactly the firmware
+     * address of the registered host function. */
+    if (table->host_sentinel != nullptr) {
+        const bool value_ok = reinterpret_cast<void*>(table->host_sentinel) ==
+                              reinterpret_cast<void*>(&poca_host_sentinel);
+        std::printf(
+            "[poca-load] GLOB_DAT host_sentinel=0x%08" PRIx32 " expected=0x%08" PRIx32 " %s\n",
+            reinterpret_cast<uint32_t>(table->host_sentinel),
+            reinterpret_cast<uint32_t>(&poca_host_sentinel), value_ok ? "MATCH" : "MISMATCH");
+        if (!value_ok && std::strcmp(package->name, "globdat") == 0) {
+            std::printf("[poca-load] FAIL globdat GLOB_DAT value\n");
+            release_plugin(true);
+            return 1;
+        }
+    }
+    if (table->host_add != nullptr) {
+        const bool value_ok =
+            reinterpret_cast<void*>(table->host_add) == reinterpret_cast<void*>(&poca_host_add);
+        std::printf("[poca-load] GLOB_DAT host_add=0x%08" PRIx32 " expected=0x%08" PRIx32 " %s\n",
+                    reinterpret_cast<uint32_t>(table->host_add),
+                    reinterpret_cast<uint32_t>(&poca_host_add), value_ok ? "MATCH" : "MISMATCH");
+        if (!value_ok && std::strcmp(package->name, "plt") == 0) {
+            std::printf("[poca-load] FAIL plt GLOB_DAT value\n");
+            release_plugin(true);
+            return 1;
+        }
+    }
 
     /* Loaded image address evidence: text/data windows live in the PSRAM data
      * mapping; entry pointers run on the mirrored exec window. */
@@ -450,25 +767,31 @@ int cmd_poca_load() {
 }
 
 int cmd_poca_activate() {
-    if (!g_plugin.loaded || g_plugin.table == nullptr) {
+    if (!g_plugin.loaded || g_plugin.table == nullptr || g_plugin.package == nullptr) {
         std::printf("[poca-activate] FAIL no loaded plugin; run poca load first\n");
         return 1;
     }
     const poca_plugin_table_t* table = g_plugin.table;
     const auto activate = table->activate;
-    std::printf("[poca-activate] activate fn ptr=0x%08" PRIx32 "\n",
+    std::printf("[poca-activate] %s activate fn ptr=0x%08" PRIx32 "\n", g_plugin.package->name,
                 reinterpret_cast<uint32_t>(activate));
     const uint32_t fn_addr = reinterpret_cast<uint32_t>(activate);
     if (!(fn_addr >= kPsramExecLow && fn_addr < kPsramExecHigh)) {
         std::printf("[poca-activate] FAIL activate fn outside PSRAM exec window\n");
         return 1;
     }
-    /* The value is computed by plugin code executing from PSRAM over the
-     * plugin's own pattern bytes; expected is computed here over the flash
-     * copy of the identical constants. */
     const int32_t returned = activate();
-    const int32_t expected =
-        static_cast<int32_t>(POCA_PLUGIN_MAGIC ^ poca_crc32(POCA_BASELINE_PATTERN, 64u));
+    /* The expected value is computed by firmware code over its own copy of
+     * the identical constants; which imports contribute depends on the
+     * loaded plugin (per-package self-check contract in ALLOWLIST.md). */
+    const uint32_t crc = poca_crc32(POCA_BASELINE_PATTERN, POCA_BASELINE_PATTERN_SIZE);
+    int32_t expected = static_cast<int32_t>(POCA_PLUGIN_MAGIC ^ crc);
+    if (std::strcmp(g_plugin.package->name, "globdat") == 0) {
+        expected = static_cast<int32_t>(POCA_PLUGIN_MAGIC ^ crc ^ poca_host_sentinel_value());
+    } else if (std::strcmp(g_plugin.package->name, "plt") == 0) {
+        expected = static_cast<int32_t>(POCA_PLUGIN_MAGIC ^ poca_host_add_value(crc, 0u) ^
+                                        poca_host_add_value(POCA_HOST_ADD_DELTA, crc));
+    }
     std::printf("[poca-activate] returned=0x%08x expected=0x%08x\n",
                 static_cast<unsigned>(returned), static_cast<unsigned>(expected));
     if (returned != expected) {

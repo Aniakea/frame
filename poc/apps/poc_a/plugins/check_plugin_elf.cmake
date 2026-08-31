@@ -1,15 +1,19 @@
 # Static gates on a built plugin ELF (task T4; feeds the T5 allowlist work).
 #
 # Invoked as: cmake -D PLUGIN_NAME=<n> -D ELF=<file> -D READELF=<tool>
-#                  -D NM=<tool> -D EXPECT_ENTRY=<sym> -P check_plugin_elf.cmake
+#                  -D NM=<tool> -D EXPECT_ENTRY=<sym>
+#                  -D "EXPECT_UNDEFINED=<sym;...>" -P check_plugin_elf.cmake
 #
 # Gate 1 (relocation allowlist): every dynamic relocation emitted into the
 #   final image must be one of the types the vendored elf_loader implements
 #   on xtensa (esp_elf_xtensa.c): R_XTENSA_NONE/RELATIVE/RTLD/GLOB_DAT/
 #   JMP_SLOT. Anything else is a pipeline bug (fix the link flags), not a
 #   loader configuration problem.
-# Gate 2 (closed-world imports): `nm -u` must be empty; the plugin resolves
-#   every symbol internally.
+# Gate 2 (closed-world imports): every undefined symbol must appear in
+#   EXPECT_UNDEFINED, the plugin's declared import list (T5). Device-side
+#   enforcement is separate: only symbols registered at runtime through
+#   esp_elf_register_symbol() actually resolve, anything else fails the
+#   load with -ENOSYS before execute.
 # Gate 3 (shape): ELF32, little-endian, Xtensa machine, ET_DYN, non-zero
 #   entry, and the exported query entry present as a defined GLOBAL FUNC.
 
@@ -63,9 +67,26 @@ if(NOT undef_res EQUAL 0)
     message(FATAL_ERROR "[poca-plugin] ${PLUGIN_NAME}: nm -u failed: ${undef_err}")
 endif()
 string(STRIP "${undef_out}" undef_out)
-if(NOT undef_out STREQUAL "")
-    message(FATAL_ERROR "[poca-plugin] ${PLUGIN_NAME}: closed-world import gate failed, undefined symbols: ${undef_out}")
+set(unexpected "${undef_out}")
+if(unexpected)
+    string(REPLACE "\n" ";" undef_symbols "${undef_out}")
+    set(unexpected "")
+    foreach(sym IN LISTS undef_symbols)
+        string(STRIP "${sym}" sym)
+        string(REGEX REPLACE "^U[ ]+" "" sym "${sym}")
+        if(NOT sym STREQUAL "")
+            list(FIND EXPECT_UNDEFINED "${sym}" idx)
+            if(idx EQUAL -1)
+                list(APPEND unexpected "${sym}")
+            endif()
+        endif()
+    endforeach()
 endif()
+if(unexpected)
+    message(FATAL_ERROR "[poca-plugin] ${PLUGIN_NAME}: import gate failed, undeclared undefined symbols: ${unexpected} (declared: ${EXPECT_UNDEFINED})")
+endif()
+list(LENGTH EXPECT_UNDEFINED declared_count)
+message(STATUS "[poca-plugin] ${PLUGIN_NAME}: declared imports=${declared_count} undefined-undeclared=0")
 
 execute_process(
     COMMAND "${READELF}" -hW "${ELF}"

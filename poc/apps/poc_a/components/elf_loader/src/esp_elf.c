@@ -190,8 +190,18 @@ static int esp_elf_load_section(esp_elf_t *elf, const uint8_t *pbuf)
                 ESP_LOGD(TAG, ".text   sec addr=0x%08x size=0x%08x offset=0x%08x",
                          shdr[i].addr, shdr[i].size, shdr[i].offset);
 
+                /* [patch p3] Record the TRUE .text size, not ELF_ALIGN(size,4):
+                 * the recorded size is the map_sym()/elf_remap_text() window;
+                 * rounding it up makes the window swallow the first vaddr(s) of
+                 * the following section (xtensa places .rodata with alignment 1
+                 * directly after .text). A data pointer with such a vaddr is
+                 * then mapped into the .text window and mirrored into the
+                 * instruction alias, so the first data access faults
+                 * (LoadStoreError, observed with the T5 globdat probe whose
+                 * .text size is 1 mod 4). Allocation itself is unaffected: the
+                 * allocator returns aligned blocks regardless of size. */
                 elf->sec[ELF_SEC_TEXT].v_addr  = shdr[i].addr;
-                elf->sec[ELF_SEC_TEXT].size    = ELF_ALIGN(shdr[i].size, 4);
+                elf->sec[ELF_SEC_TEXT].size    = shdr[i].size;
                 elf->sec[ELF_SEC_TEXT].offset  = shdr[i].offset;
 
                 ESP_LOGD(TAG, ".text   offset is 0x%lx size is 0x%x",
@@ -531,6 +541,23 @@ int esp_elf_relocate(esp_elf_t *elf, const uint8_t *pbuf)
     }
 
     ehdr    = (const elf32_hdr_t *)pbuf;
+
+    /* [patch p2] Fail closed on malformed or foreign-architecture images
+     * before any header-driven parsing or segment copy: ELF magic,
+     * ELFCLASS32, little-endian data encoding and an Xtensa machine type
+     * are required. Without this check the loader happily interprets
+     * arbitrary bytes as section/program headers (verified in T5). */
+    if (ehdr->ident[0] != 0x7f || ehdr->ident[1] != 'E' ||
+            ehdr->ident[2] != 'L' || ehdr->ident[3] != 'F' ||
+            ehdr->ident[4] != 1 /* ELFCLASS32 */ ||
+            ehdr->ident[5] != 1 /* ELFDATA2LSB */ ||
+            ehdr->machine != 94 /* EM_XTENSA */) {
+        ESP_LOGE(TAG, "Invalid ELF image: magic/class/data/machine mismatch "
+                 "(class=%u data=%u machine=%u)",
+                 ehdr->ident[4], ehdr->ident[5], ehdr->machine);
+        return -EINVAL;
+    }
+
     shdr    = (const elf32_shdr_t *)(pbuf + ehdr->shoff);
     shstrab = (const char *)pbuf + shdr[ehdr->shstrndx].offset;
 
@@ -620,7 +647,17 @@ int esp_elf_relocate(esp_elf_t *elf, const uint8_t *pbuf)
                     ESP_LOGD(TAG, "Find function %s addr=%x", func_name, addr);
                 }
 
-                esp_elf_arch_relocate(elf, &rela_buf, sym, addr);
+                /* [patch p1] Fail closed on unsupported relocations: upstream
+                 * ignored esp_elf_arch_relocate()'s -EINVAL, so out-of-allowlist
+                 * relocation types only logged an error and loading continued
+                 * with unrelocated words. Abort the load instead (TEST-003:
+                 * unknown types are rejected before any plugin code runs). */
+                ret = esp_elf_arch_relocate(elf, &rela_buf, sym, addr);
+                if (ret) {
+                    ESP_LOGE(TAG, "Failed to relocate type=%d offset=0x%x ret=%d",
+                             ELF_R_TYPE(rela_buf.info), rela_buf.offset, ret);
+                    return ret;
+                }
             }
 #if CONFIG_ELF_DYNAMIC_LOAD_SHARED_OBJECT
         } else {
