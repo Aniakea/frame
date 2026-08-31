@@ -56,7 +56,7 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -t sources < <(git ls-files 'poc/common/**' 'poc/host/**' \
-            'poc/apps/m1_hardware/main/**' | grep -E '\.(c|cc|h|hh)$' | sort)
+            'poc/apps/m1_hardware/main/**' 'poc/apps/poc_a/main/**' | grep -E '\.(c|cc|h|hh)$' | sort)
           clang-format-18 --dry-run --Werror "${sources[@]}"
       - name: Validate repository data and documentation
         run: |
@@ -264,6 +264,38 @@ jobs:
           retention-days: 14
           include-hidden-files: true
 
+  firmware-poc-a:
+    name: ESP-IDF PoC-A firmware
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    container:
+      image: docker.io/espressif/idf@sha256:0d8c9773d48a327233f9c1d7c654ff0bcf133ae24503ea2e97a57cfe02b8cb67
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Configure and build PoC-A firmware
+        working-directory: poc/apps/poc_a
+        run: |
+          . /opt/esp/idf/export.sh
+          set -euo pipefail
+          cmake --preset default
+          cmake --build --preset default --parallel 2
+      - name: Upload PoC-A firmware
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: firmware-poc-a
+          path: |
+            poc/apps/poc_a/build/default/*.bin
+            poc/apps/poc_a/build/default/*.elf
+            poc/apps/poc_a/build/default/*.map
+            poc/apps/poc_a/build/default/bootloader/*.bin
+            poc/apps/poc_a/build/default/partition_table/*.bin
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+
   required:
     name: CI / required
     runs-on: ubuntu-24.04
@@ -277,6 +309,7 @@ jobs:
       - secrets
       - firmware-dev
       - firmware-m1
+      - firmware-poc-a
     steps:
       - name: Confirm required jobs passed
         env:
@@ -288,6 +321,7 @@ jobs:
           SECRETS_RESULT: ${{ needs.secrets.result }}
           REPOSITORY_GATES_RESULT: ${{ needs.repository-gates.result }}
           FIRMWARE_M1_RESULT: ${{ needs.firmware-m1.result }}
+          FIRMWARE_POC_A_RESULT: ${{ needs.firmware-poc-a.result }}
         run: |
           set -euo pipefail
           test "${REPOSITORY_GATES_RESULT}" = success
@@ -298,4 +332,5 @@ jobs:
           test "${SECRETS_RESULT}" = success
           test "${FIRMWARE_DEV_RESULT}" = success
           test "${FIRMWARE_M1_RESULT}" = success
+          test "${FIRMWARE_POC_A_RESULT}" = success
           printf '%s\n' 'All required CI jobs passed.'
