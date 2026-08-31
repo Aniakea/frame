@@ -56,7 +56,8 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -t sources < <(git ls-files 'poc/common/**' 'poc/host/**' \
-            'poc/apps/m1_hardware/main/**' 'poc/apps/poc_a/main/**' | grep -E '\.(c|cc|h|hh)$' | sort)
+            'poc/apps/m1_hardware/main/**' 'poc/apps/poc_a/main/**' \
+            'poc/apps/poc_a/plugins/**' | grep -E '\.(c|cc|cpp|cxx|h|hh|hpp)$' | sort)
           clang-format-18 --dry-run --Werror "${sources[@]}"
       - name: Validate repository data and documentation
         run: |
@@ -72,6 +73,48 @@ jobs:
           path: .build/reports/
           if-no-files-found: error
           retention-days: 14
+
+  mpb-corpus-gates:
+    name: Host MPB corpus and plugin policy gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        with:
+          version: "0.12.5"
+          python-version: "3.11"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Install locked Python environment
+        run: |
+          set -euo pipefail
+          uv sync --frozen
+      - name: Build and run the MPB parser corpus suite
+        run: |
+          set -euo pipefail
+          cmake -S poc/host -B .build/poc-corpus
+          cmake --build .build/poc-corpus --target mpb_parser_test --parallel 2
+          ctest --test-dir .build/poc-corpus -R MpbParser --output-on-failure
+      - name: Regenerate the MPB corpus and compare byte for byte
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          mkdir -p "${tmp}/poc/host/tests" "${tmp}/tools"
+          cp poc/host/tests/gen_mpb_corpus.py "${tmp}/poc/host/tests/"
+          cp -r tools/frame_tools "${tmp}/tools/"
+          uv run python "${tmp}/poc/host/tests/gen_mpb_corpus.py"
+          sha256sum poc/host/tests/mpb_corpus/*.mpb
+          diff -r -x README.md poc/host/tests/mpb_corpus "${tmp}/poc/host/tests/mpb_corpus"
+          printf '%s\n' 'committed corpus is byte-identical to a fresh regeneration'
+      - name: Run plugin policy checker and stem drift guard tests
+        run: |
+          set -euo pipefail
+          uv run pytest tests/test_check_plugin_policy.py -v
 
   host-clang-sanitizers:
     name: Host Clang ASan and UBSan
@@ -302,6 +345,7 @@ jobs:
     if: always()
     needs:
       - repository-gates
+      - mpb-corpus-gates
       - host-clang-sanitizers
       - host-gcc
       - host-clang-tidy
@@ -314,6 +358,7 @@ jobs:
       - name: Confirm required jobs passed
         env:
           FIRMWARE_DEV_RESULT: ${{ needs.firmware-dev.result }}
+          MPB_CORPUS_GATES_RESULT: ${{ needs.mpb-corpus-gates.result }}
           HOST_CLANG_RESULT: ${{ needs.host-clang-sanitizers.result }}
           HOST_GCC_RESULT: ${{ needs.host-gcc.result }}
           HOST_TIDY_RESULT: ${{ needs.host-clang-tidy.result }}
@@ -325,6 +370,7 @@ jobs:
         run: |
           set -euo pipefail
           test "${REPOSITORY_GATES_RESULT}" = success
+          test "${MPB_CORPUS_GATES_RESULT}" = success
           test "${HOST_CLANG_RESULT}" = success
           test "${HOST_GCC_RESULT}" = success
           test "${HOST_TIDY_RESULT}" = success
