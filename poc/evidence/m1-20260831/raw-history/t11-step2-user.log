@@ -1,0 +1,318 @@
+"schema_version":1,"sequence":11,"uptime_us":102329354,"utc_valid":true,"utc":"2026-01-06T21:18:42Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","imagESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037dece
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16bc
+load:0x403c8700,len:0xf00
+load:0x403cb700,len:0x3238
+entry 0x403c892c
+I (24) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (24) boot: compile time Aug 31 2026 06:30:58
+I (25) boot: Multicore bootloader
+I (25) boot: chip revision: v0.2
+I (25) boot: efuse block revision: v1.4
+I (25) qio_mode: Enabling default flash chip QIO
+I (25) boot.esp32s3: Boot SPI Speed : 80MHz
+I (26) boot.esp32s3: SPI Mode       : QIO
+I (26) boot.esp32s3: SPI Flash Size : 16MB
+I (26) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (26) boot: ## Label            Usage          Type ST Offset   Length
+I (27) boot:  0 nvs              WiFi data        01 02 00009000 00014000
+I (27) boot:  1 nvs_keys         NVS keys         01 04 0001d000 00001000
+I (27) boot:  2 otadata          OTA data         01 00 0001e000 00002000
+I (28) boot:  3 coredump         Unknown data     01 03 00020000 00020000
+I (28) boot:  4 ota_0            OTA app          00 10 00040000 00500000
+I (29) boot:  5 ota_1            OTA app          00 11 00540000 00500000
+I (29) boot:  6 plugin_fs        Unknown data     01 83 00a40000 004c0000
+I (29) boot:  7 system_fs        Unknown data     01 83 00f00000 00100000
+I (30) boot: End of partition table
+I (30) esp_image: segment 0: paddr=00040020 vaddr=3c100020 size=3af54h (241492) map
+I (68) esp_image: segment 1: paddr=0007af7c vaddr=3fc9cc00 size=0509ch ( 20636) load
+I (72) esp_image: segment 2: paddr=00080020 vaddr=42000020 size=f5df0h (1007088) map
+I (228) esp_image: segment 3: paddr=00175e18 vaddr=3fca1c9c size=00b44h (  2884) load
+I (229) esp_image: segment 4: paddr=00176964 vaddr=40374000 size=18b60h (101216) load
+I (250) esp_image: segment 5: paddr=0018f4cc vaddr=50000000 size=00024h (    36) load
+I (261) boot: Loaded app from partition at offset 0x40000
+I (261) boot: Disabling RNG early entropy source...
+I (262) octal_psram: vendor id    : 0x0d (AP)
+I (262) octal_psram: dev id       : 0x02 (generation 3)
+I (262) octal_psram: density      : 0x03 (64 Mbit)
+I (263) octal_psram: good-die     : 0x01 (Pass)
+I (263) octal_psram: Latency      : 0x01 (Fixed)
+I (263) octal_psram: VCC          : 0x01 (3V)
+I (263) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (263) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (264) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (264) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (264) octal_psram: DriveStrength: 0x00 (1/1)
+I (264) MSPI Timing: Enter psram timing tuning
+I (265) esp_psram: Found 8MB PSRAM device
+I (265) esp_psram: Speed: 80MHz
+I (266) cpu_start: Multicore app
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4200a147
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16bc
+load:0x403c8700,len:0xf00
+load:0x403cb700,len:0x3238
+entry 0x403c892c
+I (24) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (24) boot: compile time Aug 31 2026 06:30:58
+I (25) boot: Multicore bootloader
+I (25) boot: chip revision: v0.2
+I (25) boot: efuse block revision: v1.4
+I (25) qio_mode: Enabling default flash chip QIO
+I (25) boot.esp32s3: Boot SPI Speed : 80MHz
+I (26) boot.esp32s3: SPI Mode       : QIO
+I (26) boot.esp32s3: SPI Flash Size : 16MB
+I (26) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (26) boot: ## Label            Usage          Type ST Offset   Length
+I (27) boot:  0 nvs              WiFi data        01 02 00009000 00014000
+I (27) boot:  1 nvs_keys         NVS keys         01 04 0001d000 00001000
+I (27) boot:  2 otadata          OTA data         01 00 0001e000 00002000
+I (28) boot:  3 coredump         Unknown data     01 03 00020000 00020000
+I (28) boot:  4 ota_0            OTA app          00 10 00040000 00500000
+I (29) boot:  5 ota_1            OTA app          00 11 00540000 00500000
+I (29) boot:  6 plugin_fs        Unknown data     01 83 00a40000 004c0000
+I (29) boot:  7 system_fs        Unknown data     01 83 00f00000 00100000
+I (30) boot: End of partition table
+I (30) esp_image: segment 0: paddr=00040020 vaddr=3c100020 size=3af54h (241492) map
+I (68) esp_image: segment 1: paddr=0007af7c vaddr=3fc9cc00 size=0509ch ( 20636) load
+I (72) esp_image: segment 2: paddr=00080020 vaddr=42000020 size=f5df0h (1007088) map
+I (228) esp_image: segment 3: paddr=00175e18 vaddr=3fca1c9c size=00b44h (  2884) load
+I (229) esp_image: segment 4: paddr=00176964 vaddr=40374000 size=18b60h (101216) load
+I (250) esp_image: segment 5: paddr=0018f4cc vaddr=50000000 size=00024h (    36) load
+I (261) boot: Loaded app from partition at offset 0x40000
+I (261) boot: Disabling RNG early entropy source...
+I (262) octal_psram: vendor id    : 0x0d (AP)
+I (262) octal_psram: dev id       : 0x02 (generation 3)
+I (262) octal_psram: density      : 0x03 (64 Mbit)
+I (263) octal_psram: good-die     : 0x01 (Pass)
+I (263) octal_psram: Latency      : 0x01 (Fixed)
+I (263) octal_psram: VCC          : 0x01 (3V)
+I (263) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (263) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (264) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (264) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (264) octal_psram: DriveStrength: 0x00 (1/1)
+I (264) MSPI Timing: Enter psram timing tuning
+I (265) esp_psram: Found 8MB PSRAM device
+I (265) esp_psram: Speed: 80MHz
+I (266) cpu_start: Multicore app
+I (692) esp_psram: SPI SRAM memory test OK
+I (700) cpu_start: Pro cpu start user code
+I (700) cpu_start: cpu freq: 240000000 Hz
+I (701) app_init: Application information:
+I (701) app_init: Project name:     frame_m1_hardware
+I (701) app_init: App version:      7bae861-dirty
+I (701) app_init: Compile time:     Aug 31 2026 06:36:52
+I (701) app_init: ELF file SHA256:  b1ddd8346...
+I (701) app_init: ESP-IDF:          v6.0.2
+I (701) efuse_init: Min chip rev:     v0.0
+I (702) efuse_init: Max chip rev:     v0.99 
+I (702) efuse_init: Chip rev:         v0.2
+I (702) heap_init: Initializing. RAM available for dynamic allocation:
+I (702) heap_init: At 3FCB8370 len 000313A0 (196 KiB): RAM
+I (702) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (702) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (703) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+I (703) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (704) spi_flash: detected chip: generic
+I (704) spi_flash: flash io: qio
+I (704) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (705) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (705) esp_core_dump_flash: Init core dump to flash
+I (705) esp_core_dump_flash: Found partition 'coredump' @ 20000 131072 bytes
+I (723) esp_core_dump_flash: Core dump data checksum is correct
+I (723) esp_core_dump_flash: Found core dump 19328 bytes in flash @ 0x20000
+I (724) main_task: Started on CPU0
+I (724) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+I (725) main_task: Calling app_main()
+I (785) frame-m1: Frame M1 0.1.0-dev.1; IDF v6.0.2; toolchain gcc-15.2.0
+I (785) frame-m1: board=Waveshare ESP32-S3-RLCD-4.2 module=ESP32-S3-WROOM-1-N16R8 device=c1810c76790e
+I (786) frame-m1: cores=2 flash=16777216 psram=8388608 part=OK reset=11 image_sha256=241d3a2af0a480ce
+I (807) frame-prov: system_fs mounted
+I (809) pp: pp rom version: e7ae62f
+I (809) net80211: net80211 rom version: e7ae62f
+I (811) wifi:wifi driver task: 3fcc7f54, prio:23, stack:6656, core=0
+I (818) wifi:wifi firmware version: 00ad238
+I (818) wifi:wifi certification version: v7.0
+I (818) wifi:config NVS flash: enabled
+I (818) wifi:config nano formatting: disabled
+I (818) wifi:Init data frame dynamic rx buffer num: 32
+I (819) wifi:Init static rx mgmt buffer num: 5
+I (819) wifi:Init management short buffer num: 32
+I (819) wifi:Init dynamic tx buffer num: 32
+I (819) wifi:Init static tx FG buffer num: 2
+I (819) wifi:Init static rx buffer size: 1600
+I (819) wifi:Init static rx buffer num: 10
+I (820) wifi:Init dynamic rx buffer num: 32
+I (820) wifi_init: rx ba win: 6
+I (820) wifi_init: accept mbox: 6
+I (821) wifi_init: tcpip mbox: 32
+I (821) wifi_init: udp mbox: 6
+I (821) wifi_init: tcp mbox: 6
+I (821) wifi_init: tcp tx win: 5760
+I (821) wifi_init: tcp rx win: 5760
+I (821) wifi_init: tcp mss: 1440
+I (821) wifi_init: WiFi IRAM OP enabled
+I (821) wifi_init: WiFi RX IRAM OP enabled
+I (822) phy_init: phy_version 712,87e8c20e,Apr 13 2026,18:51:10
+W (845) SD_HOST: input line delay not supported, fallback to 0 delay
+I (857) wifi:mode : sta (a4:cb:8f:cf:cd:5c)
+I (857) wifi:enable tsf
+{"schema_version":1,"sequence":1,"uptime_us":2169362,"utc_valid":true,"utc":"2026-01-06T21:19:09Z","source":"m1","event":"status","mode":"normal","status":"FAILED","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":false,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":295,"humidity_tenths_percent":403,"key_short":0,"key_long":0,"crc32c":"26469067"}
+[5n
+Type 'help' to get the list of commands.
+Use UP/DOWN arrows to navigate through command history.
+Press TAB when typing command name to auto-complete.
+I (3652) frame-prov: wifi provision pending
+
+Your terminal application does not support escape sequences.
+
+Line editing and history features are disabled.
+
+On Windows, try using Windows Terminal or Putty instead.
+I (3655) wifi:frame>  flush txq
+I (3656) wifi:stop sw txq
+I (3656) wifi:lmac stop hw txq
+I (3659) wifi:mode : sta (a4:cb:8f:cf:cd:5c) + softAP (a4:cb:8f:cf:cd:5d)
+I (3660) wifi:enable tsf
+I (3661) wifi:Total power save buffer number: 16
+I (3662) wifi:Init max length of beacon: 752/752
+I (3663) wifi:Init max length of beacon: 752/752
+I (3666) esp_netif_lwip: DHCP server started on interface WIFI_AP_DEF with IP: 192.168.4.1
+I (3667) frame-prov: provision AP up Frame-Setup-790e at 192.168.4.1
+I (3669) frame-m1: services board=ESP_OK storage=ESP_OK wifi=ESP_OK display=ESP_OK console=ESP_OK
+I (3670) frame-m1: provision mount=ESP_OK saved=ESP_OK
+I (3671) main_task: Returned from app_main()
+{"schema_version":1,"sequence":2,"uptime_us":12181323,"utc_valid":true,"utc":"2026-01-06T21:19:19Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":295,"humidity_tenths_percent":404,"key_short":0,"key_long":0,"crc32c":"409d24cc"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:19:19Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":295,"humidity_tenths_percent":404,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":3,"uptime_us":22197342,"utc_valid":true,"utc":"2026-01-06T21:19:29Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":295,"humidity_tenths_percent":407,"key_short":0,"key_long":0,"crc32c":"7532efed"}
+{"schema_version":1,"sequence":4,"uptime_us":32213370,"utc_valid":true,"utc":"2026-01-06T21:19:39Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":295,"humidity_tenths_percent":417,"key_short":0,"key_long":0,"crc32c":"27907ec0"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:19:39Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":295,"humidity_tenths_percent":417,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":5,"uptime_us":42229320,"utc_valid":true,"utc":"2026-01-06T21:19:49Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":296,"humidity_tenths_percent":418,"key_short":0,"key_long":0,"crc32c":"4c0209ba"}
+{"schema_version":1,"sequence":6,"uptime_us":52248361,"utc_valid":true,"utc":"2026-01-06T21:19:59Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":296,"humidity_tenths_percent":426,"key_short":0,"key_long":0,"crc32c":"cd21c1fb"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:19:59Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":296,"humidity_tenths_percent":426,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":7,"uptime_us":62264339,"utc_valid":true,"utc":"2026-01-06T21:20:09Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":425,"key_short":0,"key_long":0,"crc32c":"158eb205"}
+{"schema_version":1,"sequence":8,"uptime_us":72280374,"utc_valid":true,"utc":"2026-01-06T21:20:19Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":425,"key_short":0,"key_long":0,"crc32c":"cff03f5e"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:20:19Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":297,"humidity_tenths_percent":425,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":9,"uptime_us":82296321,"utc_valid":true,"utc":"2026-01-06T21:20:29Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":426,"key_short":0,"key_long":0,"crc32c":"7a1a3abf"}
+{"schema_version":1,"sequence":10,"uptime_us":92312336,"utc_valid":true,"utc":"2026-01-06T21:20:39Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":426,"key_short":0,"key_long":0,"crc32c":"b32a0dcc"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:20:39Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":298,"humidity_tenths_percent":426,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":11,"uptime_us":102327318,"utc_valid":true,"utc":"2026-01-06T21:20:49Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":299,"humidity_tenths_percent":431,"key_short":0,"key_long":0,"crc32c":"77e11bdc"}
+{"schema_version":1,"sequence":12,"uptime_us":112343337,"utc_valid":true,"utc":"2026-01-06T21:20:59Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":299,"humidity_tenths_percent":430,"key_short":0,"key_long":0,"crc32c":"aa251846"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:21:09Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":299,"humidity_tenths_percent":432,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":13,"uptime_us":122362315,"utc_valid":true,"utc":"2026-01-06T21:21:09Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":299,"humidity_tenths_percent":432,"key_short":0,"key_long":0,"crc32c":"52aa7b24"}
+{"schema_version":1,"sequence":14,"uptime_us":132378344,"utc_valid":true,"utc":"2026-01-06T21:21:19Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":299,"humidity_tenths_percent":434,"key_short":0,"key_long":0,"crc32c":"f68adfb1"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:21:29Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":299,"humidity_tenths_percent":435,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":15,"uptime_us":142394360,"utc_valid":true,"utc":"2026-01-06T21:21:29Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":299,"humidity_tenths_percent":435,"key_short":0,"key_long":0,"crc32c":"a89559e9"}
+{"schema_version":1,"sequence":16,"uptime_us":152410351,"utc_valid":true,"utc":"2026-01-06T21:21:39Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":299,"humidity_tenths_percent":434,"key_short":0,"key_long":0,"crc32c":"2fb3a427"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:21:49Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":298,"humidity_tenths_percent":434,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":17,"uptime_us":162426364,"utc_valid":true,"utc":"2026-01-06T21:21:49Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":434,"key_short":0,"key_long":0,"crc32c":"467287ce"}
+{"schema_version":1,"sequence":18,"uptime_us":172442354,"utc_valid":true,"utc":"2026-01-06T21:21:59Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":434,"key_short":0,"key_long":0,"crc32c":"2fa43493"}
+{"schema_version":1,"sequence":19,"uptime_us":182461326,"utc_valid":true,"utc":"2026-01-06T21:22:09Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":435,"key_short":0,"key_long":0,"crc32c":"c7516df2"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:22:09Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":298,"humidity_tenths_percent":435,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":20,"uptime_us":192478346,"utc_valid":true,"utc":"2026-01-06T21:22:19Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":436,"key_short":0,"key_long":0,"crc32c":"98aec760"}
+{"schema_version":1,"sequence":21,"uptime_us":202494336,"utc_valid":true,"utc":"2026-01-06T21:22:29Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":436,"key_short":0,"key_long":0,"crc32c":"d57120ed"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:22:29Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":297,"humidity_tenths_percent":436,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":22,"uptime_us":212510332,"utc_valid":true,"utc":"2026-01-06T21:22:39Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":437,"key_short":0,"key_long":0,"crc32c":"0bb50bb7"}
+{"schema_version":1,"sequence":23,"uptime_us":222526337,"utc_valid":true,"utc":"2026-01-06T21:22:49Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":434,"key_short":0,"key_long":0,"crc32c":"ac150a2e"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:22:49Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":297,"humidity_tenths_percent":434,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":24,"uptime_us":232542338,"utc_valid":true,"utc":"2026-01-06T21:22:59Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":433,"key_short":0,"key_long":0,"crc32c":"a285a7d3"}
+{"schema_version":1,"sequence":25,"uptime_us":242558368,"utc_valid":true,"utc":"2026-01-06T21:23:09Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":296,"humidity_tenths_percent":430,"key_short":0,"key_long":0,"crc32c":"cddfa7e7"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:23:09Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":296,"humidity_tenths_percent":430,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":26,"uptime_us":252577323,"utc_valid":true,"utc":"2026-01-06T21:23:19Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":429,"key_short":0,"key_long":0,"crc32c":"fa00d6ef"}
+{"schema_version":1,"sequence":27,"uptime_us":262593331,"utc_valid":true,"utc":"2026-01-06T21:23:29Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":426,"key_short":0,"key_long":0,"crc32c":"314fd27a"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:23:29Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":297,"humidity_tenths_percent":426,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":28,"uptime_us":272609343,"utc_valid":true,"utc":"2026-01-06T21:23:39Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":425,"key_short":0,"key_long":0,"crc32c":"cf1dffec"}
+{"schema_version":1,"sequence":29,"uptime_us":282626343,"utc_valid":true,"utc":"2026-01-06T21:23:49Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":424,"key_short":0,"key_long":0,"crc32c":"8af080ae"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:23:49Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":297,"humidity_tenths_percent":424,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":30,"uptime_us":292642331,"utc_valid":true,"utc":"2026-01-06T21:23:59Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":423,"key_short":0,"key_long":0,"crc32c":"6e2f02df"}
+{"schema_version":1,"sequence":31,"uptime_us":302658346,"utc_valid":true,"utc":"2026-01-06T21:24:09Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":420,"key_short":0,"key_long":0,"crc32c":"d1895d4d"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:24:09Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":298,"humidity_tenths_percent":420,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":32,"uptime_us":312677336,"utc_valid":true,"utc":"2026-01-06T21:24:19Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":418,"key_short":0,"key_long":0,"crc32c":"02697eac"}
+{"schema_version":1,"sequence":33,"uptime_us":322693370,"utc_valid":true,"utc":"2026-01-06T21:24:29Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":415,"key_short":0,"key_long":0,"crc32c":"c3782472"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:24:39Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":298,"humidity_tenths_percent":413,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":34,"uptime_us":332712318,"utc_valid":true,"utc":"2026-01-06T21:24:39Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":413,"key_short":0,"key_long":0,"crc32c":"c5b1f69e"}
+{"schema_version":1,"sequence":35,"uptime_us":342728337,"utc_valid":true,"utc":"2026-01-06T21:24:49Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":411,"key_short":0,"key_long":0,"crc32c":"8361462a"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:24:59Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":298,"humidity_tenths_percent":410,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":36,"uptime_us":352744356,"utc_valid":true,"utc":"2026-01-06T21:24:59Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":410,"key_short":0,"key_long":0,"crc32c":"41b75140"}
+{"schema_version":1,"sequence":37,"uptime_us":362760338,"utc_valid":true,"utc":"2026-01-06T21:25:09Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":408,"key_short":0,"key_long":0,"crc32c":"191768a4"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:25:19Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":298,"humidity_tenths_percent":407,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":38,"uptime_us":372776357,"utc_valid":true,"utc":"2026-01-06T21:25:19Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":407,"key_short":0,"key_long":0,"crc32c":"482e8c8f"}
+{"schema_version":1,"sequence":39,"uptime_us":382796342,"utc_valid":true,"utc":"2026-01-06T21:25:29Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":298,"humidity_tenths_percent":405,"key_short":0,"key_long":0,"crc32c":"02cba8c4"}
+{"schema_version":1,"sequence":40,"uptime_us":392812367,"utc_valid":true,"utc":"2026-01-06T21:25:39Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":405,"key_short":0,"key_long":0,"crc32c":"3056ee84"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:25:39Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":297,"humidity_tenths_percent":405,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":41,"uptime_us":402828366,"utc_valid":true,"utc":"2026-01-06T21:25:49Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":405,"key_short":0,"key_long":0,"crc32c":"5b2700f4"}
+{"schema_version":1,"sequence":42,"uptime_us":412844323,"utc_valid":true,"utc":"2026-01-06T21:25:59Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":404,"key_short":0,"key_long":0,"crc32c":"91b58308"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:25:59Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":297,"humidity_tenths_percent":404,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":43,"uptime_us":422860366,"utc_valid":true,"utc":"2026-01-06T21:26:09Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":403,"key_short":0,"key_long":0,"crc32c":"b4a67129"}
+{"schema_version":1,"sequence":44,"uptime_us":432876336,"utc_valid":true,"utc":"2026-01-06T21:26:19Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":402,"key_short":0,"key_long":0,"crc32c":"9fb32d49"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:26:19Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":297,"humidity_tenths_percent":402,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":45,"uptime_us":442895342,"utc_valid":true,"utc":"2026-01-06T21:26:29Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":401,"key_short":0,"key_long":0,"crc32c":"cfc209b1"}
+{"schema_version":1,"sequence":46,"uptime_us":452911339,"utc_valid":true,"utc":"2026-01-06T21:26:39Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":400,"key_short":0,"key_long":0,"crc32c":"3426094c"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:26:39Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":297,"humidity_tenths_percent":400,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":47,"uptime_us":462927335,"utc_valid":true,"utc":"2026-01-06T21:26:49Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":399,"key_short":0,"key_long":0,"crc32c":"1a4dc12b"}
+{"schema_version":1,"sequence":48,"uptime_us":472944363,"utc_valid":true,"utc":"2026-01-06T21:26:59Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":297,"humidity_tenths_percent":398,"key_short":0,"key_long":0,"crc32c":"097a118e"}
+status --json
+{"schema_version":1,"firmware":"0.1.0-dev.1","idf":"v6.0.2","toolchain":"gcc-15.2.0","device_id":"c1810c76790e","health":"OK","target_ok":true,"cores":2,"flash_bytes":16777216,"psram_bytes":8388608,"partitions_ok":true,"reset_reason":11,"display":"OK","tf":"READY","rtc":true,"rtc_valid":true,"utc":"2026-01-06T21:26:59Z","shtc3":true,"sensor_valid":true,"wifi":"UNCONFIG","ap_active":true,"credentials_persisted":false,"tf_logging":true,"logging_error":0,"temperature_tenths_c":297,"humidity_tenths_percent":398,"key_short":0,"key_long":0,"elf_sha256":"b1ddd834673617cb7881aac43c834a46878482f4d08a93918db9409194bd86f0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5"}
+frame>  
+frame>  {"schema_version":1,"sequence":49,"uptime_us":482960316,"utc_valid":true,"utc":"2026-01-06T21:27:09Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"241d3a2af0a480ce6af1d128c9623531058a1bcccd7c6396e95928c815ff36c5","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","ap_setup":true,"rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":296,"humidity_tenths_percent":398,"key_short":0,"key_long":0,"crc32c":"184663c3"}
+I (485288) wifi:new:<1,0>, old:<1,1>, ap:<1,0>, sta:<0,0>, prof:1, snd_ch_cfg:0x0
+I (485290) wifi:station: c6:89:55:2c:8a:34 join, AID=1, bgn, 20
+I (486561) esp_netif_lwip: DHCP server assigned IP to a client, IP is: 192.168.4.2
+I (488402) wifi:<ba-add>idx:2 (ifx:1, c6:89:55:2c:8a:34), tid:0, ssn:2043, winSize:64
+I (490108) wifi:station: 36:48:30:9d:ef:46 join, AID=2, bgn, 20
+I (491237) esp_netif_lwip: DHCP server assigned IP to a client, IP is: 192.168.4.3

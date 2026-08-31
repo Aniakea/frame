@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "gate": "M1",
+  "run_id": "m1-20260831T021427Z",
+  "verdict": "FAIL",
+  "started_at": "2026-08-31T02:14:27Z",
+  "finished_at": "2026-08-31T03:14:28Z",
+  "source": {
+    "repository_commit": "d73cadbcd6666951418681bf3ece841351cd6057",
+    "dirty": true,
+    "project_document_sha256": "7c2dc241f0333f0c9bf5dde8a9b23f6aa68725ddbf3e7cdadbf1a1785c3dff76"
+  },
+  "platform": {
+    "idf_tag": "v6.0.2",
+    "compiler": "gcc-15.2.0 (xtensa-esp-elf)",
+    "target": "esp32s3",
+    "sdkconfig_sha256": "7d094856f83c6ba1a375a1acb182989a2b1f31344380f19e031723e2eec08cbf"
+  },
+  "hardware": {
+    "board_id": "Waveshare ESP32-S3-RLCD-4.2",
+    "board_revision": "N16R8",
+    "display_id": null,
+    "sd_card_id": null
+  },
+  "metrics": {
+    "jsonl_count": 358,
+    "sequence_min": 25,
+    "sequence_max": 384,
+    "soak_wall_seconds": 3601,
+    "reset_reason": 11,
+    "status_failed_lines": 0,
+    "wifi_reconnect_cycles": 5,
+    "wifi_reconnect_recovered": 0,
+    "tf_transitions_observed": 4,
+    "tf_absent_boot_classify_ms": 835,
+    "key_short_presses_window": 2,
+    "key_long_presses_window": 2,
+    "key_portal_hold": true,
+    "rtc_valid_true_samples": 0,
+    "rtc_valid_false_samples": 29
+  },
+  "artifacts": [
+    {
+      "name": "soak.log",
+      "uri": "soak.log",
+      "sha256": "dc568ea538fb91767adffef8a02f78f73672f906050c3a1a36e9d0bf66d6a78f"
+    },
+    {
+      "name": "jsonl.ndjson",
+      "uri": "jsonl.ndjson",
+      "sha256": "2908825353a77bace2b0d733bf837897131efe31312b787c53c419b7ff0a9ce9"
+    },
+    {
+      "name": "status.ndjson",
+      "uri": "status.ndjson",
+      "sha256": "039cb776675bbb1b6023c7066b22bf1c3a9642f0fda168d3a23cec41b72277ee"
+    },
+    {
+      "name": "boot.log",
+      "uri": "raw-history/boot.log",
+      "sha256": "69e2b329708dda9625de196a1057639e073b432e7732e79a2fc1f40f48e791b3"
+    },
+    {
+      "name": "diag.log",
+      "uri": "raw-history/diag.log",
+      "sha256": "d75a223393dc776c1d852d63e345ca31e749616bde0788d7ac290c568c466590"
+    },
+    {
+      "name": "t10-serial.log",
+      "uri": "raw-history/t10-serial.log",
+      "sha256": "0c884ff933b8a7440ad4c659f2ffae44131cf9c4c8d8123263645d21da7675bd"
+    },
+    {
+      "name": "t11-final-state.log",
+      "uri": "raw-history/t11-final-state.log",
+      "sha256": "51efb3d5b1f1689a07857e2854ff2d3caf7c7448e9c990a6ce84af7c979cab7b"
+    },
+    {
+      "name": "t11-flash.log",
+      "uri": "raw-history/t11-flash.log",
+      "sha256": "be396b79389c09a6e1bd6735063c46787969b8b0b231bd326f52f9a64084dd09"
+    },
+    {
+      "name": "t11-item1-ip.log",
+      "uri": "raw-history/t11-item1-ip.log",
+      "sha256": "3f922bf3cb588617c50472152e25f3b536a7f72de45b40b1aa376573ca61041d"
+    },
+    {
+      "name": "t11-item1-reboot.log",
+      "uri": "raw-history/t11-item1-reboot.log",
+      "sha256": "4fdfe2d5ec520b0862a947ab4b419237fdaf010e05531b7276b699675281a74d"
+    },
+    {
+      "name": "t11-item2.log",
+      "uri": "raw-history/t11-item2.log",
+      "sha256": "85706e37b71a6bb7cd0df64fde13e75d044f697ae47ac5dc01ae01faf7786296"
+    },
+    {
+      "name": "t11-item4.log",
+      "uri": "raw-history/t11-item4.log",
+      "sha256": "614f935ed7d93acbbc776f976499bdd28f9517c0e8a27c5668f16560e82c96a2"
+    },
+    {
+      "name": "t11-item5.log",
+      "uri": "raw-history/t11-item5.log",
+      "sha256": "988b1d8e01724abeb33428d0c25df81db70626ef1ecef8636b12b07846210e3b"
+    },
+    {
+      "name": "t11-key-window.log",
+      "uri": "raw-history/t11-key-window.log",
+      "sha256": "a29fb7ebb502bcae9fb04e5d0bdec38118e66a628f0f827b5678948cd22af1ce"
+    },
+    {
+      "name": "t11-root-dev.log",
+      "uri": "raw-history/t11-root-dev.log",
+      "sha256": "e9d963f418c300b2dfdceb721c96132c88eb586dfdfa8a44c57cb394233a7b29"
+    },
+    {
+      "name": "t11-root-prod.log",
+      "uri": "raw-history/t11-root-prod.log",
+      "sha256": "44973791be92b62bc31ff728c4362a640a7be9ae129e14a6afcc5809094625ca"
+    },
+    {
+      "name": "t11-step2-user.log",
+      "uri": "raw-history/t11-step2-user.log",
+      "sha256": "1c7c38d15b4083d5b47f9c564522aeb5d8c87821084e1e246a5c07b14256b56c"
+    },
+    {
+      "name": "t5_fu_stdout.log",
+      "uri": "raw-history/t5_fu_stdout.log",
+      "sha256": "98d9a64d8c24712535a6c0762a91e3fa3624845322f6c281617be51fd99f61cc"
+    },
+    {
+      "name": "t5_stdout.log",
+      "uri": "raw-history/t5_stdout.log",
+      "sha256": "9b03c936eba2ed85f4b02dfd612ef1ca8aea4512b5dc65d77929ab0bd75357bf"
+    },
+    {
+      "name": "t7-phase1.log",
+      "uri": "raw-history/t7-phase1.log",
+      "sha256": "416e0f8b06bedad40a08c18ea4b935caf5b0228120afa1c9aff607e142efb5f2"
+    },
+    {
+      "name": "t7-reconnect-probe.log",
+      "uri": "raw-history/t7-reconnect-probe.log",
+      "sha256": "2dae682e0d3963faaae1812f92171a7887a75391dd1c0fcd635704b2ee117d12"
+    },
+    {
+      "name": "t7-w1.log",
+      "uri": "raw-history/t7-w1.log",
+      "sha256": "90d7d0a9fac4872d513df71f5e5f0500981ce30fb8ddd74f1e3b0dcb425e225a"
+    },
+    {
+      "name": "t7-w2.log",
+      "uri": "raw-history/t7-w2.log",
+      "sha256": "33671e98f7e66b7c635c43c6aa5feb2b4881167a153df5f06305f8c7803980ce"
+    },
+    {
+      "name": "t7-w2b.log",
+      "uri": "raw-history/t7-w2b.log",
+      "sha256": "f75490583e8206fde1fe79b2bce62620083bd99495161941db3324d1c6b54f2f"
+    },
+    {
+      "name": "t7-w3.log",
+      "uri": "raw-history/t7-w3.log",
+      "sha256": "fdd5f8aba1c04f0846c4af669202ae366863a103cab4dc157f0894672d023ac6"
+    },
+    {
+      "name": "t8-all-captures.log",
+      "uri": "raw-history/t8-all-captures.log",
+      "sha256": "6f37db09c10b05d138a9edab75a64f742780b438e5889084708218d09f38169d"
+    },
+    {
+      "name": "t8-build-final.log",
+      "uri": "raw-history/t8-build-final.log",
+      "sha256": "89310123e184a7c8032748d1d8d74c4f71244cd0c00e6884dc17a33fc38681fe"
+    },
+    {
+      "name": "t8-build1.log",
+      "uri": "raw-history/t8-build1.log",
+      "sha256": "668cabbe0c49ca495ba1d89668e12b7aa9c4a2a06c42e2e1ce412b039df78ebd"
+    },
+    {
+      "name": "t8-build2.log",
+      "uri": "raw-history/t8-build2.log",
+      "sha256": "641eec5765e9c83f366eba0384e02bb6c9637c38fd555f5fc07a2524000b0be3"
+    },
+    {
+      "name": "t8-phaseA.log",
+      "uri": "raw-history/t8-phaseA.log",
+      "sha256": "99dd6afbce6bcdd3aff206af121a014febb8cee350c663f3400b25399b998975"
+    },
+    {
+      "name": "t8-phaseB.log",
+      "uri": "raw-history/t8-phaseB.log",
+      "sha256": "7689f041ee61aa0094e085a915d93940bd3fae15b311c5ce4348648b8a21e2b7"
+    },
+    {
+      "name": "t8-phaseC.log",
+      "uri": "raw-history/t8-phaseC.log",
+      "sha256": "3b671497faa6c0828bf17fa0016cd56f4baa674a8fcd1396fc9e0b3f31af2cc3"
+    },
+    {
+      "name": "t8-reconf2.log",
+      "uri": "raw-history/t8-reconf2.log",
+      "sha256": "1fe160fb55e3fd1f297e17fc2f8fbda41c6d37a45a6eade925e96026e34d259a"
+    },
+    {
+      "name": "t8-reconfigure.log",
+      "uri": "raw-history/t8-reconfigure.log",
+      "sha256": "364b3e1741137cdd10e02e8c1ee9217b7762e31af65b64274936ac4eff2b5a49"
+    },
+    {
+      "name": "t9-boot.log",
+      "uri": "raw-history/t9-boot.log",
+      "sha256": "b1676bfdbd62a580909aad21db9743bd7b2e6a4a47264c92f39213c4cfb87142"
+    },
+    {
+      "name": "t9-build-final.log",
+      "uri": "raw-history/t9-build-final.log",
+      "sha256": "cf7f90559e83c1b20b458c798e1bdd8941036137a3a0b0213a8ffa119f8d37b1"
+    },
+    {
+      "name": "t9-http-cycle.log",
+      "uri": "raw-history/t9-http-cycle.log",
+      "sha256": "150a435f28d038015bc4de3fb2d936b7931966d35d81abfee1bd691ce9f1c075"
+    },
+    {
+      "name": "t9-repl1.log",
+      "uri": "raw-history/t9-repl1.log",
+      "sha256": "0257e0914168601bcf6d9ae06b6661993a22c07a49c55d413c92b2dda8d365b5"
+    },
+    {
+      "name": "t9-repl2.log",
+      "uri": "raw-history/t9-repl2.log",
+      "sha256": "f15541e609f618a1449ff3d00d942efc8df190e2e14061191c7834b8dc470957"
+    },
+    {
+      "name": "t9-wrongpw.log",
+      "uri": "raw-history/t9-wrongpw.log",
+      "sha256": "f23f97168b095c877127d72e1d8156e5e6638e33c7974ede28193acc29606163"
+    },
+    {
+      "name": "verify.log",
+      "uri": "raw-history/verify.log",
+      "sha256": "1233c14e783e2ef66ae2923d21de81309facd3783c4f91f7df93fcc62abff245"
+    }
+  ],
+  "notes": "1h serial soak plus on-device TF/KEY assist windows on the final hardened firmware (tree of d73cadb; dirty=tools/tests collector additions only, poc/ untouched). VERDICT FAIL: single failing criterion - console 'wifi reconnect' never returns to CONNECTED (0/5 cycles in soak + 0/1 controlled reproduction). Root cause: wifi_service.cc reconnect() calls esp_wifi_connect() while still associated; IDF v6 rejects it ('sta is connected, disconnect before connecting to new ap'), no STA_DISCONNECTED event fires, so the event-driven auto-reconnect never engages; app state stays CONNECTING indefinitely. connect_stored() path (boot auto-connect, portal) is unaffected because it disconnects first. Follow-up fix task required. All other soak criteria PASS: 358 JSONL lines (360 +/-10), sequence 25..384 strictly monotonic, zero status:FAILED lines, reset_reason=11 constant across all samples, uptime monotonic (no reboot), tf=READY throughout, no spurious key presses. internal_free memory-decline criterion: N/A - firmware exposes no heap field in either JSON stream (telemetry or status --json); not instrumented, follow-up candidate. Assist windows: W1 KEY >=3s portal hold PASS (AP up observed, auto-recovery to CONNECTED within 120s without console help); W1 short/long presses completed via W2 retry: exactly +2/+2, no spurious; W2 TF: 2 pull->insert cycles, 4/4 transitions ABSENT+tf_logging false / READY+resume, logging_error=0; W3 absent-boot: TF-absent classified <=0.9s device time (W(835) frame-sd probe failed), health DEGRADED never FAILED, alive >30s, no telemetry while card out, reinsert resumed logging. TF same-file append judged behaviorally: sequence continuity across W2 pull/reinsert cycles and resumed logging across the W3 reboot with logging_error=0; direct TF line counts are not observable over UART (no fs listing command). Watch items: rtc_valid=false in all soak status samples after a transient PCF85063 ESP_ERR_INVALID_CRC during an earlier USB glitch (was true at session start); boot-moment telemetry status:FAILED artifact (T10-known) absent here because the capture attached mid-boot. Deviation: status responses artifact committed as status.ndjson (frame-evidence discovers every *.json under poc/evidence and NDJSON is not a manifest); soak raw directory kept outside poc/evidence because the collector's status.json artifact would be discovered by frame-evidence as an invalid manifest; curated copies are committed here instead. raw-history/ archives all /tmp/opencode/m1-verify serial captures from T4-T11 and this task."
+}

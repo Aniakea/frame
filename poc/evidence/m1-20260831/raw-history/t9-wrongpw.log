@@ -1,0 +1,215 @@
+I (228) esp_image: segment 3: paddr=00175cac vaddr=3fca1cfc sizeESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037dece
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16bc
+load:0x403c8700,len:0xf00
+load:0x403cb700,len:0x3238
+entry 0x403c892c
+I (24) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (24) boot: compile time Aug 31 2026 06:30:58
+I (25) boot: Multicore bootloader
+I (25) boot: chip revision: v0.2
+I (25) boot: efuse block revision: v1.4
+I (25) qio_mode: Enabling default flash chip QIO
+I (25) boot.esp32s3: Boot SPI Speed : 80MHz
+I (26) boot.esp32s3: SPI Mode       : QIO
+I (26) boot.esp32s3: SPI Flash Size : 16MB
+I (26) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (26) boot: ## Label            Usage          Type ST Offset   Length
+I (27) boot:  0 nvs              WiFi data        01 02 00009000 00014000
+I (27) boot:  1 nvs_keys         NVS keys         01 04 0001d000 00001000
+I (27) boot:  2 otadata          OTA data         01 00 0001e000 00002000
+I (28) boot:  3 coredump         Unknown data     01 03 00020000 00020000
+I (28) boot:  4 ota_0            OTA app          00 10 00040000 00500000
+I (29) boot:  5 ota_1            OTA app          00 11 00540000 00500000
+I (29) boot:  6 plugin_fs        Unknown data     01 83 00a40000 004c0000
+I (29) boot:  7 system_fs        Unknown data     01 83 00f00000 00100000
+I (30) boot: End of partition table
+I (30) esp_image: segment 0: paddr=00040020 vaddr=3c100020 size=3aef4h (241396) map
+I (68) esp_image: segment 1: paddr=0007af1c vaddr=3fc9cc00 size=050fch ( 20732) load
+I (72) esp_image: segment 2: paddr=00080020 vaddr=42000020 size=f5c84h (1006724) map
+I (228) esp_image: segment 3: paddr=00175cac vaddr=3fca1cfc size=00ae4h (  2788) load
+I (229) esp_image: segment 4: paddr=00176798 vaddr=40374000 size=18b60h (101216) load
+I (250) esp_image: segment 5: paddr=0018f300 vaddr=50000000 size=00024h (    36) load
+I (261) boot: Loaded app from partition at offset 0x40000
+I (261) boot: Disabling RNG early entropy source...
+I (262) octal_psram: vendor id    : 0x0d (AP)
+I (262) octal_psram: dev id       : 0x02 (generation 3)
+I (262) octal_psram: density      : 0x03 (64 Mbit)
+I (263) octal_psram: good-die     : 0x01 (Pass)
+I (263) octal_psram: Latency      : 0x01 (Fixed)
+I (263) octal_psram: VCC          : 0x01 (3V)
+I (263) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (263) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (264) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (264) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (264) octal_psram: DriveStrength: 0x00 (1/1)
+I (264) MSPI Timing: Enter psram timing tuning
+I (265) esp_psram: Found 8MB PSRAM device
+I (265) esp_psram: Speed: 80MHz
+I (266) cpu_start: Multicore app
+I (699) esp_psram: SPI SRAM memory test OK
+I (707) cpu_start: Pro cpu start user code
+I (707) cpu_start: cpu freq: 240000000 Hz
+I (707) app_init: Application information:
+I (707) app_init: Project name:     frame_m1_hardware
+I (708) app_init: App version:      7bae861-dirty
+I (708) app_init: Compile time:     Aug 31 2026 06:36:52
+I (708) app_init: ELF file SHA256:  43513adff...
+I (708) app_init: ESP-IDF:          v6.0.2
+I (708) efuse_init: Min chip rev:     v0.0
+I (708) efuse_init: Max chip rev:     v0.99 
+I (708) efuse_init: Chip rev:         v0.2
+I (709) heap_init: Initializing. RAM available for dynamic allocation:
+I (709) heap_init: At 3FCB8370 len 000313A0 (196 KiB): RAM
+I (709) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (709) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (709) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+I (710) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (710) spi_flash: detected chip: generic
+I (710) spi_flash: flash io: qio
+I (711) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (711) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (712) esp_core_dump_flash: Init core dump to flash
+I (712) esp_core_dump_flash: Found partition 'coredump' @ 20000 131072 bytes
+I (730) esp_core_dump_flash: Core dump data checksum is correct
+I (730) esp_core_dump_flash: Found core dump 19328 bytes in flash @ 0x20000
+I (731) main_task: Started on CPU0
+I (731) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+I (732) main_task: Calling app_main()
+I (792) frame-m1: Frame M1 0.1.0-dev.1; IDF v6.0.2; toolchain gcc-15.2.0
+I (792) frame-m1: board=Waveshare ESP32-S3-RLCD-4.2 module=ESP32-S3-WROOM-1-N16R8 device=c1810c76790e
+I (792) frame-m1: cores=2 flash=16777216 psram=8388608 part=OK reset=11 image_sha256=759e39b7aecf2f17
+I (812) frame-prov: system_fs mounted
+I (814) pp: pp rom version: e7ae62f
+I (814) net80211: net80211 rom version: e7ae62f
+I (816) wifi:wifi driver task: 3fcc7f54, prio:23, stack:6656, core=0
+I (823) wifi:wifi firmware version: 00ad238
+I (823) wifi:wifi certification version: v7.0
+I (823) wifi:config NVS flash: enabled
+I (823) wifi:config nano formatting: disabled
+I (823) wifi:Init data frame dynamic rx buffer num: 32
+I (823) wifi:Init static rx mgmt buffer num: 5
+I (824) wifi:Init management short buffer num: 32
+I (824) wifi:Init dynamic tx buffer num: 32
+I (824) wifi:Init static tx FG buffer num: 2
+I (824) wifi:Init static rx buffer size: 1600
+I (824) wifi:Init static rx buffer num: 10
+I (824) wifi:Init dynamic rx buffer num: 32
+I (825) wifi_init: rx ba win: 6
+I (825) wifi_init: accept mbox: 6
+I (825) wifi_init: tcpip mbox: 32
+I (826) wifi_init: udp mbox: 6
+I (826) wifi_init: tcp mbox: 6
+I (826) wifi_init: tcp tx win: 5760
+I (826) wifi_init: tcp rx win: 5760
+I (826) wifi_init: tcp mss: 1440
+I (826) wifi_init: WiFi IRAM OP enabled
+I (826) wifi_init: WiFi RX IRAM OP enabled
+I (826) phy_init: phy_version 712,87e8c20e,Apr 13 2026,18:51:10
+W (853) SD_HOST: input line delay not supported, fallback to 0 delay
+I (861) wifi:mode : sta (a4:cb:8f:cf:cd:5c)
+I (861) wifi:enable tsf
+{"schema_version":1,"sequence":1,"uptime_us":2169352,"utc_valid":true,"utc":"2026-01-06T20:53:37Z","source":"m1","event":"status","mode":"normal","status":"FAILED","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"759e39b7aecf2f179b21fda8a01faf91928c4b6327ee3c7e4d4880d58f5d43f9","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":289,"humidity_tenths_percent":372,"key_short":0,"key_long":0,"crc32c":"eebdf55b"}
+[5n
+Type 'help' to get the list of commands.
+Use UP/DOWN arrows to navigate through command history.
+Press TAB when typing command name to auto-complete.
+I (3657) frame-prov: wifi provision pending
+
+Your terminal application does not support escape sequences.
+
+Line editing and history features are disabled.
+
+On Windows, try using Windows Terminal or Putty instead.
+I (3660) wifi:frame>  flush txq
+I (3661) wifi:stop sw txq
+I (3661) wifi:lmac stop hw txq
+I (3664) wifi:mode : sta (a4:cb:8f:cf:cd:5c) + softAP (a4:cb:8f:cf:cd:5d)
+I (3665) wifi:enable tsf
+I (3666) wifi:Total power save buffer number: 16
+I (3667) wifi:Init max length of beacon: 752/752
+I (3668) wifi:Init max length of beacon: 752/752
+I (3671) esp_netif_lwip: DHCP server started on interface WIFI_AP_DEF with IP: 192.168.4.1
+I (3672) frame-prov: provision AP up Frame-Setup-790e at 192.168.4.1
+I (3674) frame-m1: services board=ESP_OK storage=ESP_OK wifi=ESP_OK display=ESP_OK console=ESP_OK
+I (3675) frame-m1: provision mount=ESP_OK saved=ESP_OK
+I (3676) main_task: Returned from app_main()
+
+frame>  
+frame>  wifi set ChinaNet-ToT
+Password (input is not stored): wifi set: ESP_OK; credentials remain in RAM only
+frame>  I (9101) wifi:ap channel adjust o:1,1 n:11,2
+I (9102) wifi:new:<11,0>, old:<1,1>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (9103) wifi:state: init -> auth (0xb0)
+I (9111) wifi:state: auth -> assoc (0x0)
+I (9119) wifi:state: assoc -> run (0x10)
+I (12143) wifi:state: run -> init (0x2c0)
+I (12144) wifi:new:<11,2>, old:<11,0>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (12146) wifi:state: init -> auth (0xb0)
+I (12149) wifi:state: auth -> assoc (0x0)
+I (12165) wifi:state: assoc -> run (0x10)
+{"schema_version":1,"sequence":2,"uptime_us":12181353,"utc_valid":true,"utc":"2026-01-06T20:53:47Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"759e39b7aecf2f179b21fda8a01faf91928c4b6327ee3c7e4d4880d58f5d43f9","partitions":true,"reset_reason":11,"tf":"READY","wifi":"CONNECTING","rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":289,"humidity_tenths_percent":372,"key_short":0,"key_long":0,"crc32c":"9f5e8604"}
+I (15185) wifi:state: run -> init (0x2c0)
+I (15186) wifi:new:<11,0>, old:<11,2>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (18020) wifi:new:<11,2>, old:<11,0>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (18022) wifi:state: init -> auth (0xb0)
+I (18025) wifi:state: auth -> assoc (0x0)
+I (18031) wifi:state: assoc -> run (0x10)
+I (21052) wifi:state: run -> init (0x2c0)
+I (21054) wifi:new:<11,0>, old:<11,2>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (21056) wifi:new:<11,2>, old:<11,0>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (21058) wifi:state: init -> auth (0xb0)
+I (21063) wifi:state: auth -> assoc (0x0)
+I (21086) wifi:state: assoc -> run (0x10)
+{"schema_version":1,"sequence":3,"uptime_us":22197359,"utc_valid":true,"utc":"2026-01-06T20:53:57Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"759e39b7aecf2f179b21fda8a01faf91928c4b6327ee3c7e4d4880d58f5d43f9","partitions":true,"reset_reason":11,"tf":"READY","wifi":"DISCONNECTED","rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":289,"humidity_tenths_percent":372,"key_short":0,"key_long":0,"crc32c":"8c307730"}
+I (24105) wifi:state: run -> init (0x2c0)
+I (24106) wifi:new:<11,0>, old:<11,2>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (26940) wifi:new:<11,2>, old:<11,0>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (26942) wifi:state: init -> auth (0xb0)
+I (26966) wifi:state: auth -> assoc (0x0)
+I (26976) wifi:state: assoc -> run (0x10)
+I (29993) wifi:state: run -> init (0x2c0)
+I (29994) wifi:new:<11,0>, old:<11,2>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (29996) wifi:new:<11,2>, old:<11,0>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (29998) wifi:state: init -> auth (0xb0)
+I (30003) wifi:state: auth -> assoc (0x0)
+I (30009) wifi:state: assoc -> run (0x10)
+{"schema_version":1,"sequence":4,"uptime_us":32213358,"utc_valid":true,"utc":"2026-01-06T20:54:07Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"759e39b7aecf2f179b21fda8a01faf91928c4b6327ee3c7e4d4880d58f5d43f9","partitions":true,"reset_reason":11,"tf":"READY","wifi":"DISCONNECTED","rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":289,"humidity_tenths_percent":372,"key_short":0,"key_long":0,"crc32c":"32015ac4"}
+I (33024) wifi:state: run -> init (0x2c0)
+I (33026) wifi:new:<11,0>, old:<11,2>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (35860) wifi:new:<11,2>, old:<11,0>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (35862) wifi:state: init -> auth (0xb0)
+I (35865) wifi:state: auth -> assoc (0x0)
+I (35871) wifi:state: assoc -> run (0x10)
+I (38895) wifi:state: run -> init (0x2c0)
+I (38896) wifi:new:<11,0>, old:<11,2>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (38899) wifi:new:<11,2>, old:<11,0>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (38901) wifi:state: init -> auth (0xb0)
+I (38903) wifi:state: auth -> assoc (0x0)
+I (38910) wifi:state: assoc -> run (0x10)
+I (41925) wifi:state: run -> init (0x2c0)
+I (41926) wifi:new:<11,0>, old:<11,2>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+{"schema_version":1,"sequence":5,"uptime_us":42229354,"utc_valid":true,"utc":"2026-01-06T20:54:17Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"759e39b7aecf2f179b21fda8a01faf91928c4b6327ee3c7e4d4880d58f5d43f9","partitions":true,"reset_reason":11,"tf":"READY","wifi":"DISCONNECTED","rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":289,"humidity_tenths_percent":372,"key_short":0,"key_long":0,"crc32c":"1f17415d"}
+I (44760) wifi:new:<11,2>, old:<11,0>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (44762) wifi:state: init -> auth (0xb0)
+I (44767) wifi:state: auth -> assoc (0x0)
+I (44777) wifi:state: assoc -> run (0x10)
+I (47793) wifi:state: run -> init (0x2c0)
+I (47794) wifi:new:<11,0>, old:<11,2>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (47796) wifi:new:<11,2>, old:<11,0>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (47798) wifi:state: init -> auth (0xb0)
+I (47801) wifi:state: auth -> assoc (0x0)
+I (47808) wifi:state: assoc -> run (0x10)
+I (50825) wifi:state: run -> init (0x2c0)
+I (50826) wifi:new:<11,0>, old:<11,2>, ap:<11,2>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (51656) frame-prov: wifi fallback: 5 disconnects without IP
+{"schema_version":1,"sequence":6,"uptime_us":52249357,"utc_valid":true,"utc":"2026-01-06T20:54:27Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"759e39b7aecf2f179b21fda8a01faf91928c4b6327ee3c7e4d4880d58f5d43f9","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":289,"humidity_tenths_percent":372,"key_short":0,"key_long":0,"crc32c":"434f700e"}
+{"schema_version":1,"sequence":7,"uptime_us":62264337,"utc_valid":true,"utc":"2026-01-06T20:54:37Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"759e39b7aecf2f179b21fda8a01faf91928c4b6327ee3c7e4d4880d58f5d43f9","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":290,"humidity_tenths_percent":371,"key_short":0,"key_long":0,"crc32c":"114ea2bd"}
+{"schema_version":1,"sequence":8,"uptime_us":72280351,"utc_valid":true,"utc":"2026-01-06T20:54:47Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"759e39b7aecf2f179b21fda8a01faf91928c4b6327ee3c7e4d4880d58f5d43f9","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":289,"humidity_tenths_percent":371,"key_short":0,"key_long":0,"crc32c":"83ad4d82"}
+{"schema_version":1,"sequence":9,"uptime_us":82296334,"utc_valid":true,"utc":"2026-01-06T20:54:57Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"759e39b7aecf2f179b21fda8a01faf91928c4b6327ee3c7e4d4880d58f5d43f9","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":289,"humidity_tenths_percent":371,"key_short":0,"key_long":0,"crc32c":"1f9ace1f"}
+{"schema_version":1,"sequence":10,"uptime_us":92312320,"utc_valid":true,"utc":"2026-01-06T20:55:07Z","source":"m1","event":"status","mode":"normal","status":"OK","device_id":"c1810c76790e","app":"7bae861-dirty","idf":"v6.0.2","toolchain":"gcc-15.2.0","image_sha256":"759e39b7aecf2f179b21fda8a01faf91928c4b6327ee3c7e4d4880d58f5d43f9","partitions":true,"reset_reason":11,"tf":"READY","wifi":"UNCONFIG","rtc":true,"shtc3":true,"sensor_valid":true,"temperature_tenths_c":289,"humidity_tenths_percent":372,"key_short":0,"key_long":0,"crc32c":"3699d3c6"}

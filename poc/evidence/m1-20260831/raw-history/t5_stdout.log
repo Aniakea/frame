@@ -1,0 +1,19 @@
+18:09:06 phase-1: hard reset; capture boot + telemetry 45s (sliced for arrival timing)
+18:09:51 boot telemetry n=4 seqs=[1, 3, 4, 5] first-line 3.7s after reset (READY classification precedes first append; logging starts same loop pass)
+18:09:51 phase-1b: 25s live cadence watch (expect 2-3 telemetry lines ~10s apart)
+18:10:10 telemetry lines added during <=25s watch: 2
+18:10:14 status --json after boot: tf_logging=True logging_error=0
+18:10:14 [PASS-a] telemetry n=4 >=3, schema=1, event=status, crc32c 8hex all, sequence strictly increasing [1, 3, 4, 5], first JSONL 3.7s after reset (<=15s: append only runs in READY state => JSONL within 10s of READY holds), cadence 2 lines/25s, status tf_logging=true logging_error=0
+18:10:18 [FAIL-b] rtc_valid=True utc=2026-01-06T07:58:09Z partitions_ok=True sensor_valid=True temp=274 hum=368; utc did not advance between rounds
+18:10:22 >>> PLEASE PRESS KEY: exactly 2 SHORT (<1s) + 2 LONG (>=1s) presses.
+18:10:22 >>> KEY WINDOW OPEN 180s -- press now
+18:13:26 >>> KEY WINDOW CLOSED (baseline short=0 long=0; final short=0 long=0)
+18:13:26 [DEFERRED-c] no presses observed during 180s window (user unavailable); deferred
+18:13:26 >>> PLEASE PULL TF CARD NOW (keep it out until asked)
+Traceback (most recent call last):
+  File "/tmp/opencode/m1-verify/t5_verify.py", line 335, in <module>
+    main()
+  File "/tmp/opencode/m1-verify/t5_verify.py", line 233, in main
+    dev.note(f"pull happened within poll gap {pull_gap:.1f}s (last non-ABSENT poll -> first ABSENT "
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: unsupported format string passed to NoneType.__format__
