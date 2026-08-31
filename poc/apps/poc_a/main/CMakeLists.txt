@@ -53,6 +53,44 @@ poca_negative_corpus(
 # negatives derive from the gated baseline ELF: gate first, then fabricate
 add_dependencies(poca_negative_corpus poca_plugin_baseline)
 
+# T6 C++ feature-rejection probes: each variant must be REJECTED by the
+# same gates that protect the positive builds (expected-failure wrapper
+# echoes the verbatim gate error). NEEDLES name the required rejection
+# reason (plain substrings); gate order is reloc-allowlist -> C++-sections
+# -> imports -> shape.
+poca_cxx_probe(cxx_ctor
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/../plugins/cxx_probes/cxx_static_ctor.cpp"
+    ENTRY "frame_plugin_entry"
+    NEEDLES "forbidden C++ feature section" ".ctors")
+poca_cxx_probe(cxx_dtor
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/../plugins/cxx_probes/cxx_static_dtor.cpp"
+    ENTRY "frame_plugin_entry"
+    NEEDLES "forbidden C++ feature section" ".dtors")
+poca_cxx_probe(cxx_tls
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/../plugins/cxx_probes/cxx_tls.cpp"
+    ENTRY "frame_plugin_entry"
+    NEEDLES "relocation allowlist violated" "R_XTENSA_TLS")
+poca_cxx_probe(cxx_exceptions
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/../plugins/cxx_probes/cxx_exceptions.cpp"
+    ENTRY "frame_plugin_entry"
+    EXTRA_FLAGS -fexceptions -funwind-tables
+    NEEDLES "forbidden C++ feature section" ".eh_frame")
+poca_cxx_probe(cxx_rtti
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/../plugins/cxx_probes/cxx_rtti.cpp"
+    ENTRY "frame_plugin_entry"
+    EXTRA_FLAGS -frtti
+    NEEDLES "import gate failed" "__dynamic_cast")
+poca_cxx_probe(cxx_unwind
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/../plugins/cxx_probes/cxx_unwind.cpp"
+    ENTRY "frame_plugin_entry"
+    EXTRA_FLAGS -funwind-tables -fasynchronous-unwind-tables
+    NEEDLES "forbidden C++ feature section" ".eh_frame")
+
+poca_cxx_probe_corpus(
+    CTOR_ELF "${CMAKE_BINARY_DIR}/plugins/cxx_ctor/cxx_ctor.elf"
+    TLS_ELF "${CMAKE_BINARY_DIR}/plugins/cxx_tls/cxx_tls.elf")
+add_dependencies(poca_cxx_probe_corpus poca_cxx_probe_cxx_ctor poca_cxx_probe_cxx_tls)
+
 target_include_directories(${COMPONENT_LIB} PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/../plugins"
     "${CMAKE_BINARY_DIR}/plugins/generated")
@@ -62,7 +100,14 @@ add_dependencies(${COMPONENT_LIB}
     poca_plugin_globdat
     poca_plugin_plt
     poca_plugin_import_neg
-    poca_negative_corpus)
+    poca_negative_corpus
+    poca_cxx_probe_cxx_ctor
+    poca_cxx_probe_cxx_dtor
+    poca_cxx_probe_cxx_tls
+    poca_cxx_probe_cxx_exceptions
+    poca_cxx_probe_cxx_rtti
+    poca_cxx_probe_cxx_unwind
+    poca_cxx_probe_corpus)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/baseline.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/globdat.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/plt.mpb" BINARY)
@@ -73,6 +118,9 @@ target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_phspan.
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_phbe.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_ph64.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_phmach.mpb" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/cxx_ctor.mpb" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/cxx_tls.mpb" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_tls_nosect.mpb" BINARY)
 
 target_compile_options(${COMPONENT_LIB} PRIVATE
     -std=c++26

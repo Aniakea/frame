@@ -171,6 +171,147 @@ function(poca_plugin name)
     message(STATUS "[poca-plugin] registered ${name} (entry ${PLUGIN_ENTRY}, version ${PLUGIN_VERSION})")
 endfunction()
 
+# poca_cxx_probe(<name> SOURCE <file.cpp> ENTRY <symbol> NEEDLES <substr>...
+#                [EXTRA_FLAGS <flag>...])
+#
+# T6 C++ feature-rejection probes (appendix C 11.2/11.3). Builds the probe
+# with the firmware build's xtensa g++ under the pipeline link contract but
+# with the C++ runtime features that the probe exercises ENABLED, then runs
+# the REAL positive-pipeline gates (check_plugin_elf.cmake) against the
+# result and asserts they REJECT it (expected-failure wrapper
+# cxx_probes/check_probe_rejection.cmake). The probe ELFs are never
+# gate-approved artifacts; the on-board corpus rows are packaged separately
+# by build_cxx_probes.py (hostile_signed pattern, see T5).
+#
+# The probe compile baseline keeps every OTHER C++ runtime feature off
+# (-fno-exceptions -fno-rtti -fno-unwind-tables
+# -fno-asynchronous-unwind-tables) so each variant's emitted artifact set
+# isolates exactly the feature under test; per-variant flags re-enable one
+# feature.
+function(poca_cxx_probe name)
+    cmake_parse_arguments(PROBE "" "SOURCE;ENTRY" "NEEDLES;EXTRA_FLAGS" ${ARGN})
+    if(NOT PROBE_SOURCE OR NOT PROBE_ENTRY OR NOT PROBE_NEEDLES)
+        message(FATAL_ERROR "poca_cxx_probe(${name}): SOURCE, ENTRY and NEEDLES are required")
+    endif()
+    if(NOT PROBE_EXTRA_FLAGS)
+        set(PROBE_EXTRA_FLAGS "")
+    endif()
+
+    set(out_dir "${CMAKE_BINARY_DIR}/plugins")
+    set(gen_dir "${out_dir}/generated")
+    file(MAKE_DIRECTORY "${out_dir}/${name}")
+
+    set(obj "${out_dir}/${name}/${name}.o")
+    set(elf "${out_dir}/${name}/${name}.elf")
+    set(stamp "${out_dir}/${name}/reject.stamp")
+
+    # Tool siblings discovered from the firmware build's xtensa gcc (the g++
+    # driver name does not contain "-gcc"; the C compiler lives in the same
+    # toolchain bin dir).
+    string(REPLACE "-gcc" "-readelf" plugin_readelf "${CMAKE_C_COMPILER}")
+    string(REPLACE "-gcc" "-nm" plugin_nm "${CMAKE_C_COMPILER}")
+
+    set(probe_compile_flags -c -std=c++20 -Os -g0
+        -fPIC -fvisibility=hidden
+        -fdata-sections -ffunction-sections
+        -ffreestanding -fno-builtin
+        -fno-exceptions -fno-rtti
+        -fno-unwind-tables -fno-asynchronous-unwind-tables
+        -Wall -Wextra -Werror)
+
+    set(probe_link_flags -shared -fPIC -static-libgcc
+        -nostdlib -nostartfiles
+        -fdata-sections -ffunction-sections
+        -Wl,--gc-sections
+        -fvisibility=hidden
+        -Wl,--allow-shlib-undefined
+        -Wl,--build-id=none
+        -e ${PROBE_ENTRY})
+
+    add_custom_command(
+        OUTPUT "${obj}"
+        COMMAND "${CMAKE_CXX_COMPILER}" ${probe_compile_flags} ${PROBE_EXTRA_FLAGS}
+                -I "${POCA_PLUGINS_DIR}" -c "${PROBE_SOURCE}" -o "${obj}"
+        DEPENDS "${PROBE_SOURCE}" "${POCA_PLUGINS_DIR}/plugin_abi.h"
+        COMMENT "[cxx-probe] compile ${name}.o (flags: ${PROBE_EXTRA_FLAGS})"
+        VERBATIM)
+
+    add_custom_command(
+        OUTPUT "${elf}"
+        COMMAND "${CMAKE_CXX_COMPILER}" ${probe_link_flags} "${obj}" -o "${elf}"
+        DEPENDS "${obj}"
+        COMMENT "[cxx-probe] link ${name}.elf"
+        VERBATIM)
+
+    add_custom_command(
+        OUTPUT "${stamp}"
+        COMMAND "${CMAKE_COMMAND}"
+            -D "PROBE_NAME=${name}"
+            -D "ELF=${elf}"
+            -D "READELF=${plugin_readelf}"
+            -D "NM=${plugin_nm}"
+            -D "EXPECT_ENTRY=${PROBE_ENTRY}"
+            -D "NEEDLES=${PROBE_NEEDLES}"
+            -D "CHECK_SCRIPT=${POCA_PLUGINS_DIR}/check_plugin_elf.cmake"
+            -P "${POCA_PLUGINS_DIR}/cxx_probes/check_probe_rejection.cmake"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${stamp}"
+        DEPENDS "${elf}" "${POCA_PLUGINS_DIR}/check_plugin_elf.cmake"
+                "${POCA_PLUGINS_DIR}/cxx_probes/check_probe_rejection.cmake"
+        COMMENT "[cxx-probe] ${name}: gates must REJECT (${PROBE_NEEDLES})"
+        VERBATIM)
+
+    add_custom_target("poca_cxx_probe_${name}" DEPENDS "${stamp}")
+    message(STATUS "[cxx-probe] registered ${name} (entry ${PROBE_ENTRY}, "
+        "expect-reject: ${PROBE_NEEDLES})")
+endfunction()
+
+# poca_cxx_probe_corpus(CTOR_ELF <elf> TLS_ELF <elf>)
+#
+# Packages the on-board T6 corpus rows (cxx_ctor, cxx_tls and the
+# sections-renamed neg_tls_nosect) from the probe ELFs via the hostile path
+# (build_cxx_probes.py; TEST-only key). Like poca_negative_corpus this
+# deliberately steps around the positive pipeline - the probes are rejected
+# artifacts by design and their containers must still be signature-valid so
+# the on-device rejection happens in the loader (p1/p4), not in mpb verify.
+function(poca_cxx_probe_corpus)
+    cmake_parse_arguments(CORPUS "" "CTOR_ELF;TLS_ELF" "" ${ARGN})
+    if(NOT CORPUS_CTOR_ELF OR NOT CORPUS_TLS_ELF)
+        message(FATAL_ERROR "poca_cxx_probe_corpus: CTOR_ELF and TLS_ELF are required")
+    endif()
+
+    set(out_dir "${CMAKE_BINARY_DIR}/plugins")
+    set(gen_dir "${out_dir}/generated")
+    set(corpus_names cxx_ctor cxx_tls neg_tls_nosect)
+    set(corpus_outputs "")
+    foreach(name IN LISTS corpus_names)
+        list(APPEND corpus_outputs "${out_dir}/${name}.mpb" "${gen_dir}/poca_${name}_meta.h")
+    endforeach()
+    set(stamp "${out_dir}/cxx_probes/corpus.stamp")
+
+    set(signing_key "${POCA_REPO_ROOT}/tools/frame_tools/testdata/keys/poc_a_test_signing_key.pem")
+    if(Python_EXECUTABLE)
+        set(corpus_python "${Python_EXECUTABLE}")
+    else()
+        set(corpus_python python3)
+    endif()
+
+    add_custom_command(
+        OUTPUT "${stamp}"
+        BYPRODUCTS ${corpus_outputs}
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${out_dir}/cxx_probes"
+        COMMAND "${corpus_python}" "${POCA_PLUGINS_DIR}/cxx_probes/build_cxx_probes.py"
+            --ctor-elf "${CORPUS_CTOR_ELF}"
+            --tls-elf "${CORPUS_TLS_ELF}"
+            --key "${signing_key}"
+            --out-dir "${out_dir}"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${stamp}"
+        DEPENDS "${CORPUS_CTOR_ELF}" "${CORPUS_TLS_ELF}"
+                "${POCA_PLUGINS_DIR}/cxx_probes/build_cxx_probes.py" "${signing_key}"
+        COMMENT "[cxx-corpus] hostile-signed probe containers (cxx_ctor/cxx_tls/neg_tls_nosect)"
+        VERBATIM)
+    add_custom_target(poca_cxx_probe_corpus DEPENDS "${stamp}")
+endfunction()
+
 # poca_negative_corpus(BASELINE_ELF <elf> ...)
 #
 # T5 negative corpus: runs build_negative_corpus.py against the gated

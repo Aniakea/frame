@@ -561,6 +561,34 @@ int esp_elf_relocate(esp_elf_t *elf, const uint8_t *pbuf)
     shdr    = (const elf32_shdr_t *)(pbuf + ehdr->shoff);
     shstrab = (const char *)pbuf + shdr[ehdr->shstrndx].offset;
 
+    /* [patch p4] Reject C++ runtime feature sections before any section is
+     * allocated, copied or relocated (appendix C 11.2 default-forbidden
+     * features; task T6). The entry-point model has no runner for static
+     * constructors/destructors (.init_array/.fini_array, spelled .ctors/
+     * .dtors by the xtensa toolchain), no TLS block support (.tdata/.tbss)
+     * and no unwinder (.eh_frame/.eh_frame_hdr/.gcc_except_table).
+     * Upstream silently ignored these sections, and their relocations then
+     * write through esp_elf_map_sym()==0 (observed: LoadProhibited crash
+     * on a signed .ctors probe, T6 pre-patch board run) - fail closed. */
+    {
+        static const char *const forbidden[] = {
+            ".init_array", ".fini_array", ".preinit_array",
+            ".ctors", ".dtors",
+            ".tdata", ".tbss",
+            ".eh_frame", ".eh_frame_hdr", ".gcc_except_table",
+        };
+        for (uint32_t i = 0; i < ehdr->shnum; i++) {
+            const char *name = shstrab + shdr[i].name;
+            for (size_t f = 0; f < sizeof(forbidden) / sizeof(forbidden[0]); f++) {
+                if (strncmp(name, forbidden[f], strlen(forbidden[f])) == 0) {
+                    ESP_LOGE(TAG, "Forbidden C++ feature section '%s' "
+                             "(appendix C 11.2); rejecting image before load", name);
+                    return -EINVAL;
+                }
+            }
+        }
+    }
+
     /* Load section or segment to memory space */
 
 #if CONFIG_ELF_LOADER_BUS_ADDRESS_MIRROR

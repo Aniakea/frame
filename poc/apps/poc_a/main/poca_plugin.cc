@@ -11,6 +11,8 @@
 #include "frame_poc/mpb_parser.h"
 #include "plugin_abi.h"
 #include "poca_baseline_meta.h"
+#include "poca_cxx_ctor_meta.h"
+#include "poca_cxx_tls_meta.h"
 #include "poca_globdat_meta.h"
 #include "poca_import_neg_meta.h"
 #include "poca_neg_ph64_meta.h"
@@ -19,6 +21,7 @@
 #include "poca_neg_phspan_meta.h"
 #include "poca_neg_r32_meta.h"
 #include "poca_neg_s0op_meta.h"
+#include "poca_neg_tls_nosect_meta.h"
 #include "poca_plt_meta.h"
 #include "poca_pubkey.h"
 #include "psa/crypto.h"
@@ -46,6 +49,12 @@ extern "C" const uint8_t _binary_neg_ph64_mpb_start[];
 extern "C" const uint8_t _binary_neg_ph64_mpb_end[];
 extern "C" const uint8_t _binary_neg_phmach_mpb_start[];
 extern "C" const uint8_t _binary_neg_phmach_mpb_end[];
+extern "C" const uint8_t _binary_cxx_ctor_mpb_start[];
+extern "C" const uint8_t _binary_cxx_ctor_mpb_end[];
+extern "C" const uint8_t _binary_cxx_tls_mpb_start[];
+extern "C" const uint8_t _binary_cxx_tls_mpb_end[];
+extern "C" const uint8_t _binary_neg_tls_nosect_mpb_start[];
+extern "C" const uint8_t _binary_neg_tls_nosect_mpb_end[];
 
 namespace frame::poca {
 namespace {
@@ -100,6 +109,12 @@ const EmbeddedPackage k_packages[] = {
      POCA_NEG_PH64_MPB_SHA256},
     {"neg_phmach", _binary_neg_phmach_mpb_start, _binary_neg_phmach_mpb_end,
      POCA_NEG_PHMACH_MPB_SIZE, POCA_NEG_PHMACH_MPB_SHA256},
+    {"cxx_ctor", _binary_cxx_ctor_mpb_start, _binary_cxx_ctor_mpb_end, POCA_CXX_CTOR_MPB_SIZE,
+     POCA_CXX_CTOR_MPB_SHA256},
+    {"cxx_tls", _binary_cxx_tls_mpb_start, _binary_cxx_tls_mpb_end, POCA_CXX_TLS_MPB_SIZE,
+     POCA_CXX_TLS_MPB_SHA256},
+    {"neg_tls_nosect", _binary_neg_tls_nosect_mpb_start, _binary_neg_tls_nosect_mpb_end,
+     POCA_NEG_TLS_NOSECT_MPB_SIZE, POCA_NEG_TLS_NOSECT_MPB_SHA256},
 };
 
 /* Expected outcome per package: the on-board matrix rows. Every negative
@@ -117,13 +132,16 @@ const PackageExpect k_expects[] = {
     {"baseline", Expect::kLoadOk, 0},
     {"globdat", Expect::kLoadOk, 0},
     {"plt", Expect::kLoadOk, 0},
-    {"import_neg", Expect::kRelocateErrno, -88}, /* -ENOSYS (newlib xtensa) */
-    {"neg_r32", Expect::kRelocateErrno, -22},    /* -EINVAL: patch p1, R_XTENSA_32 */
-    {"neg_s0op", Expect::kRelocateErrno, -22},   /* -EINVAL: patch p1, SLOT0_OP */
-    {"neg_phbe", Expect::kRelocateErrno, -22},   /* -EINVAL: patch p2, EI_DATA */
-    {"neg_ph64", Expect::kRelocateErrno, -22},   /* -EINVAL: patch p2, EI_CLASS */
-    {"neg_phmach", Expect::kRelocateErrno, -22}, /* -EINVAL: patch p2, e_machine */
-    {"neg_phspan", Expect::kPhdrReject, 0},      /* admission: budget > manifest */
+    {"import_neg", Expect::kRelocateErrno, -88},     /* -ENOSYS (newlib xtensa) */
+    {"neg_r32", Expect::kRelocateErrno, -22},        /* -EINVAL: patch p1, R_XTENSA_32 */
+    {"neg_s0op", Expect::kRelocateErrno, -22},       /* -EINVAL: patch p1, SLOT0_OP */
+    {"neg_phbe", Expect::kRelocateErrno, -22},       /* -EINVAL: patch p2, EI_DATA */
+    {"neg_ph64", Expect::kRelocateErrno, -22},       /* -EINVAL: patch p2, EI_CLASS */
+    {"neg_phmach", Expect::kRelocateErrno, -22},     /* -EINVAL: patch p2, e_machine */
+    {"neg_phspan", Expect::kPhdrReject, 0},          /* admission: budget > manifest */
+    {"cxx_ctor", Expect::kRelocateErrno, -22},       /* -EINVAL: patch p4, .ctors */
+    {"cxx_tls", Expect::kRelocateErrno, -22},        /* -EINVAL: patch p4, .tdata/.tbss */
+    {"neg_tls_nosect", Expect::kRelocateErrno, -22}, /* -EINVAL: patch p1, TLSDESC relocs */
 };
 
 struct PluginRuntime {

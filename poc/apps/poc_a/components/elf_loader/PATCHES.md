@@ -61,6 +61,7 @@ numbered patches (`p1`, `p2`, ...) with motivation, diff, and post-patch
 | p1 fail-closed arch relocate | T5 | `src/esp_elf.c` (1 hunk) | below | manifest sha256 `16f67a5112e08e40cda6db67873dd5ce8c5c2b82fe24580aa3a32caada3a6524` (p1+p2 only) |
 | p2 ELF header validation | T5 | `src/esp_elf.c` (1 hunk) | below | (as above; both patches touch only `src/esp_elf.c`) |
 | p3 true .text window size | T5 | `src/esp_elf.c` (1 hunk) | below | manifest sha256 `77a95ceccd65bcdf773d0f415f5136d17e2d9382f9b04fe005545c02d5547637`; `src/esp_elf.c` sha256 `c13652c1f2921bb516d6dc206816d20b59d21c7e2771738f4da9a4ae4040f024` (current, p1+p2+p3) |
+| p4 forbidden C++ feature sections | T6 | `src/esp_elf.c` (1 hunk) | below | manifest sha256 `1602131050e4667d48b4bee7ec3a80464f091af5eaaaf72b7ff7ffe96999f336`; `src/esp_elf.c` sha256 `63162dbce031de712fd06f449a4f0b05a697c30354329cf5845490205438711d` (current, p1..p4) |
 
 ### p1 — fail-closed relocation (T5)
 
@@ -163,6 +164,74 @@ pattern (true size, never a rounded window).
 ```
 
 (the hunk carries the `[patch p3]` comment block verbatim from the source)
+
+
+### p4 — forbidden C++ feature sections (T6)
+
+**Rationale:** upstream `esp_elf_relocate()` parses the section table but
+silently ignores every section name it does not know. A signed container
+carrying C++ runtime feature sections therefore reaches the copy/relocation
+path unchallenged (appendix C 11.2 default-forbidden features; the PoC-A
+loader has no runner for static constructors/destructors, no TLS block and
+no unwinder). Consequences observed on target **before** this patch (T6
+pre-patch board run, signed `cxx_ctor` probe with a `.ctors` section whose
+only dynamic relocations are allowlisted `R_XTENSA_RELATIVE`):
+
+- the `.ctors` function-pointer relocation makes
+  `esp_elf_arch_relocate()` write through `esp_elf_map_sym(0x12c4) == 0`
+  (the section was never loaded, so no recorded window covers the offset)
+  -> `Guru Meditation LoadProhibited, EXCVADDR=0x0`, firmware reboot -
+  a fail-open crash, not the TEST-003-required fail-before-execute
+  rejection;
+- the build-time gate (check_plugin_elf.cmake gate 4) and the manifest
+  builder never see the artifact because a hostile producer bypasses both
+  (the T5 `hostile_signed` lesson: loader-side checks are the last layer).
+
+The patch scans section names (prefix match, so numbered subsections like
+`.init_array.00001` stay covered) immediately after the `shstrab` pointer
+is computed - before any allocation or copy - and returns `-EINVAL`. The
+list mirrors gate 4 exactly: `.init_array/.fini_array/.preinit_array/
+.ctors/.dtors/.tdata/.tbss/.eh_frame/.eh_frame_hdr/.gcc_except_table`.
+TLS relocation types remain independently fatal through patch p1 (proven
+on board by the `neg_tls_nosect` row, whose sections were renamed away).
+
+```diff
+@@ -562,6 +562,34 @@ int esp_elf_relocate(esp_elf_t *elf, const uint8_t *pbuf)
+     shdr    = (const elf32_shdr_t *)(pbuf + ehdr->shoff);
+     shstrab = (const char *)pbuf + shdr[ehdr->shstrndx].offset;
+ 
++    /* [patch p4] Reject C++ runtime feature sections before any section is
++     * allocated, copied or relocated (appendix C 11.2 default-forbidden
++     * features; task T6). The entry-point model has no runner for static
++     * constructors/destructors (.init_array/.fini_array, spelled .ctors/
++     * .dtors by the xtensa toolchain), no TLS block support (.tdata/.tbss)
++     * and no unwinder (.eh_frame/.eh_frame_hdr/.gcc_except_table).
++     * Upstream silently ignored these sections, and their relocations then
++     * write through esp_elf_map_sym()==0 (observed: LoadProhibited crash
++     * on a signed .ctors probe, T6 pre-patch board run) - fail closed. */
++    {
++        static const char *const forbidden[] = {
++            ".init_array", ".fini_array", ".preinit_array",
++            ".ctors", ".dtors",
++            ".tdata", ".tbss",
++            ".eh_frame", ".eh_frame_hdr", ".gcc_except_table",
++        };
++        for (uint32_t i = 0; i < ehdr->shnum; i++) {
++            const char *name = shstrab + shdr[i].name;
++            for (size_t f = 0; f < sizeof(forbidden) / sizeof(forbidden[0]); f++) {
++                if (strncmp(name, forbidden[f], strlen(forbidden[f])) == 0) {
++                    ESP_LOGE(TAG, "Forbidden C++ feature section '%s' "
++                             "(appendix C 11.2); rejecting image before load", name);
++                    return -EINVAL;
++                }
++            }
++        }
++    }
++
+     /* Load section or segment to memory space */
+```
+
+(the hunk carries the `[patch p4]` comment block verbatim from the source)
 
 Upstream files are NEVER edited in place without a registry entry; the
 unpatched state must always be reproducible from this table (apply the

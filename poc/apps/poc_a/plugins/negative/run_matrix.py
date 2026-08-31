@@ -29,6 +29,12 @@ NEGATIVES = [
     ("neg_ph64", ["NEGATIVE neg_ph64 PASS (errno -22, expected -22)"]),
     ("neg_phmach", ["NEGATIVE neg_phmach PASS (errno -22, expected -22)"]),
     ("neg_phspan", ["NEGATIVE neg_phspan PASS (phdr admission rejected before load)"]),
+    ("cxx_ctor", ["NEGATIVE cxx_ctor PASS (errno -22, expected -22)",
+                  "Forbidden C++ feature section"]),
+    ("cxx_tls", ["NEGATIVE cxx_tls PASS (errno -22, expected -22)",
+                 "Forbidden C++ feature section"]),
+    ("neg_tls_nosect", ["NEGATIVE neg_tls_nosect PASS (errno -22, expected -22)",
+                        "Failed to relocate type"]),
 ]
 
 
@@ -85,6 +91,7 @@ def run(port: str) -> int:
 
     expect("status", board.command("poca status"),
            ["registered host imports: poca_host_sentinel poca_host_add"])
+    canary_start = entry_queries(board)
 
     for name in POSITIVE_CYCLE:
         expect(f"verify {name}", board.command(f"poca verify {name}"),
@@ -101,8 +108,9 @@ def run(port: str) -> int:
         expect(f"unload {name}", board.command("poca unload"), ["[poca-unload] PASS"])
 
     canary = entry_queries(board)
-    if canary != len(POSITIVE_CYCLE):
-        failures.append(f"canary after positives: {canary} != {len(POSITIVE_CYCLE)}")
+    if canary != canary_start + len(POSITIVE_CYCLE):
+        failures.append(f"canary after positives: {canary} != "
+                        f"{canary_start}+{len(POSITIVE_CYCLE)}")
 
     for name, needles in NEGATIVES:
         expect(f"load {name}", board.command(f"poca load {name}"),
@@ -124,7 +132,8 @@ def run(port: str) -> int:
             print(f"  - {failure}")
         return 1
     print(f"\nMATRIX PASS (positives={len(POSITIVE_CYCLE)}, negatives={len(NEGATIVES)}, "
-          f"canary={canary_neg} unchanged across all negatives)")
+          f"canary={canary_neg} unchanged across all negatives, "
+          f"canary_start={canary_start})")
     return 0
 
 
