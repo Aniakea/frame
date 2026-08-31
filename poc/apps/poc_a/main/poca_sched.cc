@@ -1168,8 +1168,8 @@ int vector_quiesce() {
     const bool late_ok = late_err == FRAME_ERR_PLUGIN_STOPPING;
 
     core.start();
-    const bool drained = wait_until([&] { return s.destroyed_count() == 16 && s.stopped(); },
-                                    10000);
+    const bool drained =
+        wait_until([&] { return s.destroyed_count() == 16 && s.stopped(); }, 10000);
     bool flags_ok = true;
     bool identity_ok = true;
     for (auto& post : g_quiesce_posts) {
