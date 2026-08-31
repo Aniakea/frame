@@ -10,6 +10,7 @@
 #include "esp_elf.h"
 #include "esp_heap_caps.h"
 #include "poca_plugin.hh"
+#include "poca_sched.hh"
 #include "private/elf_platform.h"
 #include "sdkconfig.h"
 
@@ -102,9 +103,12 @@ int poca_command(int argc, char** argv) {
         }
         return cmd_poca_soak(static_cast<unsigned>(parsed), argc == 4 ? argv[3] : "default");
     }
+    if (argc == 3 && std::strcmp(argv[1], "sched") == 0) {
+        return cmd_poca_sched(argv[2]);
+    }
     std::printf("usage: poca status | poca abi | poca verify [name] | poca load [name] | "
                 "poca activate | poca unload | poca iram [n] | poca coexist | poca soak <n> "
-                "[mix]\n");
+                "[mix] | poca sched <test>\n");
     return 1;
 }
 
@@ -114,7 +118,7 @@ esp_err_t start_console() {
     const esp_console_cmd_t poca_cmd{
         .command = "poca",
         .help = "poca status | abi | verify [name] | load [name] | activate | unload | iram [n] | "
-                "coexist | soak <n> [mix]",
+                "coexist | soak <n> [mix] | sched <test>",
         .hint = nullptr,
         .func = &poca_command,
         .argtable = nullptr,

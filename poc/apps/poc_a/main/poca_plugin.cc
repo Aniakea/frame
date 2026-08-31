@@ -950,6 +950,20 @@ void print_stack_snap(const char* phase) {
 
 uint32_t poca_entry_queries() { return g_entry_queries; }
 
+const void* poca_active_activate_fn() {
+    if (!g_active.loaded || g_active.table == nullptr) {
+        return nullptr;
+    }
+    return reinterpret_cast<const void*>(g_active.table->activate);
+}
+
+int32_t poca_active_expected_activate() {
+    if (!g_active.loaded || g_active.package == nullptr) {
+        return INT32_MIN;
+    }
+    return expected_activate(*g_active.package);
+}
+
 int cmd_poca_verify(const char* name) {
     if (g_active.loaded) {
         std::printf("[poca-verify] FAIL plugin loaded; unload first\n");

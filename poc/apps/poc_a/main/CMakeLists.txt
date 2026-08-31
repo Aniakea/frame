@@ -4,6 +4,7 @@ idf_component_register(
         "poc_a_main.cc"
         "poca_console.cc"
         "poca_plugin.cc"
+        "poca_sched.cc"
     INCLUDE_DIRS "."
     PRIV_REQUIRES
         console

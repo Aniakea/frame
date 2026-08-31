@@ -43,6 +43,12 @@ int cmd_poca_coexist();
 int cmd_poca_soak(unsigned cycles, const char* mix);
 uint32_t poca_entry_queries();
 
+// T13 loader-strand hookup: activate() pointer of the ACTIVE plugin slot
+// (nullptr when nothing is loaded) and the firmware-side expected activate
+// value, so a strand handler can call plugin entry code and check it.
+const void* poca_active_activate_fn();
+int32_t poca_active_expected_activate();
+
 } // namespace frame::poca
 
 #endif /* POC_A_MAIN_POCA_PLUGIN_HH */
