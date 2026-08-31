@@ -9,6 +9,7 @@ idf_component_register(
         console
         elf_loader
         esp_hw_support
+        esp_timer
         frame_poc_mpb
         frame_poc_runtime
         mbedtls

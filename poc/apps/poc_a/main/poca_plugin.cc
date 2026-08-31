@@ -6,6 +6,8 @@
 
 #include "esp_elf.h"
 #include "esp_heap_caps.h"
+#include "esp_log.h"
+#include "esp_timer.h"
 #include "frame_poc/frame_abi.h"
 #include "frame_poc/mpb_mbedtls_glue.h"
 #include "frame_poc/mpb_parser.h"
@@ -15,6 +17,7 @@
 #include "poca_baseline_300k_meta.h"
 #include "poca_baseline_meta.h"
 #include "poca_baseline_v2_meta.h"
+#include "poca_console.hh"
 #include "poca_cxx_ctor_meta.h"
 #include "poca_cxx_tls_meta.h"
 #include "poca_globdat_meta.h"
@@ -424,15 +427,17 @@ PhBudget compute_ph_budget(const uint8_t* elf, size_t size) {
 }
 
 int check_ph_budget(const uint8_t* elf_base, const mpb_view_t& view, bool negative_expected,
-                    const char* name) {
+                    const char* name, bool quiet = false) {
     const PhBudget budget = compute_ph_budget(elf_base, view.payloads[0].length);
-    if (!budget.ok) {
-        std::printf("[poca] phdr budget INVALID: %s\n", budget.reason);
-    } else {
-        std::printf("[poca] phdr loads=%" PRIu32 " memsz=%" PRIu64 " pad=%" PRIu64
-                    " budget=%" PRIu64 " manifest max_mem=%" PRIu32 "\n",
-                    budget.loads, budget.memsz_total, budget.pad_total,
-                    budget.memsz_total + budget.pad_total, view.max_memory_bytes);
+    if (!quiet) {
+        if (!budget.ok) {
+            std::printf("[poca] phdr budget INVALID: %s\n", budget.reason);
+        } else {
+            std::printf("[poca] phdr loads=%" PRIu32 " memsz=%" PRIu64 " pad=%" PRIu64
+                        " budget=%" PRIu64 " manifest max_mem=%" PRIu32 "\n",
+                        budget.loads, budget.memsz_total, budget.pad_total,
+                        budget.memsz_total + budget.pad_total, view.max_memory_bytes);
+        }
     }
     if (!budget.ok || budget.memsz_total + budget.pad_total > view.max_memory_bytes) {
         if (negative_expected) {
@@ -532,28 +537,34 @@ int parse_mpb(const uint8_t* buffer, size_t size, mpb_view_t* out_view) {
     return 0;
 }
 
-int check_embedded_digest(const EmbeddedPackage& package, size_t size, const char* hex) {
+int check_embedded_digest(const EmbeddedPackage& package, size_t size, const char* hex,
+                          bool quiet = false) {
     const int digest_ok = std::strcmp(hex, package.meta_sha256) == 0 &&
                           size == static_cast<size_t>(package.meta_size);
-    std::printf("[poca] mpb digest %s\n", digest_ok ? "MATCH" : "MISMATCH");
+    if (!quiet) {
+        std::printf("[poca] mpb digest %s\n", digest_ok ? "MATCH" : "MISMATCH");
+    }
     return digest_ok ? 0 : 1;
 }
 
 void release_slot(PluginRuntime& slot, bool free_staging);
-bool check_max_memory_admission(const mpb_view_t& view);
+bool check_max_memory_admission(const mpb_view_t& view, bool quiet = false);
 
 /* Stage a package into slot's immutable PSRAM staging copy (PLUG-008) and
  * run the full mpb verification (structure -> signature -> hash -> policy,
  * hardcoded inside mpb_parse). On success fills out_view and asserts the
  * container identity (manifest name/version) against the packaged meta so a
  * stale or swapped embed is caught before any ELF byte is interpreted.
- * Returns false (slot released) on any failure. */
+ * Returns false (slot released) on any failure. quiet=true (T9 soak) skips
+ * informational lines; every FAIL line still prints. */
 bool stage_and_verify(PluginRuntime& slot, const EmbeddedPackage& package, const char* tag,
-                      mpb_view_t* out_view) {
+                      mpb_view_t* out_view, bool quiet = false) {
     slot.package = &package;
     const size_t embed_size = static_cast<size_t>(package.end - package.start);
     slot.psram_free_before_load = psram_free_bytes();
-    std::printf("[%s] psram free before=%" PRIu32 "\n", tag, slot.psram_free_before_load);
+    if (!quiet) {
+        std::printf("[%s] psram free before=%" PRIu32 "\n", tag, slot.psram_free_before_load);
+    }
     slot.staging =
         static_cast<uint8_t*>(heap_caps_malloc(embed_size, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
     if (slot.staging == nullptr) {
@@ -570,8 +581,10 @@ bool stage_and_verify(PluginRuntime& slot, const EmbeddedPackage& package, const
         release_slot(slot, true);
         return false;
     }
-    std::printf("[%s] mpb size=%zu sha256=%s\n", tag, slot.staging_size, hex);
-    if (check_embedded_digest(package, slot.staging_size, hex) != 0) {
+    if (!quiet) {
+        std::printf("[%s] mpb size=%zu sha256=%s\n", tag, slot.staging_size, hex);
+    }
+    if (check_embedded_digest(package, slot.staging_size, hex, quiet) != 0) {
         std::printf("[%s] FAIL stale staging copy\n", tag);
         release_slot(slot, true);
         return false;
@@ -583,7 +596,9 @@ bool stage_and_verify(PluginRuntime& slot, const EmbeddedPackage& package, const
         release_slot(slot, true);
         return false;
     }
-    print_view(view);
+    if (!quiet) {
+        print_view(view);
+    }
 
     char view_name[MPB_MAX_NAME_BYTES + 1];
     char view_version[MPB_MAX_VERSION_BYTES + 1];
@@ -598,8 +613,10 @@ bool stage_and_verify(PluginRuntime& slot, const EmbeddedPackage& package, const
     view_version[version_len] = '\0';
     const bool identity_ok = std::strcmp(view_name, package.meta_name) == 0 &&
                              std::strcmp(view_version, package.meta_version) == 0;
-    std::printf("[%s] identity name=%s version=%s %s\n", tag, view_name, view_version,
-                identity_ok ? "MATCH" : "MISMATCH");
+    if (!quiet) {
+        std::printf("[%s] identity name=%s version=%s %s\n", tag, view_name, view_version,
+                    identity_ok ? "MATCH" : "MISMATCH");
+    }
     if (!identity_ok) {
         std::printf("[%s] FAIL package identity (expected name=%s version=%s)\n", tag,
                     package.meta_name, package.meta_version);
@@ -622,21 +639,23 @@ bool stage_and_verify(PluginRuntime& slot, const EmbeddedPackage& package, const
  * checks and prepare(). Used by `poca load` (ACTIVE slot) and by the T8
  * coexistence flow (either slot). On failure the slot is released and false
  * is returned; the execution canary advances by exactly one on the
- * successful query. */
-bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, const char* tag) {
+ * successful query. quiet=true (T9 soak) suppresses informational lines
+ * only; FAIL lines and every contract check are unchanged. */
+bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, const char* tag,
+                        bool quiet = false) {
     mpb_view_t view{};
-    if (!stage_and_verify(slot, package, tag, &view)) {
+    if (!stage_and_verify(slot, package, tag, &view, quiet)) {
         return false;
     }
     const uint8_t* elf_base = slot.staging + view.payloads[0].offset;
     const size_t elf_size = view.payloads[0].length;
 
-    if (!check_max_memory_admission(view)) {
+    if (!check_max_memory_admission(view, quiet)) {
         std::printf("[%s] FAIL admission: declared max_memory_bytes exceeds hard max\n", tag);
         release_slot(slot, true);
         return false;
     }
-    if (check_ph_budget(elf_base, view, false, package.name) != 0) {
+    if (check_ph_budget(elf_base, view, false, package.name, quiet) != 0) {
         std::printf("[%s] FAIL phdr admission\n", tag);
         release_slot(slot, true);
         return false;
@@ -687,10 +706,12 @@ bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, con
     const uintptr_t sym_mapped = esp_elf_map_sym(&slot.elf, sym_value);
     const uintptr_t entry_exec = reinterpret_cast<uintptr_t>(slot.elf.entry);
     const uintptr_t mirror_delta = entry_exec - entry_vaddr_mapped;
-    std::printf("[%s] entry sym %s vaddr=0x%08" PRIx32 " mapped=0x%08" PRIx32 " exec=0x%08" PRIx32
-                " delta=0x%08" PRIx32 "\n",
-                tag, POCA_PLUGIN_ENTRY_NAME, sym_value, static_cast<uint32_t>(sym_mapped),
-                static_cast<uint32_t>(entry_exec), static_cast<uint32_t>(mirror_delta));
+    if (!quiet) {
+        std::printf("[%s] entry sym %s vaddr=0x%08" PRIx32 " mapped=0x%08" PRIx32
+                    " exec=0x%08" PRIx32 " delta=0x%08" PRIx32 "\n",
+                    tag, POCA_PLUGIN_ENTRY_NAME, sym_value, static_cast<uint32_t>(sym_mapped),
+                    static_cast<uint32_t>(entry_exec), static_cast<uint32_t>(mirror_delta));
+    }
     if (sym_mapped == 0 || sym_mapped + mirror_delta != entry_exec) {
         std::printf("[%s] FAIL entry symbol is not the linked entry point\n", tag);
         release_slot(slot, true);
@@ -705,7 +726,9 @@ bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, con
     /* two-step cast: -Werror=cast-function-type rejects direct fn-to-fn */
     const auto query =
         reinterpret_cast<poca_plugin_query_fn>(reinterpret_cast<void*>(slot.elf.entry));
-    std::printf("[%s] query fn ptr=0x%08" PRIx32 "\n", tag, reinterpret_cast<uint32_t>(query));
+    if (!quiet) {
+        std::printf("[%s] query fn ptr=0x%08" PRIx32 "\n", tag, reinterpret_cast<uint32_t>(query));
+    }
     g_entry_queries += 1;
     const poca_plugin_table_t* table = query();
     if (table == nullptr) {
@@ -713,15 +736,18 @@ bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, con
         release_slot(slot, true);
         return false;
     }
-    std::printf("[%s] table ptr=0x%08" PRIx32 " struct_size=%u abi=%u.%u\n", tag,
-                reinterpret_cast<uint32_t>(table), static_cast<unsigned>(table->struct_size),
-                static_cast<unsigned>(table->abi_major), static_cast<unsigned>(table->abi_minor));
     if (table->struct_size != sizeof(poca_plugin_table_t) ||
         table->abi_major != POCA_PLUGIN_ABI_MAJOR || table->abi_minor != POCA_PLUGIN_ABI_MINOR ||
         table->prepare == nullptr || table->activate == nullptr || table->unload == nullptr) {
         std::printf("[%s] FAIL entry table contract\n", tag);
         release_slot(slot, true);
         return false;
+    }
+    if (!quiet) {
+        std::printf("[%s] table ptr=0x%08" PRIx32 " struct_size=%u abi=%u.%u\n", tag,
+                    reinterpret_cast<uint32_t>(table), static_cast<unsigned>(table->struct_size),
+                    static_cast<unsigned>(table->abi_major),
+                    static_cast<unsigned>(table->abi_minor));
     }
     const int32_t prepare_err = table->prepare();
     if (prepare_err != 0) {
@@ -730,7 +756,9 @@ bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, con
         release_slot(slot, true);
         return false;
     }
-    std::printf("[%s] prepare()=0 OK\n", tag);
+    if (!quiet) {
+        std::printf("[%s] prepare()=0 OK\n", tag);
+    }
 
     /* Relocation VALUE assertions for the importing plugins (T5 matrix):
      * the GLOB_DAT slots in the entry table must hold exactly the firmware
@@ -738,10 +766,12 @@ bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, con
     if (table->host_sentinel != nullptr) {
         const bool value_ok = reinterpret_cast<void*>(table->host_sentinel) ==
                               reinterpret_cast<void*>(&poca_host_sentinel);
-        std::printf("[%s] GLOB_DAT host_sentinel=0x%08" PRIx32 " expected=0x%08" PRIx32 " %s\n",
-                    tag, reinterpret_cast<uint32_t>(table->host_sentinel),
-                    reinterpret_cast<uint32_t>(&poca_host_sentinel),
-                    value_ok ? "MATCH" : "MISMATCH");
+        if (!quiet) {
+            std::printf("[%s] GLOB_DAT host_sentinel=0x%08" PRIx32 " expected=0x%08" PRIx32 " %s\n",
+                        tag, reinterpret_cast<uint32_t>(table->host_sentinel),
+                        reinterpret_cast<uint32_t>(&poca_host_sentinel),
+                        value_ok ? "MATCH" : "MISMATCH");
+        }
         if (!value_ok && std::strcmp(package.name, "globdat") == 0) {
             std::printf("[%s] FAIL globdat GLOB_DAT value\n", tag);
             release_slot(slot, true);
@@ -751,9 +781,12 @@ bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, con
     if (table->host_add != nullptr) {
         const bool value_ok =
             reinterpret_cast<void*>(table->host_add) == reinterpret_cast<void*>(&poca_host_add);
-        std::printf("[%s] GLOB_DAT host_add=0x%08" PRIx32 " expected=0x%08" PRIx32 " %s\n", tag,
-                    reinterpret_cast<uint32_t>(table->host_add),
-                    reinterpret_cast<uint32_t>(&poca_host_add), value_ok ? "MATCH" : "MISMATCH");
+        if (!quiet) {
+            std::printf("[%s] GLOB_DAT host_add=0x%08" PRIx32 " expected=0x%08" PRIx32 " %s\n", tag,
+                        reinterpret_cast<uint32_t>(table->host_add),
+                        reinterpret_cast<uint32_t>(&poca_host_add),
+                        value_ok ? "MATCH" : "MISMATCH");
+        }
         if (!value_ok && std::strcmp(package.name, "plt") == 0) {
             std::printf("[%s] FAIL plt GLOB_DAT value\n", tag);
             release_slot(slot, true);
@@ -763,14 +796,17 @@ bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, con
 
     /* Loaded image address evidence: text/data windows live in the PSRAM data
      * mapping; entry pointers run on the mirrored exec window. */
-    std::printf("[%s] text [0x%08" PRIx32 " .. +0x%zx) data [0x%08" PRIx32 " .. +0x%zx) bss 0x%zx"
-                " rodata 0x%zx drlro 0x%zx\n",
-                tag, reinterpret_cast<uint32_t>(slot.elf.ptext), slot.elf.sec[ELF_SEC_TEXT].size,
-                reinterpret_cast<uint32_t>(slot.elf.pdata),
-                slot.elf.sec[ELF_SEC_DATA].size + slot.elf.sec[ELF_SEC_RODATA].size +
-                    slot.elf.sec[ELF_SEC_DRLRO].size,
-                slot.elf.sec[ELF_SEC_BSS].size, slot.elf.sec[ELF_SEC_RODATA].size,
-                slot.elf.sec[ELF_SEC_DRLRO].size);
+    if (!quiet) {
+        std::printf("[%s] text [0x%08" PRIx32 " .. +0x%zx) data [0x%08" PRIx32
+                    " .. +0x%zx) bss 0x%zx"
+                    " rodata 0x%zx drlro 0x%zx\n",
+                    tag, reinterpret_cast<uint32_t>(slot.elf.ptext),
+                    slot.elf.sec[ELF_SEC_TEXT].size, reinterpret_cast<uint32_t>(slot.elf.pdata),
+                    slot.elf.sec[ELF_SEC_DATA].size + slot.elf.sec[ELF_SEC_RODATA].size +
+                        slot.elf.sec[ELF_SEC_DRLRO].size,
+                    slot.elf.sec[ELF_SEC_BSS].size, slot.elf.sec[ELF_SEC_RODATA].size,
+                    slot.elf.sec[ELF_SEC_DRLRO].size);
+    }
     const uint32_t text_addr = reinterpret_cast<uint32_t>(slot.elf.ptext);
     if (!(text_addr >= kPsramDataLow && text_addr < kPsramDataHigh)) {
         std::printf("[%s] FAIL text addr outside PSRAM data window\n", tag);
@@ -788,8 +824,10 @@ bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, con
     if (slot.elf.sec[ELF_SEC_IRAM].size != 0) {
         const uint32_t iram_addr = reinterpret_cast<uint32_t>(slot.elf.piram);
         const bool iram_window_ok = iram_addr >= kIramLow && iram_addr < kIramHigh;
-        std::printf("[%s] iram [0x%08" PRIx32 " .. +0x%zx) window0x40=%s\n", tag, iram_addr,
-                    slot.elf.sec[ELF_SEC_IRAM].size, iram_window_ok ? "PASS" : "FAIL");
+        if (!quiet) {
+            std::printf("[%s] iram [0x%08" PRIx32 " .. +0x%zx) window0x40=%s\n", tag, iram_addr,
+                        slot.elf.sec[ELF_SEC_IRAM].size, iram_window_ok ? "PASS" : "FAIL");
+        }
         if (!iram_window_ok || slot.elf.piram == nullptr) {
             std::printf("[%s] FAIL plugin_iram outside IRAM exec window\n", tag);
             release_slot(slot, true);
@@ -800,8 +838,10 @@ bool load_positive_into(PluginRuntime& slot, const EmbeddedPackage& package, con
     slot.table = table;
     slot.loaded = true;
     const uint32_t free_after = psram_free_bytes();
-    std::printf("[%s] psram free after=%" PRIu32 " consumed=%" PRIu32 "\n", tag, free_after,
-                slot.psram_free_before_load - free_after);
+    if (!quiet) {
+        std::printf("[%s] psram free after=%" PRIu32 " consumed=%" PRIu32 "\n", tag, free_after,
+                    slot.psram_free_before_load - free_after);
+    }
     return true;
 }
 
@@ -835,12 +875,17 @@ int32_t expected_activate(const EmbeddedPackage& package) {
 /* T8 admission guard (MEM-003): the manifest's max_memory_bytes must not
  * exceed the 512 KiB hard maximum. Returns true when admissible and always
  * logs the declaration against both budget anchors. */
-bool check_max_memory_admission(const mpb_view_t& view) {
+/* T8 admission guard (MEM-003): the manifest's max_memory_bytes must not
+ * exceed the 512 KiB hard maximum. Returns true when admissible; quiet=true
+ * (T9 soak) skips the informational log line. */
+bool check_max_memory_admission(const mpb_view_t& view, bool quiet) {
     const bool ok = view.max_memory_bytes <= kHardMaxMemoryBytes;
-    std::printf("[poca] admission max_mem=%" PRIu32 " default_arena=%" PRIu32 " hard_max=%" PRIu32
-                " %s\n",
-                view.max_memory_bytes, kDefaultArenaBytes, kHardMaxMemoryBytes,
-                ok ? "OK" : "REJECT(>hard max)");
+    if (!quiet) {
+        std::printf("[poca] admission max_mem=%" PRIu32 " default_arena=%" PRIu32
+                    " hard_max=%" PRIu32 " %s\n",
+                    view.max_memory_bytes, kDefaultArenaBytes, kHardMaxMemoryBytes,
+                    ok ? "OK" : "REJECT(>hard max)");
+    }
     return ok;
 }
 
@@ -852,6 +897,10 @@ struct HeapSnap {
     uint32_t iram_largest;
     uint32_t iram_min_ever;
     uint32_t internal_free;
+    /* T9 soak trend fields (development-plan section 4 item 6): the internal
+     * heap needs the same largest/min_ever trend evidence as PSRAM. */
+    uint32_t internal_largest;
+    uint32_t internal_min_ever;
 };
 
 HeapSnap heap_snap() {
@@ -869,15 +918,18 @@ HeapSnap heap_snap() {
         static_cast<uint32_t>(iram.largest_free_block),
         static_cast<uint32_t>(iram.minimum_free_bytes),
         static_cast<uint32_t>(internal.total_free_bytes),
+        static_cast<uint32_t>(internal.largest_free_block),
+        static_cast<uint32_t>(internal.minimum_free_bytes),
     };
 }
 
 void print_heap_snap(const char* phase, const HeapSnap& snap) {
     std::printf("[T8-heap] phase=%-16s psram free=%" PRIu32 " largest=%" PRIu32 " min_ever=%" PRIu32
                 " | iram-exec free=%" PRIu32 " largest=%" PRIu32 " min_ever=%" PRIu32
-                " | internal free=%" PRIu32 "\n",
+                " | internal free=%" PRIu32 " largest=%" PRIu32 " min_ever=%" PRIu32 "\n",
                 phase, snap.psram_free, snap.psram_largest, snap.psram_min_ever, snap.iram_free,
-                snap.iram_largest, snap.iram_min_ever, snap.internal_free);
+                snap.iram_largest, snap.iram_min_ever, snap.internal_free, snap.internal_largest,
+                snap.internal_min_ever);
 }
 
 /* Whole-system stack high-water snapshot (uxTaskGetSystemStates, the M1
@@ -1454,6 +1506,336 @@ int cmd_poca_coexist() {
     }
     std::printf("[poca-coexist] FAIL\n");
     return 1;
+}
+
+/* ====================== T9: 1000-cycle lifecycle soak ====================== */
+
+constexpr unsigned kSoakSampleEvery = 10u;
+constexpr unsigned kSoakSwapEvery = 100u;
+constexpr unsigned kSoakIntegrityEvery = 50u;
+constexpr unsigned kSoakMaxTasks = 12u;
+/* ring capacity: baseline row + one row per kSoakSampleEvery window of a
+ * 10000-cycle max run would overflow by design; rows beyond capacity wrap
+ * (keep the newest kSoakRingRows samples) and the summary reports it. */
+constexpr unsigned kSoakRingRows = 104u;
+
+struct SoakSample {
+    uint32_t cycle;
+    HeapSnap heap;
+    uint32_t hwm[kSoakMaxTasks];
+};
+
+SoakSample g_soak_ring[kSoakRingRows];
+char g_soak_task_names[kSoakMaxTasks][configMAX_TASK_NAME_LEN];
+unsigned g_soak_task_count = 0;
+unsigned g_soak_ring_count = 0;
+unsigned g_soak_ring_next = 0;
+bool g_soak_ring_overflow = false;
+
+uint32_t soak_task_stack_size(const char* name) {
+    if (std::strcmp(name, "console_repl") == 0) {
+        return kPocaReplStackBytes;
+    }
+    if (std::strcmp(name, "IDLE0") == 0 || std::strcmp(name, "IDLE1") == 0) {
+        return CONFIG_FREERTOS_IDLE_TASK_STACKSIZE;
+    }
+    if (std::strcmp(name, "ipc0") == 0 || std::strcmp(name, "ipc1") == 0) {
+        return CONFIG_ESP_IPC_TASK_STACK_SIZE;
+    }
+    if (std::strcmp(name, "esp_timer") == 0 || std::strcmp(name, "Tmr Svc") == 0) {
+        return CONFIG_ESP_TIMER_TASK_STACK_SIZE;
+    }
+    return 0; /* unknown: judge applies a conservative floor instead */
+}
+
+/* Capture the per-task stack high-water marks via uxTaskGetSystemState (the
+ * T8 helper's data source). The first call also fixes the tracked task set
+ * and name order; any later task-set change is a soak error (fail loudly
+ * rather than silently misattributing columns). */
+bool soak_capture_tasks(SoakSample* out) {
+    static TaskStatus_t tasks[kSoakMaxTasks * 2];
+    const UBaseType_t count = uxTaskGetSystemState(tasks, kSoakMaxTasks * 2, nullptr);
+    if (count == 0 || count > kSoakMaxTasks) {
+        std::printf("[poca-soak] FAIL task capture count=%u\n", static_cast<unsigned>(count));
+        return false;
+    }
+    if (g_soak_task_count == 0) {
+        g_soak_task_count = count;
+        for (unsigned t = 0; t < count; ++t) {
+            std::snprintf(g_soak_task_names[t], sizeof(g_soak_task_names[t]), "%s",
+                          tasks[t].pcTaskName);
+            out->hwm[t] = tasks[t].usStackHighWaterMark;
+        }
+        return true;
+    }
+    if (count != g_soak_task_count) {
+        std::printf("[poca-soak] FAIL task set changed %u -> %u\n", g_soak_task_count,
+                    static_cast<unsigned>(count));
+        return false;
+    }
+    for (unsigned t = 0; t < count; ++t) {
+        bool matched = false;
+        for (unsigned s = 0; s < count; ++s) {
+            if (std::strcmp(tasks[s].pcTaskName, g_soak_task_names[t]) == 0) {
+                out->hwm[t] = tasks[s].usStackHighWaterMark;
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) {
+            std::printf("[poca-soak] FAIL task '%s' missing from snapshot\n", g_soak_task_names[t]);
+            return false;
+        }
+    }
+    return true;
+}
+
+void soak_take_sample(uint32_t cycle) {
+    SoakSample sample{};
+    sample.cycle = cycle;
+    sample.heap = heap_snap();
+    if (!soak_capture_tasks(&sample)) {
+        return; /* capture failure already counted as a soak error */
+    }
+    if (g_soak_ring_count < kSoakRingRows) {
+        g_soak_ring[g_soak_ring_count] = sample;
+        g_soak_ring_count += 1;
+    } else {
+        g_soak_ring[g_soak_ring_next] = sample;
+        g_soak_ring_next = (g_soak_ring_next + 1u) % kSoakRingRows;
+        g_soak_ring_overflow = true;
+    }
+}
+
+/* Quiesce step semantics (development-plan section 4 item 6 / 4.14.2 minimal
+ * entry subset): the ABI 1.2 entry table defines prepare/activate/unload and
+ * NO quiesce entry. A missing (NULL) lifecycle entry is contractually a
+ * trivial success - quiescing a stateless plugin requires no plugin code -
+ * so the soak counts each quiesce as a satisfied no-op instead of calling
+ * any function. */
+bool soak_quiesce(const PluginRuntime& slot) {
+    return slot.loaded && slot.table != nullptr && slot.table->activate != nullptr;
+}
+
+/* Full single-plugin lifecycle: load(verify+relocate+query+prepare) ->
+ * activate(value assert) -> quiesce(no-op) -> unload. Returns true only when
+ * every stage passed; the slot is released on all exits. */
+bool soak_lifecycle_cycle(const EmbeddedPackage& package, unsigned* matches) {
+    if (!load_positive_into(g_active, package, "poca-soak", /*quiet=*/true)) {
+        std::printf("[poca-soak] FAIL cycle load %s\n", package.name);
+        return false;
+    }
+    const int32_t returned = g_active.table->activate();
+    const int32_t expected = expected_activate(package);
+    const bool match = returned == expected;
+    *matches += match ? 1u : 0u;
+    if (!match) {
+        std::printf("[poca-soak] FAIL cycle activate %s returned=0x%08x expected=0x%08x\n",
+                    package.name, static_cast<unsigned>(returned), static_cast<unsigned>(expected));
+    }
+    const bool quiesced = soak_quiesce(g_active);
+    const int32_t unload_err = g_active.table->unload();
+    release_slot(g_active, true);
+    if (!quiesced || unload_err != 0) {
+        std::printf("[poca-soak] FAIL cycle teardown %s quiesced=%s unload_err=%d\n", package.name,
+                    quiesced ? "yes" : "NO", static_cast<int>(unload_err));
+        return false;
+    }
+    return match;
+}
+
+/* Every kSoakSwapEvery-th cycle: the T8 coexistence mini-path. v1 runs its
+ * full lifecycle up to quiesce, v2 stages as CANDIDATE while v1 is still
+ * ACTIVE (both arenas resident), both answer with their own magic, v1
+ * unloads, the candidate is promoted and finishes its own lifecycle. */
+bool soak_swap_cycle(const EmbeddedPackage& v1, const EmbeddedPackage& v2, unsigned* matches) {
+    bool ok = true;
+    if (!load_positive_into(g_active, v1, "poca-soak", /*quiet=*/true)) {
+        std::printf("[poca-soak] FAIL swap load v1\n");
+        return false;
+    }
+    const int32_t exp_v1 = expected_activate(v1);
+    const int32_t exp_v2 = expected_activate(v2);
+    const int32_t ret_v1 = g_active.table->activate();
+    const bool m1 = ret_v1 == exp_v1;
+    *matches += m1 ? 1u : 0u;
+    ok = ok && m1;
+
+    if (!load_positive_into(g_candidate, v2, "poca-soak", /*quiet=*/true)) {
+        std::printf("[poca-soak] FAIL swap load v2 candidate\n");
+        release_slot(g_active, true);
+        return false;
+    }
+    const int32_t ret_old = g_active.table->activate();
+    const int32_t ret_cand = g_candidate.table->activate();
+    const bool m_old = ret_old == exp_v1;
+    const bool m_cand = ret_cand == exp_v2;
+    *matches += (m_old ? 1u : 0u) + (m_cand ? 1u : 0u);
+    ok = ok && m_old && m_cand;
+
+    const bool quiesced_v1 = soak_quiesce(g_active);
+    const int32_t unload_err = g_active.table->unload();
+    release_slot(g_active, true);
+    g_active = g_candidate;
+    g_candidate = PluginRuntime{};
+    const int32_t ret_promoted = g_active.table->activate();
+    const bool m_promoted = ret_promoted == exp_v2;
+    *matches += m_promoted ? 1u : 0u;
+    const bool quiesced_v2 = soak_quiesce(g_active);
+    const int32_t unload2_err = g_active.table->unload();
+    release_slot(g_active, true);
+    ok = ok && quiesced_v1 && quiesced_v2 && unload_err == 0 && unload2_err == 0 && m_promoted;
+
+    std::printf("[poca-soak] swap cycle v1=%s v2=%s ok=%s "
+                "(v1=0x%08x/%s cand=0x%08x/%s old-while-cand=0x%08x/%s promoted=0x%08x/%s)\n",
+                v1.name, v2.name, ok ? "yes" : "NO", static_cast<unsigned>(ret_v1),
+                m1 ? "MATCH" : "MISMATCH", static_cast<unsigned>(ret_cand),
+                m_cand ? "MATCH" : "MISMATCH", static_cast<unsigned>(ret_old),
+                m_old ? "MATCH" : "MISMATCH", static_cast<unsigned>(ret_promoted),
+                m_promoted ? "MATCH" : "MISMATCH");
+    return ok;
+}
+
+int cmd_poca_soak(unsigned cycles, const char* mix) {
+    if (g_active.loaded || g_candidate.loaded) {
+        std::printf("[poca-soak] FAIL slots busy; run poca unload first\n");
+        return 1;
+    }
+    const EmbeddedPackage* v1 = find_package("baseline");
+    const EmbeddedPackage* v2 = find_package("baseline_v2");
+    const EmbeddedPackage* iram = find_package("iram_probe");
+    if (v1 == nullptr || v2 == nullptr || iram == nullptr) {
+        std::printf("[poca-soak] FAIL fixture packages missing\n");
+        return 1;
+    }
+    const bool mix_default = std::strcmp(mix, "default") == 0;
+    const bool mix_baseline = std::strcmp(mix, "baseline") == 0;
+    const bool mix_iram = std::strcmp(mix, "iram") == 0;
+    if (!mix_default && !mix_baseline && !mix_iram) {
+        std::printf("[poca-soak] FAIL unknown mix '%s' (default|baseline|iram)\n", mix);
+        return 1;
+    }
+
+    g_soak_task_count = 0;
+    g_soak_ring_count = 0;
+    g_soak_ring_next = 0;
+    g_soak_ring_overflow = false;
+    const uint32_t canary_before = g_entry_queries;
+    std::printf("SOAKHDR,cycles=%u,sample_every=%u,swap_every=%u,integrity_every=%u,mix=%s\n",
+                static_cast<unsigned>(cycles), kSoakSampleEvery, kSoakSwapEvery,
+                kSoakIntegrityEvery, mix);
+    std::printf("[poca-soak] quiesce semantics: no quiesce fn in the ABI 1.2 entry table; "
+                "NULL entry = trivial success (4.14.2 minimal subset)\n");
+    print_heap_snap("soak-baseline", heap_snap());
+    print_stack_snap("soak-baseline");
+    soak_take_sample(0);
+    std::printf("SOAKTASKS");
+    for (unsigned t = 0; t < g_soak_task_count; ++t) {
+        std::printf(",%s", g_soak_task_names[t]);
+    }
+    std::printf("\nSOAKTASKSZ");
+    for (unsigned t = 0; t < g_soak_task_count; ++t) {
+        std::printf(",%u", static_cast<unsigned>(soak_task_stack_size(g_soak_task_names[t])));
+    }
+    std::printf("\n");
+
+    /* The loader tags every relocate with a 2-line INFO banner; 1000 cycles
+     * would flood the transcript. Errors stay visible (level ERROR). */
+    esp_log_level_set("ELF", ESP_LOG_ERROR);
+
+    unsigned completed = 0;
+    unsigned errors = 0;
+    unsigned matches = 0;
+    unsigned expected_matches = 0;
+    unsigned swaps = 0;
+    unsigned swap_ok = 0;
+    unsigned quiesce_noop = 0;
+    unsigned integrity_probes = 0;
+    unsigned integrity_ok = 0;
+    const int64_t t0 = esp_timer_get_time();
+
+    for (unsigned cycle = 1; cycle <= cycles; ++cycle) {
+        if (cycle % kSoakSwapEvery == 0u) {
+            swaps += 1u;
+            expected_matches += 4u;
+            if (soak_swap_cycle(*v1, *v2, &matches)) {
+                swap_ok += 1u;
+            } else {
+                errors += 1u;
+            }
+            quiesce_noop += 2u;
+        } else {
+            const EmbeddedPackage* scheduled =
+                (mix_iram || (mix_default && cycle % 3u == 0u)) ? iram : v1;
+            expected_matches += 1u;
+            quiesce_noop += 1u;
+            if (!soak_lifecycle_cycle(*scheduled, &matches)) {
+                errors += 1u;
+            }
+        }
+        completed += 1u;
+
+        if (cycle % kSoakIntegrityEvery == 0u) {
+            integrity_probes += 1u;
+            if (heap_caps_check_integrity(MALLOC_CAP_SPIRAM, false)) {
+                integrity_ok += 1u;
+            } else {
+                errors += 1u;
+                std::printf("[poca-soak] FAIL integrity probe cycle=%u\n", cycle);
+            }
+        }
+        if (cycle % kSoakSampleEvery == 0u) {
+            soak_take_sample(cycle);
+            std::printf("[poca-soak] prog cycle=%u/%u errors=%u matches=%u psram_free=%" PRIu32
+                        "\n",
+                        cycle, static_cast<unsigned>(cycles), errors, matches, psram_free_bytes());
+        }
+        /* yield 1 tick so the IDLE tasks on both cores feed the task WDT
+         * (both CPU idle tasks are watched on this config) */
+        vTaskDelay(1);
+    }
+
+    if (cycles % kSoakSampleEvery != 0u) {
+        soak_take_sample(cycles);
+    }
+    const int64_t elapsed_ms = (esp_timer_get_time() - t0) / 1000;
+    esp_log_level_set("ELF", ESP_LOG_INFO);
+    print_heap_snap("soak-final", heap_snap());
+    print_stack_snap("soak-final");
+
+    std::printf("[poca-soak] samples begin (%u rows)\n", g_soak_ring_count);
+    for (unsigned i = 0; i < g_soak_ring_count; ++i) {
+        const unsigned row = g_soak_ring_overflow ? (g_soak_ring_next + i) % kSoakRingRows : i;
+        const SoakSample& s = g_soak_ring[row];
+        std::printf("SOAKSMP,%u,%" PRIu32 ",%" PRIu32 ",%" PRIu32 ",%" PRIu32 ",%" PRIu32
+                    ",%" PRIu32 ",%" PRIu32 ",%" PRIu32 ",%" PRIu32 ",%" PRIu32 "",
+                    i, s.cycle, s.heap.psram_free, s.heap.psram_largest, s.heap.psram_min_ever,
+                    s.heap.iram_free, s.heap.iram_largest, s.heap.iram_min_ever,
+                    s.heap.internal_free, s.heap.internal_largest, s.heap.internal_min_ever);
+        for (unsigned t = 0; t < g_soak_task_count; ++t) {
+            std::printf(",%u", static_cast<unsigned>(s.hwm[t]));
+        }
+        std::printf("\n");
+    }
+    std::printf("[poca-soak] samples end\n");
+
+    const unsigned expected_queries = completed + swaps;
+    std::printf("SOAKSUM,cycles=%u,completed=%u,errors=%u,value_matches=%u,"
+                "expected_value_matches=%u,swaps=%u,swap_ok=%u,quiesce_noop=%u,"
+                "integrity_probes=%u,integrity_ok=%u,canary_before=%" PRIu32
+                ",canary_after=%" PRIu32 ",expected_queries=%u,elapsed_ms=%" PRId64
+                ",ring_overflow=%s\n",
+                static_cast<unsigned>(cycles), completed, errors, matches, expected_matches, swaps,
+                swap_ok, quiesce_noop, integrity_probes, integrity_ok, canary_before,
+                g_entry_queries, expected_queries, elapsed_ms, g_soak_ring_overflow ? "yes" : "no");
+    if (errors != 0u || completed != cycles) {
+        std::printf("[poca-soak] FAIL (errors=%u completed=%u/%u)\n", errors, completed,
+                    static_cast<unsigned>(cycles));
+        return 1;
+    }
+    std::printf("[poca-soak] DONE (%u cycles, verdict authority = host judge on samples)\n",
+                static_cast<unsigned>(cycles));
+    return 0;
 }
 
 } // namespace frame::poca

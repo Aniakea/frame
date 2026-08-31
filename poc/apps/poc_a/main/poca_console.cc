@@ -94,8 +94,17 @@ int poca_command(int argc, char** argv) {
     if (argc == 2 && std::strcmp(argv[1], "coexist") == 0) {
         return cmd_poca_coexist();
     }
+    if ((argc == 3 || argc == 4) && std::strcmp(argv[1], "soak") == 0) {
+        const int parsed = std::atoi(argv[2]);
+        if (parsed < 1 || parsed > 10000) {
+            std::printf("[poca-soak] FAIL cycle count out of range (1..10000)\n");
+            return 1;
+        }
+        return cmd_poca_soak(static_cast<unsigned>(parsed), argc == 4 ? argv[3] : "default");
+    }
     std::printf("usage: poca status | poca abi | poca verify [name] | poca load [name] | "
-                "poca activate | poca unload | poca iram [n] | poca coexist\n");
+                "poca activate | poca unload | poca iram [n] | poca coexist | poca soak <n> "
+                "[mix]\n");
     return 1;
 }
 
@@ -105,7 +114,7 @@ esp_err_t start_console() {
     const esp_console_cmd_t poca_cmd{
         .command = "poca",
         .help = "poca status | abi | verify [name] | load [name] | activate | unload | iram [n] | "
-                "coexist",
+                "coexist | soak <n> [mix]",
         .hint = nullptr,
         .func = &poca_command,
         .argtable = nullptr,
@@ -122,7 +131,7 @@ esp_err_t start_console() {
     repl_config.prompt = "poca> ";
     repl_config.max_cmdline_length = 160;
     repl_config.max_cmdline_args = 8;
-    repl_config.task_stack_size = 6144;
+    repl_config.task_stack_size = kPocaReplStackBytes;
     repl_config.task_priority = 5;
     repl_config.task_core_id = 1;
     esp_console_dev_usb_serial_jtag_config_t device_config =

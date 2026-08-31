@@ -7,7 +7,8 @@ namespace frame::poca {
 
 /* Console subcommands implemented in poca_plugin.cc (task T4, extended in
  * T5 with the named-package relocation/import allowlist matrix, in T7 with
- * the IRAM probe, in T8 with generation coexistence):
+ * the IRAM probe, in T8 with generation coexistence, in T9 with the
+ * lifecycle soak):
  *   poca verify [name]   parse-only view of an embedded signed package
  *   poca load [name]     stage + verify + admission + relocate + query
  *                        + prepare; negatives assert fail-before-execute
@@ -19,6 +20,16 @@ namespace frame::poca {
  *                        CANDIDATE in an independent arena, single-candidate
  *                        guard, both generations callable, swap+unload old,
  *                        per-phase heap/stack snapshots + budget summary
+ *   poca soak <n> [mix]  T9: n lifecycle cycles (load->verify->relocate->
+ *                        prepare->activate+value assert->quiesce(no-op;
+ *                        NULL entry = trivial success)->unload); schedule:
+ *                        mix=default cycles%3==0 iram_probe else baseline,
+ *                        mix=baseline / mix=iram force one plugin; every
+ *                        100th cycle a v1/v2 coexistence swap; heap+stack
+ *                        sample ring every 10 cycles printed as a
+ *                        machine-parsable SOAKSMP table; heap integrity
+ *                        probe every 50 cycles; SOAKSUM summary line (the
+ *                        PASS/FAIL verdict authority is the host judge)
  * Package names: baseline baseline_v2 baseline_300k globdat plt import_neg
  * iram_probe iram_mismatch neg_maxmem neg_r32 neg_s0op neg_phspan neg_phbe
  * neg_ph64 neg_phmach (default baseline).
@@ -29,6 +40,7 @@ int cmd_poca_activate();
 int cmd_poca_unload();
 int cmd_poca_iram(unsigned iterations);
 int cmd_poca_coexist();
+int cmd_poca_soak(unsigned cycles, const char* mix);
 uint32_t poca_entry_queries();
 
 } // namespace frame::poca
