@@ -19,6 +19,14 @@
 #define BASELINE_ERR_PACKAGE_INVALID (-18)
 #define BASELINE_ERR_HASH_MISMATCH (-19)
 
+/* Generation-variant magic (task T8 coexistence): the same source is packaged
+ * as baseline v1 (default magic) and baseline_v2 v2.0.0 with a different
+ * activate() magic constant, so concurrent calls into two resident
+ * generations are distinguishable by value, not only by address. */
+#ifndef POCA_BASELINE_ACTIVATE_MAGIC
+#define POCA_BASELINE_ACTIVATE_MAGIC POCA_PLUGIN_MAGIC
+#endif
+
 static int32_t baseline_prepare(void);
 static int32_t baseline_activate(void);
 static int32_t baseline_unload(void);
@@ -65,7 +73,7 @@ static int32_t baseline_activate(void) {
     /* The proof value: computed by THIS code, at THIS loaded address, over
      * THIS image's pattern bytes. The firmware recomputes it over its own
      * flash copy of the same constants and must observe the same value. */
-    return (int32_t)(POCA_PLUGIN_MAGIC ^
+    return (int32_t)(POCA_BASELINE_ACTIVATE_MAGIC ^
                      poca_crc32(POCA_BASELINE_PATTERN, POCA_BASELINE_PATTERN_SIZE));
 }
 

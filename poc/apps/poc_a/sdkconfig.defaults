@@ -28,3 +28,8 @@ CONFIG_LOG_DEFAULT_LEVEL_INFO=y
 # reversed for the PoC harness because requirements 4.10.3/4.10.4 require
 # plugin hot functions in IRAM.
 CONFIG_ESP_SYSTEM_MEMPROT=n
+
+# T8/T9 (plan section 4 item 6): whole-system task stack high-water
+# snapshots need the FreeRTOS trace facility (uxTaskGetSystemState /
+# TaskStatus_t), compiled only when this config is on.
+CONFIG_FREERTOS_USE_TRACE_FACILITY=y

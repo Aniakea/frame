@@ -91,8 +91,11 @@ int poca_command(int argc, char** argv) {
         }
         return cmd_poca_iram(iterations);
     }
+    if (argc == 2 && std::strcmp(argv[1], "coexist") == 0) {
+        return cmd_poca_coexist();
+    }
     std::printf("usage: poca status | poca abi | poca verify [name] | poca load [name] | "
-                "poca activate | poca unload | poca iram [n]\n");
+                "poca activate | poca unload | poca iram [n] | poca coexist\n");
     return 1;
 }
 
@@ -101,7 +104,8 @@ int poca_command(int argc, char** argv) {
 esp_err_t start_console() {
     const esp_console_cmd_t poca_cmd{
         .command = "poca",
-        .help = "poca status | abi | verify [name] | load [name] | activate | unload | iram [n]",
+        .help = "poca status | abi | verify [name] | load [name] | activate | unload | iram [n] | "
+                "coexist",
         .hint = nullptr,
         .func = &poca_command,
         .argtable = nullptr,

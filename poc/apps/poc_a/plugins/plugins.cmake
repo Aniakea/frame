@@ -1,5 +1,5 @@
 # poca_plugin(<name> SOURCE <file.c> VERSION <semver> ENTRY <symbol> MANIFEST <json>
-#             [IMPORTS <sym>...] [IRAM])
+#             [IMPORTS <sym>...] [IRAM] [MPB_NAME <name>] [MAGIC <0xC_MACRO_SUFFIX>])
 #
 # PoC-A plugin build pipeline (task T4 of poc-a-dynamic-elf). Produces, under
 # ${CMAKE_BINARY_DIR}/plugins/:
@@ -9,6 +9,16 @@
 #                      manifest_builder.py (frame-manifest-builder)
 #   generated/poca_<name>_meta.h   size + sha256 of the mpb, compiled into the
 #                      firmware so the device can detect a stale embed
+#
+# MPB_NAME (T8): overrides the manifest name field (default: <name>) so two
+#                packaged generations of the same plugin identity can carry
+#                the SAME manifest name with different versions (PLUG-004
+#                hot-update semantics) while remaining distinct build
+#                targets.
+# MAGIC (T8):    appends -DPOCA_BASELINE_ACTIVATE_MAGIC=<value> to the plugin
+#                compile and emits POCA_<NAME>_MAGIC into the meta header, so
+#                generation variants return distinguishable activate()
+#                self-check values.
 #
 # IRAM (T7): the plugin places hot functions in a .plugin_iram section;
 # enables gate 5 in check_plugin_elf.cmake (single ALLOC+EXEC section, no
@@ -50,12 +60,15 @@ set(POCA_PLUGINS_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set(POCA_REPO_ROOT "${POCA_PLUGINS_DIR}/../../../..")
 
 function(poca_plugin name)
-    cmake_parse_arguments(PLUGIN "IRAM" "SOURCE;VERSION;ENTRY;MANIFEST" "IMPORTS" ${ARGN})
+    cmake_parse_arguments(PLUGIN "IRAM" "SOURCE;VERSION;ENTRY;MANIFEST;MPB_NAME;MAGIC" "IMPORTS" ${ARGN})
     if(NOT PLUGIN_SOURCE OR NOT PLUGIN_VERSION OR NOT PLUGIN_ENTRY OR NOT PLUGIN_MANIFEST)
         message(FATAL_ERROR "poca_plugin(${name}): SOURCE, VERSION, ENTRY and MANIFEST are required")
     endif()
     if(NOT PLUGIN_IMPORTS)
         set(PLUGIN_IMPORTS "")
+    endif()
+    if(NOT PLUGIN_MPB_NAME)
+        set(PLUGIN_MPB_NAME "${name}")
     endif()
     if(PLUGIN_IRAM)
         set(iram_gate_args "-D" "EXPECT_IRAM_SECTION=1")
@@ -86,6 +99,9 @@ function(poca_plugin name)
         -fdata-sections -ffunction-sections
         -ffreestanding -fno-builtin
         -Wall -Wextra -Werror)
+    if(PLUGIN_MAGIC)
+        list(APPEND plugin_compile_flags "-DPOCA_BASELINE_ACTIVATE_MAGIC=${PLUGIN_MAGIC}")
+    endif()
 
     set(plugin_link_flags -shared -fPIC -static-libgcc
         -nostdlib -nostartfiles
@@ -165,12 +181,14 @@ function(poca_plugin name)
         BYPRODUCTS "${meta_header}"
         COMMAND "${CMAKE_COMMAND}" -E env "PYTHONPATH=${repo_root}/tools"
             "${plugin_python}" -m frame_tools.manifest_builder build
-            --elf "${elf}" --name "${name}" --version "${PLUGIN_VERSION}"
+            --elf "${elf}" --name "${PLUGIN_MPB_NAME}" --version "${PLUGIN_VERSION}"
             --manifest-json "${PLUGIN_MANIFEST}"
             --key "${signing_key}" --epoch 1 --output "${mpb}"
         COMMAND "${CMAKE_COMMAND}"
-            -D "PLUGIN_NAME=${name}" -D "PLUGIN_VERSION=${PLUGIN_VERSION}"
+            -D "PLUGIN_NAME=${name}" -D "PLUGIN_MPB_NAME=${PLUGIN_MPB_NAME}"
+            -D "PLUGIN_VERSION=${PLUGIN_VERSION}"
             -D "PLUGIN_ENTRY=${PLUGIN_ENTRY}"
+            -D "PLUGIN_MAGIC=${PLUGIN_MAGIC}"
             -D "MPB=${mpb}" -D "OUT=${meta_header}"
             -P "${plugins_dir}/gen_meta_header.cmake"
         DEPENDS "${stamp}" "${PLUGIN_MANIFEST}" "${signing_key}"
@@ -414,6 +432,53 @@ function(poca_iram_corpus)
         COMMENT "[iram-corpus] probe + budget-mismatch containers (T7)"
         VERBATIM)
     add_custom_target(poca_iram_corpus DEPENDS "${stamp}")
+endfunction()
+
+# poca_maxmem_corpus(BASELINE_ELF <elf>)
+#
+# T8 admission negative: packages neg_maxmem, a signature-valid container
+# whose manifest declares max_memory_bytes=614400 (600 KiB > the 512 KiB hard
+# maximum of MEM-003). The builder refuses to build this via the positive
+# path (manifest cross-field validation), so the fixture is handcrafted with
+# the hostile assemble_mpb path; the on-device rejection must then come from
+# the poca admission check, before esp_elf_init and before any plugin byte
+# executes.
+function(poca_maxmem_corpus)
+    cmake_parse_arguments(CORPUS "" "BASELINE_ELF" "" ${ARGN})
+    if(NOT CORPUS_BASELINE_ELF)
+        message(FATAL_ERROR "poca_maxmem_corpus: BASELINE_ELF is required")
+    endif()
+
+    set(out_dir "${CMAKE_BINARY_DIR}/plugins")
+    set(gen_dir "${out_dir}/generated")
+    set(corpus_names neg_maxmem)
+    set(corpus_outputs "")
+    foreach(name IN LISTS corpus_names)
+        list(APPEND corpus_outputs "${out_dir}/${name}.mpb" "${gen_dir}/poca_${name}_meta.h")
+    endforeach()
+    set(stamp "${out_dir}/coexist/corpus.stamp")
+
+    set(signing_key "${POCA_REPO_ROOT}/tools/frame_tools/testdata/keys/poc_a_test_signing_key.pem")
+    if(NOT Python_EXECUTABLE)
+        set(corpus_python python3)
+    else()
+        set(corpus_python "${Python_EXECUTABLE}")
+    endif()
+
+    add_custom_command(
+        OUTPUT "${stamp}"
+        BYPRODUCTS ${corpus_outputs}
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${out_dir}/coexist"
+        COMMAND "${corpus_python}" "${POCA_PLUGINS_DIR}/coexist/build_maxmem_corpus.py"
+            --baseline-elf "${CORPUS_BASELINE_ELF}"
+            --key "${signing_key}"
+            --out-dir "${out_dir}"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${stamp}"
+        DEPENDS "${CORPUS_BASELINE_ELF}"
+                "${POCA_PLUGINS_DIR}/coexist/build_maxmem_corpus.py" "${signing_key}"
+        COMMENT "[poca-corpus] hostile 600KiB-declared admission container (T8)"
+        VERBATIM)
+    add_custom_target(poca_maxmem_corpus DEPENDS "${stamp}")
 endfunction()
 
 # Generate the embedded TEST public key header (65-byte uncompressed point

@@ -67,6 +67,28 @@ poca_negative_corpus(
 # negatives derive from the gated baseline ELF: gate first, then fabricate
 add_dependencies(poca_negative_corpus poca_plugin_baseline)
 
+# T8 generation coexistence: baseline_v2 is the SAME source packaged as the
+# same manifest name "baseline" with version 2.0.0 and a distinct activate()
+# magic; baseline_300k proves a >256KiB default-arena declaration (300KiB)
+# is admission-requestable under the 512KiB hard max (MEM-003); neg_maxmem
+# hostile-declares 600KiB and must be rejected on-board before esp_elf_init.
+poca_plugin(baseline_v2
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/../plugins/baseline/baseline.c"
+    VERSION "2.0.0"
+    ENTRY "frame_plugin_entry"
+    MANIFEST "${CMAKE_CURRENT_LIST_DIR}/../plugins/baseline_v2/manifest.json"
+    MPB_NAME "baseline"
+    MAGIC "0x32504F43u")
+poca_plugin(baseline_300k
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/../plugins/baseline/baseline.c"
+    VERSION "1.0.1"
+    ENTRY "frame_plugin_entry"
+    MANIFEST "${CMAKE_CURRENT_LIST_DIR}/../plugins/baseline_300k/manifest.json"
+    MPB_NAME "baseline")
+poca_maxmem_corpus(
+    BASELINE_ELF "${CMAKE_BINARY_DIR}/plugins/baseline/baseline.elf")
+add_dependencies(poca_maxmem_corpus poca_plugin_baseline)
+
 # T6 C++ feature-rejection probes: each variant must be REJECTED by the
 # same gates that protect the positive builds (expected-failure wrapper
 # echoes the verbatim gate error). NEEDLES name the required rejection
@@ -111,11 +133,14 @@ target_include_directories(${COMPONENT_LIB} PRIVATE
 
 add_dependencies(${COMPONENT_LIB}
     poca_plugin_baseline
+    poca_plugin_baseline_v2
+    poca_plugin_baseline_300k
     poca_plugin_globdat
     poca_plugin_plt
     poca_plugin_import_neg
     poca_plugin_iram_probe
     poca_negative_corpus
+    poca_maxmem_corpus
     poca_cxx_probe_cxx_ctor
     poca_cxx_probe_cxx_dtor
     poca_cxx_probe_cxx_tls
@@ -125,6 +150,8 @@ add_dependencies(${COMPONENT_LIB}
     poca_cxx_probe_corpus
     poca_iram_corpus)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/baseline.mpb" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/baseline_v2.mpb" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/baseline_300k.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/globdat.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/plt.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/import_neg.mpb" BINARY)
@@ -136,6 +163,7 @@ target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_phspan.
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_phbe.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_ph64.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_phmach.mpb" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_maxmem.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/cxx_ctor.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/cxx_tls.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_tls_nosect.mpb" BINARY)
