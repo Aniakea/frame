@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://frame.local/schemas/poc-evidence-v1.json",
+  "title": "Frame architecture gate evidence manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "gate",
+    "run_id",
+    "verdict",
+    "started_at",
+    "finished_at",
+    "source",
+    "platform",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "gate": { "enum": ["A", "B", "C", "D", "E", "M1"] },
+    "run_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "verdict": { "enum": ["PASS", "FAIL", "BLOCKED"] },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository_commit", "dirty", "project_document_sha256"],
+      "properties": {
+        "repository_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "dirty": { "type": "boolean" },
+        "project_document_sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "platform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["idf_tag", "compiler", "target", "sdkconfig_sha256"],
+      "properties": {
+        "idf_tag": { "const": "v6.0.2" },
+        "idf_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "compiler": { "type": "string", "minLength": 1 },
+        "target": { "const": "esp32s3" },
+        "sdkconfig_sha256": { "$ref": "#/$defs/sha256" },
+        "loader_commit": { "type": ["string", "null"], "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "hardware": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["board_id", "board_revision"],
+      "properties": {
+        "board_id": { "type": "string", "minLength": 1 },
+        "board_revision": { "type": "string", "minLength": 1 },
+        "display_id": { "type": ["string", "null"] },
+        "sd_card_id": { "type": ["string", "null"] },
+        "power_fixture_id": { "type": ["string", "null"] }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["number", "integer", "string", "boolean", "null"]
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "uri", "sha256"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "uri": { "type": "string", "minLength": 1 },
+          "sha256": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    },
+    "notes": { "type": "string" }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
