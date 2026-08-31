@@ -95,3 +95,7 @@ Desktop.ini
 # Agent session state (local harness data; never commit)
 .omo/
 .opencode/
+
+# M1-008 build evidence committed under poc/evidence (map/size/metrics)
+!poc/evidence/**/build/
+!poc/evidence/**/build/**

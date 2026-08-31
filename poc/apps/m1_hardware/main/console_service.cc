@@ -7,6 +7,9 @@
 
 #include "board_config.hh"
 #include "esp_console.h"
+#include "esp_heap_caps.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "linenoise/linenoise.h"
 
 namespace frame::m1 {
@@ -97,6 +100,15 @@ esp_err_t console_service::start() {
         .func_w_context = nullptr,
         .context = nullptr,
     };
+    const esp_console_cmd_t metrics_cmd{
+        .command = "metrics",
+        .help = "Heap free/largest/min_ever (internal+PSRAM) and per-task stack high-water marks",
+        .hint = nullptr,
+        .func = &console_service::metrics_command,
+        .argtable = nullptr,
+        .func_w_context = nullptr,
+        .context = nullptr,
+    };
 
     esp_err_t result = esp_console_cmd_register(&status_cmd);
     if (result == ESP_OK) {
@@ -113,6 +125,9 @@ esp_err_t console_service::start() {
     }
     if (result == ESP_OK) {
         result = esp_console_cmd_register(&rtc_cmd);
+    }
+    if (result == ESP_OK) {
+        result = esp_console_cmd_register(&metrics_cmd);
     }
     if (result != ESP_OK) {
         return result;
@@ -261,6 +276,48 @@ int console_service::rtc_command(int argc, char** argv) {
     }
     std::printf("usage: rtc status | rtc raw | rtc set YYYY-MM-DD HH:MM:SS (UTC+8 local)\n");
     return 1;
+}
+
+int console_service::metrics_command(int argc, char** argv) {
+    if (argc != 1) {
+        std::printf("usage: metrics\n");
+        return 1;
+    }
+    instance_->print_metrics();
+    return 0;
+}
+
+void console_service::print_metrics() const {
+    constexpr uint32_t kInternalCaps = MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT;
+    std::printf("heap internal free=%u largest=%u min_ever=%u\n",
+                static_cast<unsigned>(heap_caps_get_free_size(kInternalCaps)),
+                static_cast<unsigned>(heap_caps_get_largest_free_block(kInternalCaps)),
+                static_cast<unsigned>(heap_caps_get_minimum_free_size(kInternalCaps)));
+    constexpr uint32_t kPsramCaps = MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT;
+    std::printf("heap psram free=%u largest=%u min_ever=%u\n",
+                static_cast<unsigned>(heap_caps_get_free_size(kPsramCaps)),
+                static_cast<unsigned>(heap_caps_get_largest_free_block(kPsramCaps)),
+                static_cast<unsigned>(heap_caps_get_minimum_free_size(kPsramCaps)));
+
+    const UBaseType_t task_slots = uxTaskGetNumberOfTasks() + 4U;
+    TaskStatus_t* tasks = static_cast<TaskStatus_t*>(
+        heap_caps_malloc(sizeof(TaskStatus_t) * task_slots, kInternalCaps));
+    if (tasks == nullptr) {
+        std::printf("task snapshot: allocation failed\n");
+        return;
+    }
+    const UBaseType_t task_count = uxTaskGetSystemState(tasks, task_slots, nullptr);
+    if (task_count == 0U) {
+        std::printf("task snapshot: task set changed, retry the command\n");
+        heap_caps_free(tasks);
+        return;
+    }
+    for (UBaseType_t index = 0; index < task_count; ++index) {
+        const unsigned hwm_bytes = static_cast<unsigned>(tasks[index].usStackHighWaterMark) *
+                                   static_cast<unsigned>(sizeof(StackType_t));
+        std::printf("task %s stack_hwm_bytes=%u\n", tasks[index].pcTaskName, hwm_bytes);
+    }
+    heap_caps_free(tasks);
 }
 
 void console_service::print_rtc_status() const {
