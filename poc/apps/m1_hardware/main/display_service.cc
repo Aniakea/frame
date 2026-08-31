@@ -32,6 +32,8 @@ uint64_t volatile_signature(const status_snapshot& value) {
     };
     fold(value.key_short_presses);
     fold(value.key_long_presses);
+    fold(value.boot_short_presses);
+    fold(value.boot_long_presses);
     fold(value.key_pressed ? 1U : 0U);
     fold(static_cast<uint64_t>(value.wifi));
     fold(static_cast<uint64_t>(value.storage));
@@ -43,20 +45,22 @@ uint64_t volatile_signature(const status_snapshot& value) {
     return signature;
 }
 
+// Human-facing RTC line: local UTC+8 rendering (China has no DST, fixed offset).
 void format_rtc_time(const status_snapshot& value, char* output, std::size_t capacity) {
     output[0] = '\0';
     if (!value.rtc.valid) {
         return;
     }
-    const time_t seconds = static_cast<time_t>(value.rtc.unix_seconds);
-    struct tm utc_time {};
-    if (gmtime_r(&seconds, &utc_time) != nullptr) {
-        const unsigned year = static_cast<unsigned>(utc_time.tm_year + 1900);
+    const time_t seconds =
+        static_cast<time_t>(value.rtc.unix_seconds + board::kLocalUtcOffsetSeconds);
+    struct tm local_time {};
+    if (gmtime_r(&seconds, &local_time) != nullptr) {
+        const unsigned year = static_cast<unsigned>(local_time.tm_year + 1900);
         std::snprintf(
-            output, capacity, "%04u-%02u-%02u %02u:%02u:%02u", year,
-            static_cast<unsigned>(utc_time.tm_mon + 1), static_cast<unsigned>(utc_time.tm_mday),
-            static_cast<unsigned>(utc_time.tm_hour), static_cast<unsigned>(utc_time.tm_min),
-            static_cast<unsigned>(utc_time.tm_sec));
+            output, capacity, "%04u-%02u-%02u %02u:%02u:%02u UTC+8", year,
+            static_cast<unsigned>(local_time.tm_mon + 1), static_cast<unsigned>(local_time.tm_mday),
+            static_cast<unsigned>(local_time.tm_hour), static_cast<unsigned>(local_time.tm_min),
+            static_cast<unsigned>(local_time.tm_sec));
     }
 }
 
@@ -186,14 +190,21 @@ void display_service::render_status(const status_snapshot& value) {
                           value.psram_ok ? "OK" : "FAIL", value.partitions_ok ? "OK" : "FAIL");
     char rtc_text[32]{};
     format_rtc_time(value, rtc_text, sizeof(rtc_text));
+    // The ~179px status column cannot hold "YYYY-MM-DD HH:MM:SS UTC+8" on one line
+    // (montserrat16: 210px); break after the date so both lines fit without clipping.
+    char* time_break = std::strchr(rtc_text, ' ');
+    if (time_break != nullptr) {
+        *time_break = '\n';
+    }
     lv_label_set_text_fmt(
         peripherals_label_,
         "Display: %s\nTF: %s / log:%s\nRTC: %s %s\nSHTC3: %s\n"
-        "KEY short:%" PRIu64 " long:%" PRIu64,
+        "KEY:%" PRIu64 "/%" PRIu64 " BOOT:%" PRIu64 "/%" PRIu64 "\nRST:%" PRIu32,
         value.display_error == ESP_OK ? "OK" : "FAIL",
         hardware_status::sd_state_name(value.storage), value.tf_logging_ok ? "OK" : "WAIT",
         value.rtc_present ? "OK" : "MISS", rtc_text[0] == '\0' ? "-" : rtc_text,
-        value.sensor_present ? "OK" : "MISS", value.key_short_presses, value.key_long_presses);
+        value.sensor_present ? "OK" : "MISS", value.key_short_presses, value.key_long_presses,
+        value.boot_short_presses, value.boot_long_presses, value.reset_count);
     lv_label_set_text_fmt(
         network_label_, "WiFi: %s\nSSID: %s\nIPv4: %s\nCredentials: system_fs (dev)",
         value.ap_active ? "AP-SETUP 192.168.4.1" : hardware_status::wifi_state_name(value.wifi),

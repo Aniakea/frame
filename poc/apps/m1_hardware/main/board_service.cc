@@ -18,6 +18,7 @@ constexpr uint8_t kRtcSecondsRegister = 0x04;
 constexpr uint8_t kRtcFirstRegister = 0x00;
 constexpr std::size_t kRtcRegisterCount = 11;
 // KEY release bands: <1s short press, 1s..<3s long press, >=3s provisioning portal command.
+// BOOT release bands: <1s short press, >=1s long press (no portal binding).
 constexpr int64_t kKeyLongPressUs = 1000000;
 constexpr int64_t kKeyPortalHoldUs = 3000000;
 
@@ -54,12 +55,12 @@ board_service::~board_service() {
 }
 
 esp_err_t board_service::start() {
-    gpio_config_t key_config{};
-    key_config.pin_bit_mask = UINT64_C(1) << board::kKey;
-    key_config.mode = GPIO_MODE_INPUT;
-    key_config.pull_up_en = GPIO_PULLUP_ENABLE;
-    key_config.intr_type = GPIO_INTR_DISABLE;
-    esp_err_t result = gpio_config(&key_config);
+    gpio_config_t buttons_config{};
+    buttons_config.pin_bit_mask = (UINT64_C(1) << board::kKey) | (UINT64_C(1) << board::kBoot);
+    buttons_config.mode = GPIO_MODE_INPUT;
+    buttons_config.pull_up_en = GPIO_PULLUP_ENABLE;
+    buttons_config.intr_type = GPIO_INTR_DISABLE;
+    esp_err_t result = gpio_config(&buttons_config);
     if (result != ESP_OK) {
         return result;
     }
@@ -296,6 +297,10 @@ void board_service::run() {
     bool stable_pressed = last_pressed;
     int64_t changed_at = esp_timer_get_time();
     int64_t pressed_at = stable_pressed ? changed_at : 0;
+    bool boot_last_pressed = gpio_get_level(board::kBoot) == 0;
+    bool boot_stable_pressed = boot_last_pressed;
+    int64_t boot_changed_at = esp_timer_get_time();
+    int64_t boot_pressed_at = boot_stable_pressed ? boot_changed_at : 0;
     int64_t next_sensor_at = 0;
 
     while (true) {
@@ -325,6 +330,28 @@ void board_service::run() {
             }
             if (pressed) {
                 status_.update([](status_snapshot& value) { value.key_pressed = true; });
+            }
+        }
+
+        const bool boot_pressed = gpio_get_level(board::kBoot) == 0;
+        if (boot_pressed != boot_last_pressed) {
+            boot_last_pressed = boot_pressed;
+            boot_changed_at = now;
+        }
+        if (boot_pressed != boot_stable_pressed && now - boot_changed_at >= 30000) {
+            boot_stable_pressed = boot_pressed;
+            if (boot_pressed) {
+                boot_pressed_at = now;
+            } else if (boot_pressed_at != 0) {
+                const int64_t boot_held_us = now - boot_pressed_at;
+                status_.update([&](status_snapshot& value) {
+                    if (boot_held_us >= kKeyLongPressUs) {
+                        ++value.boot_long_presses;
+                    } else {
+                        ++value.boot_short_presses;
+                    }
+                });
+                boot_pressed_at = 0;
             }
         }
 

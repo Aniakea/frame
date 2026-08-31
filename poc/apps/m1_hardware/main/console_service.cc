@@ -19,6 +19,21 @@ uint8_t from_bcd(uint8_t value) {
     return static_cast<uint8_t>((value >> 4U) * 10U + (value & 0x0FU));
 }
 
+// Renders unix seconds (already offset by the caller) as "YYYY-MM-DD HH:MM:SS".
+void format_unix_datetime(int64_t unix_seconds, char* output, std::size_t capacity) {
+    output[0] = '\0';
+    const time_t seconds = static_cast<time_t>(unix_seconds);
+    struct tm utc_time {};
+    if (gmtime_r(&seconds, &utc_time) != nullptr) {
+        const unsigned year = static_cast<unsigned>(utc_time.tm_year + 1900);
+        std::snprintf(
+            output, capacity, "%04u-%02u-%02u %02u:%02u:%02u", year,
+            static_cast<unsigned>(utc_time.tm_mon + 1), static_cast<unsigned>(utc_time.tm_mday),
+            static_cast<unsigned>(utc_time.tm_hour), static_cast<unsigned>(utc_time.tm_min),
+            static_cast<unsigned>(utc_time.tm_sec));
+    }
+}
+
 } // namespace
 
 esp_err_t console_service::start() {
@@ -75,7 +90,7 @@ esp_err_t console_service::start() {
     };
     const esp_console_cmd_t rtc_cmd{
         .command = "rtc",
-        .help = "rtc status | rtc raw | rtc set YYYY-MM-DD HH:MM:SS (UTC)",
+        .help = "rtc status | rtc raw | rtc set YYYY-MM-DD HH:MM:SS (UTC+8 local)",
         .hint = nullptr,
         .func = &console_service::rtc_command,
         .argtable = nullptr,
@@ -244,7 +259,7 @@ int console_service::rtc_command(int argc, char** argv) {
     if (argc == 4 && std::strcmp(argv[1], "set") == 0) {
         return instance_->run_rtc_set(argv[2], argv[3]);
     }
-    std::printf("usage: rtc status | rtc raw | rtc set YYYY-MM-DD HH:MM:SS\n");
+    std::printf("usage: rtc status | rtc raw | rtc set YYYY-MM-DD HH:MM:SS (UTC+8 local)\n");
     return 1;
 }
 
@@ -262,19 +277,14 @@ void console_service::print_rtc_status() const {
                 value.rtc.unix_seconds);
 
     char utc[32]{};
+    char local[32]{};
     if (value.rtc.valid) {
-        const time_t seconds = static_cast<time_t>(value.rtc.unix_seconds);
-        struct tm utc_time {};
-        if (gmtime_r(&seconds, &utc_time) != nullptr) {
-            const unsigned year = static_cast<unsigned>(utc_time.tm_year + 1900);
-            std::snprintf(
-                utc, sizeof(utc), "%04u-%02u-%02u %02u:%02u:%02u", year,
-                static_cast<unsigned>(utc_time.tm_mon + 1), static_cast<unsigned>(utc_time.tm_mday),
-                static_cast<unsigned>(utc_time.tm_hour), static_cast<unsigned>(utc_time.tm_min),
-                static_cast<unsigned>(utc_time.tm_sec));
-        }
+        format_unix_datetime(value.rtc.unix_seconds, utc, sizeof(utc));
+        format_unix_datetime(value.rtc.unix_seconds + board::kLocalUtcOffsetSeconds, local,
+                             sizeof(local));
     }
     std::printf("utc: %s\n", utc[0] == '\0' ? "-" : utc);
+    std::printf("local: %s UTC+8\n", local[0] == '\0' ? "-" : local);
     std::printf("OS bit: %s\n", os_state);
 }
 
@@ -309,7 +319,7 @@ int console_service::run_rtc_set(const char* date_text, const char* time_text) {
     }
     struct tm parsed {};
     if (strptime(text, "%Y-%m-%d %H:%M:%S", &parsed) == nullptr) {
-        std::printf("rtc set: unparseable, expected YYYY-MM-DD HH:MM:SS (UTC)\n");
+        std::printf("rtc set: unparseable, expected YYYY-MM-DD HH:MM:SS (UTC+8 local)\n");
         return 1;
     }
     const int year = parsed.tm_year + 1900;
@@ -320,10 +330,11 @@ int console_service::run_rtc_set(const char* date_text, const char* time_text) {
         std::printf("rtc set: value out of range\n");
         return 1;
     }
-    const int64_t unix_seconds = board_service::unix_from_utc(
+    // Input is UTC+8 local time; validate the local calendar, then shift to UTC for the chip.
+    const int64_t local_seconds = board_service::unix_from_utc(
         year, month, static_cast<unsigned>(parsed.tm_mday), static_cast<unsigned>(parsed.tm_hour),
         static_cast<unsigned>(parsed.tm_min), static_cast<unsigned>(parsed.tm_sec));
-    time_t check_seconds = static_cast<time_t>(unix_seconds);
+    time_t check_seconds = static_cast<time_t>(local_seconds);
     struct tm check {};
     if (gmtime_r(&check_seconds, &check) == nullptr || check.tm_year != parsed.tm_year ||
         check.tm_mon != parsed.tm_mon || check.tm_mday != parsed.tm_mday ||
@@ -333,8 +344,10 @@ int console_service::run_rtc_set(const char* date_text, const char* time_text) {
         return 1;
     }
 
+    const int64_t unix_seconds = local_seconds - board::kLocalUtcOffsetSeconds;
     const esp_err_t result = board_.set_rtc_time(unix_seconds);
-    std::printf("rtc set: %s (unix %" PRId64 ")\n", esp_err_to_name(result), unix_seconds);
+    std::printf("rtc set: %s (local %s %s UTC+8 -> unix %" PRId64 ")\n", esp_err_to_name(result),
+                date_text, time_text, unix_seconds);
     return result == ESP_OK ? 0 : 1;
 }
 
@@ -398,6 +411,7 @@ void console_service::print_status(bool json) const {
             "\"wifi\":\"%s\",\"ap_active\":%s,\"credentials_persisted\":%s,"
             "\"tf_logging\":%s,\"logging_error\":%d,\"temperature_tenths_c\":%d,"
             "\"humidity_tenths_percent\":%u,\"key_short\":%" PRIu64 ",\"key_long\":%" PRIu64
+            ",\"boot_short\":%" PRIu64 ",\"boot_long\":%" PRIu64 ",\"reset_count\":%" PRIu32
             ",\"elf_sha256\":\"%s\",\"image_sha256\":\"%s\"}\n",
             board::kFirmwareVersion, board::kIdfTag, value.toolchain_version, value.device_id,
             health, value.target_ok ? "true" : "false", value.cpu_cores,
@@ -411,22 +425,17 @@ void console_service::print_status(bool json) const {
             value.tf_logging_ok ? "true" : "false", static_cast<int>(value.logging_error),
             value.sensor.valid ? static_cast<int>(value.sensor.temperature_tenths_celsius) : 0,
             value.sensor.valid ? static_cast<unsigned>(value.sensor.humidity_tenths_percent) : 0U,
-            value.key_short_presses, value.key_long_presses, value.elf_sha256, value.image_sha256);
+            value.key_short_presses, value.key_long_presses, value.boot_short_presses,
+            value.boot_long_presses, value.reset_count, value.elf_sha256, value.image_sha256);
         return;
     }
 
-    char rtc_text[32]{};
+    char local_text[32]{};
+    char utc_text[32]{};
     if (value.rtc.valid) {
-        const time_t seconds = static_cast<time_t>(value.rtc.unix_seconds);
-        struct tm utc_time {};
-        if (gmtime_r(&seconds, &utc_time) != nullptr) {
-            const unsigned year = static_cast<unsigned>(utc_time.tm_year + 1900);
-            std::snprintf(
-                rtc_text, sizeof(rtc_text), "%04u-%02u-%02u %02u:%02u:%02u", year,
-                static_cast<unsigned>(utc_time.tm_mon + 1), static_cast<unsigned>(utc_time.tm_mday),
-                static_cast<unsigned>(utc_time.tm_hour), static_cast<unsigned>(utc_time.tm_min),
-                static_cast<unsigned>(utc_time.tm_sec));
-        }
+        format_unix_datetime(value.rtc.unix_seconds + board::kLocalUtcOffsetSeconds, local_text,
+                             sizeof(local_text));
+        format_unix_datetime(value.rtc.unix_seconds, utc_text, sizeof(utc_text));
     }
     std::printf("Frame M1 %s (%s)\n", board::kFirmwareVersion, health);
     std::printf("  device: %s  image: %.16s\n  IDF: %s  toolchain: %s\n", value.device_id,
@@ -439,10 +448,18 @@ void console_service::print_status(bool json) const {
                 value.display_error == ESP_OK ? "OK" : "FAILED",
                 hardware_status::sd_state_name(value.storage), value.tf_logging_ok ? "OK" : "WAIT",
                 value.reset_reason);
-    std::printf("  RTC: %s %s  SHTC3: %s  KEY: %" PRIu64 "/%" PRIu64 "\n",
-                value.rtc_present ? "OK" : "MISS", rtc_text[0] == '\0' ? "-" : rtc_text,
+    std::printf("  RTC: %s %s UTC+8\n", value.rtc_present ? "OK" : "MISS",
+                local_text[0] == '\0' ? "-" : local_text);
+    if (utc_text[0] == '\0') {
+        std::printf("  utc: -  unix: %" PRId64 "\n", value.rtc.unix_seconds);
+    } else {
+        std::printf("  utc: %sZ  unix: %" PRId64 "\n", utc_text, value.rtc.unix_seconds);
+    }
+    std::printf("  SHTC3: %s  KEY: %" PRIu64 "/%" PRIu64 "  BOOT: %" PRIu64 "/%" PRIu64
+                "  RST: %" PRIu32 "\n",
                 value.sensor_present ? "OK" : "MISS", value.key_short_presses,
-                value.key_long_presses);
+                value.key_long_presses, value.boot_short_presses, value.boot_long_presses,
+                value.reset_count);
     std::printf("  WiFi: %s  SSID: %s  IPv4: %s  credentials: system_fs (dev)\n",
                 hardware_status::wifi_state_name(value.wifi), value.ssid_configured ? "set" : "-",
                 value.ip_address[0] == '\0' ? "-" : value.ip_address);

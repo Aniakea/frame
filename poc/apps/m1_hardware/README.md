@@ -23,10 +23,27 @@ hotspot; such a hold is a portal command and does not count as a button press.
 
 ## Buttons
 
-The only monitored button is the board's **KEY** button (GPIO18, active-low): a release under 1
-second counts as a short press, 1-3 seconds as a long press, and 3 seconds or more requests the
-setup hotspot. Both counters appear on the display and in `status`. The **RST** button resets the
-board, and **BOOT** (GPIO0) is not monitored — pressing either does not change any counter.
+The board's three buttons are all observable:
+
+- **KEY** (GPIO18, active-low): a release under 1 second counts as a short press, 1-3 seconds
+  as a long press, and 3 seconds or more requests the setup hotspot (a portal command, not a
+  press). Both counters appear on the display and in `status` as `KEY: short/long`.
+- **BOOT** (GPIO0, active-low with the internal pull-up): the same release bands, under 1
+  second short and 1 second or more long, counted as `BOOT: short/long`. It is a strapping
+  pin, so the firmware only reads it at runtime and never drives it, and it has no portal
+  binding.
+- **RST**: hardwired to the chip reset line, so it cannot be sampled as a GPIO. Instead the
+  firmware increments a persistent boot counter once per boot (NVS namespace `frame`, key
+  `rst_cnt`) and reports it as `RST: count` / `reset_count`; pressing RST reboots the board
+  and increments the counter.
+
+## Timezone
+
+Internal time handling is strictly UTC: the RTC chip, JSONL telemetry, and the machine `utc`
+fields all carry UTC with a `Z` suffix. Only human-facing surfaces convert to local time —
+China Standard Time (UTC+8, no daylight-saving transitions): the display RTC line, the text
+`status` output, and `rtc status` render local time labeled `UTC+8`, and `rtc set` interprets
+its argument as UTC+8 local time (the firmware converts it to UTC before writing the chip).
 
 ## Real-Time Clock
 
@@ -38,7 +55,8 @@ display (`-`) and in JSONL (`"utc":""`). The firmware now provides two time sour
   `ntp.aliyun.com` and `pool.ntp.org`, and on the first successful sync writes the UTC time to
   the RTC (log line `rtc synced from sntp`). SNTP keeps running; periodic re-syncs update the
   system clock.
-- **Console:** `rtc set` writes the chip manually (UTC is assumed).
+- **Console:** `rtc set` writes the chip manually (the argument is UTC+8 local time; see
+  [Timezone](#timezone)).
 
 A CR1220 coin cell on the board keeps the RTC running across power-off. Without a battery (or
 with an empty one) every boot loses the time and the OS flag returns — install a fresh cell for
@@ -71,9 +89,10 @@ storage status
 selftest
 ```
 
-`rtc status` reports validity, unix time, formatted UTC, and the OS-bit state; `rtc raw` dumps
-PCF85063 registers 0x00-0x0A with a decode; `rtc set` parses `YYYY-MM-DD HH:MM:SS` as UTC,
-validates the ranges, writes the chip, and re-reads it to confirm.
+`rtc status` reports validity, unix time, formatted UTC, formatted UTC+8 local time, and the
+OS-bit state; `rtc raw` dumps PCF85063 registers 0x00-0x0A with a decode; `rtc set` parses
+`YYYY-MM-DD HH:MM:SS` as UTC+8 local time, validates the ranges (calendar round-trip), converts
+to UTC, writes the chip, and re-reads it to confirm.
 
 Do not place real credentials in command transcripts or committed evidence. `wifi set` asks for the
 password after parsing the command so it is not stored in command history; terminal software must

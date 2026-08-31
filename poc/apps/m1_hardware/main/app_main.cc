@@ -4,6 +4,7 @@
 #include "display_service.hh"
 #include "esp_log.h"
 #include "hardware_status.hh"
+#include "nvs.h"
 #include "nvs_flash.h"
 #include "sd_service.hh"
 #include "time_sync.hh"
@@ -14,6 +15,27 @@
 namespace {
 
 constexpr char kTag[] = "frame-m1";
+
+// RST is hardwired to the chip reset line and cannot be sampled as a GPIO; this persistent
+// NVS boot counter (namespace "frame", key "rst_cnt") is the observable RST-press proxy.
+uint32_t count_boot_and_store(frame::m1::hardware_status& status) {
+    nvs_handle_t handle = 0;
+    if (nvs_open("frame", NVS_READWRITE, &handle) != ESP_OK) {
+        return 0;
+    }
+    uint32_t stored = 0;
+    const esp_err_t read_result = nvs_get_u32(handle, "rst_cnt", &stored);
+    const uint32_t count =
+        read_result == ESP_OK || read_result == ESP_ERR_NVS_NOT_FOUND ? stored + 1U : 0U;
+    if (count != 0U && nvs_set_u32(handle, "rst_cnt", count) == ESP_OK) {
+        nvs_commit(handle);
+    }
+    nvs_close(handle);
+    if (count != 0U) {
+        status.update([count](frame::m1::status_snapshot& value) { value.reset_count = count; });
+    }
+    return count;
+}
 
 } // namespace
 
@@ -38,6 +60,8 @@ extern "C" void app_main(void) {
         ESP_LOGW(kTag, "NVS unavailable; Wi-Fi credentials will remain RAM-only: %s",
                  esp_err_to_name(nvs_result));
     }
+    const uint32_t reset_count = count_boot_and_store(status);
+    ESP_LOGI(kTag, "reset_count=%" PRIu32, reset_count);
 
     static board_service board(status);
     static sd_service storage(status);

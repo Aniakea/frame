@@ -63,6 +63,9 @@ struct status_snapshot {
     uint32_t reset_reason{};
     uint64_t key_short_presses{};
     uint64_t key_long_presses{};
+    uint64_t boot_short_presses{};
+    uint64_t boot_long_presses{};
+    uint32_t reset_count{};
     bool target_ok{};
     bool flash_ok{};
     bool psram_ok{};

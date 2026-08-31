@@ -37,6 +37,12 @@ inline constexpr uint16_t kRtcAddress = 0x51;
 inline constexpr uint16_t kSensorAddress = 0x70;
 
 inline constexpr gpio_num_t kKey = GPIO_NUM_18;
+// BOOT is a strapping pin; runtime config is input + pull-up read-only, never driven.
+inline constexpr gpio_num_t kBoot = GPIO_NUM_0;
+
+// Human-facing local time offset: China Standard Time (UTC+8), no daylight-saving transitions.
+// Internal storage, JSONL, and machine `utc` fields stay strictly UTC.
+inline constexpr int32_t kLocalUtcOffsetSeconds = 8 * 3600;
 
 inline constexpr gpio_num_t kSdClock = GPIO_NUM_38;
 inline constexpr gpio_num_t kSdCommand = GPIO_NUM_21;
