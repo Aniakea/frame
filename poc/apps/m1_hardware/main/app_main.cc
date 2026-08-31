@@ -6,6 +6,7 @@
 #include "hardware_status.hh"
 #include "nvs_flash.h"
 #include "sd_service.hh"
+#include "time_sync.hh"
 #include "wifi_provision.hh"
 #include "wifi_service.hh"
 #include <cinttypes>
@@ -43,7 +44,8 @@ extern "C" void app_main(void) {
     static wifi_service wifi(status);
     static wifi_provision provision(status, wifi);
     static display_service display(status);
-    static console_service console(status, storage, wifi, provision);
+    static console_service console(status, board, storage, wifi, provision);
+    static time_sync timesync(status, board);
 
     const esp_err_t board_result = board.start();
     const esp_err_t storage_result = storage.start();
@@ -52,11 +54,12 @@ extern "C" void app_main(void) {
     const esp_err_t display_result = display.start();
     const esp_err_t console_result = console.start();
     const esp_err_t saved_result = provision.start_saved_or_pending();
+    const esp_err_t timesync_result = timesync.start();
 
     ESP_LOGI(kTag, "services board=%s storage=%s wifi=%s display=%s console=%s",
              esp_err_to_name(board_result), esp_err_to_name(storage_result),
              esp_err_to_name(wifi_result), esp_err_to_name(display_result),
              esp_err_to_name(console_result));
-    ESP_LOGI(kTag, "provision mount=%s saved=%s", esp_err_to_name(provision_mount_result),
-             esp_err_to_name(saved_result));
+    ESP_LOGI(kTag, "provision mount=%s saved=%s time=%s", esp_err_to_name(provision_mount_result),
+             esp_err_to_name(saved_result), esp_err_to_name(timesync_result));
 }

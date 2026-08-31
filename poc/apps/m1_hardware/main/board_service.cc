@@ -1,5 +1,7 @@
 #include "board_service.hh"
 
+#include <ctime>
+
 #include "board_config.hh"
 #include "driver/gpio.h"
 #include "esp_log.h"
@@ -13,6 +15,8 @@ constexpr uint16_t kSensorWake = 0x3517;
 constexpr uint16_t kSensorMeasure = 0x7866;
 constexpr uint16_t kSensorSleep = 0xB098;
 constexpr uint8_t kRtcSecondsRegister = 0x04;
+constexpr uint8_t kRtcFirstRegister = 0x00;
+constexpr std::size_t kRtcRegisterCount = 11;
 // KEY release bands: <1s short press, 1s..<3s long press, >=3s provisioning portal command.
 constexpr int64_t kKeyLongPressUs = 1000000;
 constexpr int64_t kKeyPortalHoldUs = 3000000;
@@ -29,6 +33,10 @@ int64_t days_from_civil(int64_t year, unsigned month, unsigned day) {
 
 uint8_t from_bcd(uint8_t value) {
     return static_cast<uint8_t>((value >> 4U) * 10U + (value & 0x0FU));
+}
+
+uint8_t to_bcd(unsigned value) {
+    return static_cast<uint8_t>(((value / 10U) << 4U) | (value % 10U));
 }
 
 } // namespace
@@ -132,11 +140,15 @@ esp_err_t board_service::read_rtc() {
     if (rtc_ == nullptr) {
         return ESP_ERR_NOT_FOUND;
     }
+    if (i2c_mutex_ == nullptr || xSemaphoreTake(i2c_mutex_, pdMS_TO_TICKS(500)) != pdTRUE) {
+        return ESP_ERR_INVALID_STATE;
+    }
     uint8_t registers[7]{};
     esp_err_t result = i2c_master_transmit(rtc_, &kRtcSecondsRegister, 1, 100);
     if (result == ESP_OK) {
         result = i2c_master_receive(rtc_, registers, sizeof(registers), 100);
     }
+    xSemaphoreGive(i2c_mutex_);
     if (result != ESP_OK) {
         status_.update([](status_snapshot& value) { value.rtc.valid = false; });
         return result;
@@ -152,9 +164,8 @@ esp_err_t board_service::read_rtc() {
 
     const bool plausible = !oscillator_stopped && second < 60 && minute < 60 && hour < 24 &&
                            day >= 1 && day <= 31 && month >= 1 && month <= 12 && year <= 2099;
-    const int64_t unix_seconds = days_from_civil(year, month, day) * 86400LL +
-                                 static_cast<int64_t>(hour) * 3600LL +
-                                 static_cast<int64_t>(minute) * 60LL + static_cast<int64_t>(second);
+    const int64_t unix_seconds =
+        unix_from_utc(static_cast<int>(year), month, day, hour, minute, second);
     const bool valid = plausible && unix_seconds > 0;
     status_.update([&](status_snapshot& value) {
         value.rtc = {.unix_seconds = valid ? unix_seconds : 0,
@@ -162,6 +173,75 @@ esp_err_t board_service::read_rtc() {
                      .read_at_us = esp_timer_get_time()};
     });
     return valid ? ESP_OK : ESP_ERR_INVALID_CRC;
+}
+
+esp_err_t board_service::read_rtc_raw(uint8_t registers[11]) {
+    if (rtc_ == nullptr) {
+        return ESP_ERR_NOT_FOUND;
+    }
+    if (i2c_mutex_ == nullptr || xSemaphoreTake(i2c_mutex_, pdMS_TO_TICKS(500)) != pdTRUE) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    esp_err_t result = i2c_master_transmit(rtc_, &kRtcFirstRegister, 1, 100);
+    if (result == ESP_OK) {
+        result = i2c_master_receive(rtc_, registers, kRtcRegisterCount, 100);
+    }
+    xSemaphoreGive(i2c_mutex_);
+    return result;
+}
+
+esp_err_t board_service::set_rtc_time(int64_t unix_seconds) {
+    if (rtc_ == nullptr) {
+        return ESP_ERR_NOT_FOUND;
+    }
+    time_t seconds = static_cast<time_t>(unix_seconds);
+    struct tm utc_time {};
+    if (unix_seconds <= 0 || gmtime_r(&seconds, &utc_time) == nullptr) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    const int year = utc_time.tm_year + 1900;
+    if (year < 2000 || year > 2099) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    const unsigned weekday = utc_time.tm_wday == 0 ? 7U : static_cast<unsigned>(utc_time.tm_wday);
+    // Multi-byte write at 0x04; seconds bit7=0 clears the PCF85063 OS (oscillator stopped) flag.
+    const uint8_t payload[]{
+        kRtcSecondsRegister,
+        to_bcd(static_cast<unsigned>(utc_time.tm_sec)),
+        to_bcd(static_cast<unsigned>(utc_time.tm_min)),
+        to_bcd(static_cast<unsigned>(utc_time.tm_hour)),
+        to_bcd(static_cast<unsigned>(utc_time.tm_mday)),
+        to_bcd(weekday),
+        to_bcd(static_cast<unsigned>(utc_time.tm_mon) + 1U),
+        to_bcd(static_cast<unsigned>(year - 2000)),
+    };
+    if (i2c_mutex_ == nullptr || xSemaphoreTake(i2c_mutex_, pdMS_TO_TICKS(500)) != pdTRUE) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    const esp_err_t result = i2c_master_transmit(rtc_, payload, sizeof(payload), 100);
+    xSemaphoreGive(i2c_mutex_);
+    if (result != ESP_OK) {
+        return result;
+    }
+
+    // Confirm by re-reading; the oscillator may tick up to two seconds meanwhile.
+    const esp_err_t confirm = read_rtc();
+    if (confirm != ESP_OK) {
+        return confirm;
+    }
+    const status_snapshot value = status_.snapshot();
+    if (!value.rtc.valid || value.rtc.unix_seconds < unix_seconds ||
+        value.rtc.unix_seconds > unix_seconds + 2) {
+        return ESP_ERR_INVALID_CRC;
+    }
+    ESP_LOGI(kTag, "rtc time set to unix %" PRId64, unix_seconds);
+    return ESP_OK;
+}
+
+int64_t board_service::unix_from_utc(int year, unsigned month, unsigned day, unsigned hour,
+                                     unsigned minute, unsigned second) {
+    return days_from_civil(year, month, day) * 86400LL + static_cast<int64_t>(hour) * 3600LL +
+           static_cast<int64_t>(minute) * 60LL + static_cast<int64_t>(second);
 }
 
 esp_err_t board_service::sample_sensor() {

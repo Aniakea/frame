@@ -19,8 +19,29 @@ constexpr int kDrawRows = 40;
 constexpr std::size_t kDrawBytes =
     board::kDisplayWidth / 8U * static_cast<std::size_t>(kDrawRows) + 2U * sizeof(lv_color32_t);
 constexpr int64_t kRenderIntervalUs = 10LL * 1000LL * 1000LL;
+constexpr int64_t kFastCheckIntervalUs = 500LL * 1000LL;
 
 uint32_t tick_milliseconds() { return static_cast<uint32_t>(esp_timer_get_time() / 1000); }
+
+// Volatile-field digest; a change means the visible status text would change, so the
+// 500ms fast path re-renders without waiting for the 10s heartbeat.
+uint64_t volatile_signature(const status_snapshot& value) {
+    uint64_t signature = UINT64_C(1469598103934665603);
+    const auto fold = [&signature](uint64_t field) {
+        signature = (signature ^ field) * UINT64_C(1099511628211);
+    };
+    fold(value.key_short_presses);
+    fold(value.key_long_presses);
+    fold(value.key_pressed ? 1U : 0U);
+    fold(static_cast<uint64_t>(value.wifi));
+    fold(static_cast<uint64_t>(value.storage));
+    fold(value.tf_logging_ok ? 1U : 0U);
+    fold(value.ap_active ? 1U : 0U);
+    fold(value.ssid_configured ? 1U : 0U);
+    fold(value.rtc.valid ? 1U : 0U);
+    fold(value.rtc.valid ? static_cast<uint64_t>(value.rtc.unix_seconds / 60) : 0U);
+    return signature;
+}
 
 void format_rtc_time(const status_snapshot& value, char* output, std::size_t capacity) {
     output[0] = '\0';
@@ -198,12 +219,25 @@ void display_service::run() {
     }
 
     int64_t next_render_at = 0;
+    int64_t next_check_at = 0;
+    uint64_t last_signature = 0;
     while (true) {
         const int64_t now = esp_timer_get_time();
         if (now >= next_render_at) {
             status_.refresh_memory_metrics();
-            render_status(status_.snapshot());
+            const status_snapshot value = status_.snapshot();
+            render_status(value);
+            last_signature = volatile_signature(value);
             next_render_at = now + kRenderIntervalUs;
+            next_check_at = now + kFastCheckIntervalUs;
+        } else if (now >= next_check_at) {
+            const status_snapshot value = status_.snapshot();
+            const uint64_t signature = volatile_signature(value);
+            if (signature != last_signature) {
+                render_status(value);
+                last_signature = signature;
+            }
+            next_check_at = now + kFastCheckIntervalUs;
         }
         const uint32_t delay = std::clamp(lv_timer_handler(), UINT32_C(10), UINT32_C(1000));
         vTaskDelay(pdMS_TO_TICKS(delay));

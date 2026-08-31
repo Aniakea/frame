@@ -8,6 +8,7 @@ idf_component_register(
         "sd_service.cc"
         "st7305_panel.cc"
         "status_log.cc"
+        "time_sync.cc"
         "wifi_provision.cc"
         "wifi_service.cc"
     INCLUDE_DIRS "."
