@@ -100,6 +100,6 @@ in the table above and in the manifest artifact notes, and the device-reported
 
 ```
 Repository Owner: Aniakea
-Decision: PENDING OWNER CONFIRMATION  <!-- flips to "M1 Pass recorded" by owner edit/confirmation -->
+Decision: M1 Pass recorded (owner confirmed in work session, 2026-08-31 UTC)
 Date: 2026-08-31 (UTC)
 ```
