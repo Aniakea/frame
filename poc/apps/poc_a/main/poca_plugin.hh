@@ -1,6 +1,7 @@
 #ifndef POC_A_MAIN_POCA_PLUGIN_HH
 #define POC_A_MAIN_POCA_PLUGIN_HH
 
+#include <cstddef>
 #include <cstdint>
 
 namespace frame::poca {
@@ -40,6 +41,14 @@ namespace frame::poca {
  *                        [PASS-capacity-N] (the 8->7->6->5 descent with the
  *                        retry-once fail-closed policy lives in the host
  *                        runner plugins/capacity_ladder.py)
+ *   poca fcbegin <n>     T14: size and allocate the fail-closed corpus
+ *   poca fcwr <hex>      upload staging (PSRAM, immutable after the last
+ *                        write); fcgo then runs the SAME parse+verify+
+ *   poca fcgo <name> <stage> <code>
+ *                        admission+relocate pipeline on the streamed bytes
+ *                        and asserts the rejection stage+error code against
+ *                        the host expectation with the entry-query canary
+ *                        bracketing the run (execution sentinel).
  * Package names: baseline baseline_v2 baseline_300k globdat plt import_neg
  * iram_probe iram_mismatch neg_maxmem neg_r32 neg_s0op neg_phspan neg_phbe
  * neg_ph64 neg_phmach cap01..cap08 (default baseline).
@@ -52,6 +61,9 @@ int cmd_poca_iram(unsigned iterations);
 int cmd_poca_coexist();
 int cmd_poca_soak(unsigned cycles, const char* mix);
 int cmd_poca_capacity(unsigned count);
+int cmd_poca_fcbegin(size_t size);
+int cmd_poca_fcwr(const char* hex);
+int cmd_poca_fcgo(const char* name, const char* stage, int expected);
 uint32_t poca_entry_queries();
 
 // T13 loader-strand hookup: activate() pointer of the ACTIVE plugin slot

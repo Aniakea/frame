@@ -114,9 +114,30 @@ int poca_command(int argc, char** argv) {
         }
         return cmd_poca_capacity(static_cast<unsigned>(parsed));
     }
+    if (argc == 3 && std::strcmp(argv[1], "fcbegin") == 0) {
+        char* end = nullptr;
+        const long parsed = std::strtol(argv[2], &end, 10);
+        if (end == argv[2] || *end != '\0' || parsed < 1 || parsed > 512 * 1024) {
+            std::printf("[fc] FAIL size out of range (1..%d)\n", 512 * 1024);
+            return 1;
+        }
+        return cmd_poca_fcbegin(static_cast<size_t>(parsed));
+    }
+    if (argc == 3 && std::strcmp(argv[1], "fcwr") == 0) {
+        return cmd_poca_fcwr(argv[2]);
+    }
+    if (argc == 5 && std::strcmp(argv[1], "fcgo") == 0) {
+        const int parsed = std::atoi(argv[4]);
+        if (parsed == 0 && std::strcmp(argv[4], "0") != 0) {
+            std::printf("[FC] FAIL expected code not an integer: %s\n", argv[4]);
+            return 1;
+        }
+        return cmd_poca_fcgo(argv[2], argv[3], parsed);
+    }
     std::printf("usage: poca status | poca abi | poca verify [name] | poca load [name] | "
                 "poca activate | poca unload | poca iram [n] | poca coexist | poca soak <n> "
-                "[mix] | poca sched <test> | poca capacity <n>\n");
+                "[mix] | poca sched <test> | poca capacity <n> | poca fcbegin <n> | "
+                "poca fcwr <hex> | poca fcgo <name> <stage> <code>\n");
     return 1;
 }
 
@@ -126,7 +147,8 @@ esp_err_t start_console() {
     const esp_console_cmd_t poca_cmd{
         .command = "poca",
         .help = "poca status | abi | verify [name] | load [name] | activate | unload | iram [n] | "
-                "coexist | soak <n> [mix] | sched <test> | capacity <n>",
+                "coexist | soak <n> [mix] | sched <test> | capacity <n> | fcbegin <n> | "
+                "fcwr <hex> | fcgo <name> <stage> <code>",
         .hint = nullptr,
         .func = &poca_command,
         .argtable = nullptr,
@@ -141,7 +163,11 @@ esp_err_t start_console() {
 
     esp_console_repl_config_t repl_config = ESP_CONSOLE_REPL_CONFIG_DEFAULT();
     repl_config.prompt = "poca> ";
-    repl_config.max_cmdline_length = 160;
+    /* 600 (T14): the fail-closed corpus streams fixtures as hex chunks on
+     * single console lines ("poca fcwr " + 2*N hex chars); 128-byte chunks
+     * need 266 characters, and the extra headroom keeps the chunk size a
+     * runner-side choice. */
+    repl_config.max_cmdline_length = 600;
     repl_config.max_cmdline_args = 8;
     repl_config.task_stack_size = kPocaReplStackBytes;
     repl_config.task_priority = 5;

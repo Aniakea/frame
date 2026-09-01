@@ -254,6 +254,21 @@ bool g_host_symbols_registered = false;
  * stay unchanged across every negative probe (fail-before-execute proof). */
 uint32_t g_entry_queries = 0;
 
+/* T14 fail-closed corpus upload state: hostile container bytes streamed over
+ * the console (fcbegin/fcwr) into a PSRAM staging buffer, then fcgo pushes
+ * them through the SAME parse+verify+admission+relocate pipeline used for
+ * embedded packages. This proves the pipeline rejects arbitrary
+ * attacker-controlled bytes, not only compiled-in arrays; the device-side
+ * sha256 of the uploaded bytes closes the loop against the host-side corpus
+ * file hash. The buffer is immutable after the last fcwr (PLUG-08) and is
+ * released only by fcgo on any outcome. */
+struct FcUpload {
+    uint8_t* buffer = nullptr;
+    size_t size = 0;
+    size_t offset = 0;
+};
+FcUpload g_fc;
+
 /* T10 capacity ladder slots (PLUG-004/MEM-007): up to kCapMaxPlugins
  * concurrently ACTIVE plugins, one per DISTINCT manifest name (one ACTIVE
  * generation per name - the ladder never loads two generations of the same
@@ -584,8 +599,12 @@ int find_exported_symbol(const uint8_t* elf_base, size_t elf_size, const char* n
     return matches;
 }
 
-int parse_mpb(const uint8_t* buffer, size_t size, mpb_view_t* out_view) {
+int parse_mpb(const uint8_t* buffer, size_t size, mpb_view_t* out_view,
+              int32_t* err_out = nullptr) {
     if (!ensure_crypto()) {
+        if (err_out != nullptr) {
+            *err_out = FRAME_ERR_INVALID_ARGUMENT;
+        }
         return 1;
     }
     const mpb_policy_t policy = device_policy();
@@ -593,6 +612,9 @@ int parse_mpb(const uint8_t* buffer, size_t size, mpb_view_t* out_view) {
     if (err != FRAME_OK) {
         std::printf("[poca] mpb_parse FAILED err=%d (%s)\n", static_cast<int>(err),
                     frame_err_name(err));
+        if (err_out != nullptr) {
+            *err_out = err;
+        }
         return 1;
     }
     return 0;
@@ -1180,6 +1202,156 @@ int cmd_poca_load(const char* name) {
                 package->name);
     release_slot(g_active, true);
     return 1;
+}
+
+/* T14 fail-closed corpus: console-streamed hostile containers (SEC-004
+ * verification-order proof with a live execution sentinel). fcbegin sizes
+ * and allocates the immutable upload staging; fcwr appends one decoded hex
+ * chunk; fcgo runs the full negative pipeline on the uploaded bytes and
+ * asserts the observed rejection stage/code against the host-provided
+ * expectation, with the entry-query canary bracketing every run. */
+int cmd_poca_fcbegin(size_t size) {
+    if (cap_slots_busy() || g_candidate.loaded || g_active.loaded) {
+        std::printf("[fc] FAIL plugins resident; unload/finish them first\n");
+        return 1;
+    }
+    if (g_fc.buffer != nullptr) {
+        /* a stale unconsumed upload (dropped console line / aborted host)
+         * is discarded: fcgo is the only consumer of the bytes */
+        std::printf("[fc] discard stale upload (%zu/%zu)\n", g_fc.offset, g_fc.size);
+        heap_caps_free(g_fc.buffer);
+        g_fc = FcUpload{};
+    }
+    const uint32_t max_package = device_policy().max_package_bytes;
+    if (size == 0 || size > static_cast<size_t>(max_package)) {
+        std::printf("[fc] FAIL size %zu out of range (1..%u)\n", size,
+                    static_cast<unsigned>(max_package));
+        return 1;
+    }
+    g_fc.buffer =
+        static_cast<uint8_t*>(heap_caps_malloc(size, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
+    if (g_fc.buffer == nullptr) {
+        std::printf("[fc] FAIL staging alloc %zu bytes\n", size);
+        return 1;
+    }
+    g_fc.size = size;
+    g_fc.offset = 0;
+    std::printf("[fc] begin size=%zu\n", size);
+    return 0;
+}
+
+static bool fc_hex_nibble(char c, uint8_t* out) {
+    if (c >= '0' && c <= '9') {
+        *out = static_cast<uint8_t>(c - '0');
+    } else if (c >= 'a' && c <= 'f') {
+        *out = static_cast<uint8_t>(c - 'a' + 10);
+    } else if (c >= 'A' && c <= 'F') {
+        *out = static_cast<uint8_t>(c - 'A' + 10);
+    } else {
+        return false;
+    }
+    return true;
+}
+
+int cmd_poca_fcwr(const char* hex) {
+    if (g_fc.buffer == nullptr) {
+        std::printf("[fc] FAIL no upload; run fcbegin first\n");
+        return 1;
+    }
+    const size_t hex_len = std::strlen(hex);
+    if (hex_len == 0 || (hex_len % 2) != 0) {
+        std::printf("[fc] FAIL hex chunk length %zu not even\n", hex_len);
+        return 1;
+    }
+    const size_t bytes = hex_len / 2;
+    if (bytes > g_fc.size - g_fc.offset) {
+        std::printf("[fc] FAIL chunk overflows upload (%zu > %zu remaining)\n", bytes,
+                    g_fc.size - g_fc.offset);
+        return 1;
+    }
+    for (size_t i = 0; i < bytes; ++i) {
+        uint8_t hi = 0;
+        uint8_t lo = 0;
+        if (!fc_hex_nibble(hex[2 * i], &hi) || !fc_hex_nibble(hex[2 * i + 1], &lo)) {
+            std::printf("[fc] FAIL invalid hex digit at chunk byte %zu\n", i);
+            return 1;
+        }
+        g_fc.buffer[g_fc.offset + i] = static_cast<uint8_t>((hi << 4) | lo);
+    }
+    g_fc.offset += bytes;
+    std::printf("[fc] wr +%zu total=%zu/%zu\n", bytes, g_fc.offset, g_fc.size);
+    return 0;
+}
+
+int cmd_poca_fcgo(const char* name, const char* stage, int expected) {
+    if (g_fc.buffer == nullptr) {
+        std::printf("[FC] %s FAIL no upload; run fcbegin first\n", name);
+        return 1;
+    }
+    if (g_fc.offset != g_fc.size) {
+        std::printf("[FC] %s FAIL incomplete upload %zu/%zu\n", name, g_fc.offset, g_fc.size);
+        return 1;
+    }
+    const uint32_t canary_before = g_entry_queries;
+    char hex[65];
+    if (!sha256_hex(g_fc.buffer, g_fc.size, hex)) {
+        std::printf("[FC] %s FAIL sha256\n", name);
+        heap_caps_free(g_fc.buffer);
+        g_fc = FcUpload{};
+        return 1;
+    }
+    std::printf("[FC] %s size=%zu sha256=%s\n", name, g_fc.size, hex);
+
+    PluginRuntime slot{};
+    slot.staging = g_fc.buffer;
+    slot.staging_size = g_fc.size;
+
+    const char* got_stage = "";
+    int got_err = 0;
+    mpb_view_t view{};
+    int32_t parse_err = FRAME_OK;
+    if (parse_mpb(g_fc.buffer, g_fc.size, &view, &parse_err) != 0) {
+        got_stage = "mpb";
+        got_err = static_cast<int>(parse_err);
+    } else {
+        print_view(view);
+        if (view.package_kind != MPB_PACKAGE_CODE || view.payload_count != 1 ||
+            view.payloads[0].length == 0) {
+            got_stage = "shape";
+            got_err = FRAME_ERR_PACKAGE_INVALID;
+        } else if (!check_max_memory_admission(view)) {
+            got_stage = "admission";
+            got_err = FRAME_ERR_PACKAGE_INVALID;
+        } else if (check_ph_budget(g_fc.buffer + view.payloads[0].offset, view, false, name) != 0) {
+            got_stage = "phdr";
+            got_err = FRAME_ERR_PACKAGE_INVALID;
+        } else if (!ensure_host_symbols() || esp_elf_init(&slot.elf) != 0) {
+            got_stage = "init";
+            got_err = FRAME_ERR_PACKAGE_INVALID;
+        } else {
+            slot.elf.iram_required_bytes = view.iram_required_bytes;
+            const int relocate_err =
+                esp_elf_relocate(&slot.elf, g_fc.buffer + view.payloads[0].offset);
+            if (relocate_err != 0) {
+                got_stage = "relocate";
+                got_err = relocate_err;
+            } else {
+                got_stage = "loaded";
+            }
+        }
+    }
+    release_slot(slot, false);
+
+    const bool pass = std::strcmp(got_stage, stage) == 0 && got_err == expected;
+    std::printf("[FC] %s RESULT stage=%s err=%d expected=%d %s\n", name, got_stage, got_err,
+                expected, pass ? "PASS" : "FAIL");
+    const uint32_t canary_after = g_entry_queries;
+    const bool canary_ok = canary_after == canary_before;
+    std::printf("[FC] %s entry_queries=%u (unchanged=%s)\n", name,
+                static_cast<unsigned>(canary_after), canary_ok ? "yes" : "NO");
+    heap_caps_free(g_fc.buffer);
+    g_fc = FcUpload{};
+    return pass && canary_ok ? 0 : 1;
 }
 
 int cmd_poca_activate() {
