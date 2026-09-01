@@ -64,6 +64,25 @@ poca_iram_corpus(
     OBJDUMP "${plugin_objdump}")
 add_dependencies(poca_iram_corpus poca_plugin_iram_probe)
 
+# T10 capacity ladder: eight name-parameterized plugins cap01..cap08. All
+# share the baseline source template (the T8 generation-variant pattern) but
+# each is packaged with a DISTINCT manifest name, version and activate()
+# magic, so N concurrently resident instances prove N distinct live
+# generations (PLUG-004: one ACTIVE generation per name - eight distinct
+# names, no collisions). `poca capacity <n>` loads n of them, each into its
+# own esp_elf_t instance, before the respond round.
+set(POCA_CAP_NAMES "")
+foreach(cap_idx RANGE 1 8)
+    set(cap_name "cap0${cap_idx}")
+    poca_plugin(${cap_name}
+        SOURCE "${CMAKE_CURRENT_LIST_DIR}/../plugins/baseline/baseline.c"
+        VERSION "1.0.${cap_idx}"
+        ENTRY "frame_plugin_entry"
+        MANIFEST "${CMAKE_CURRENT_LIST_DIR}/../plugins/cap/manifest.json"
+        MAGIC "0x4341503${cap_idx}u")
+    list(APPEND POCA_CAP_NAMES ${cap_name})
+endforeach()
+
 poca_negative_corpus(
     BASELINE_ELF "${CMAKE_BINARY_DIR}/plugins/baseline/baseline.elf")
 # negatives derive from the gated baseline ELF: gate first, then fabricate
@@ -169,6 +188,11 @@ target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_maxmem.
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/cxx_ctor.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/cxx_tls.mpb" BINARY)
 target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/neg_tls_nosect.mpb" BINARY)
+
+foreach(cap_name IN LISTS POCA_CAP_NAMES)
+    add_dependencies(${COMPONENT_LIB} poca_plugin_${cap_name})
+    target_add_binary_data(${COMPONENT_LIB} "${CMAKE_BINARY_DIR}/plugins/${cap_name}.mpb" BINARY)
+endforeach()
 
 target_compile_options(${COMPONENT_LIB} PRIVATE
     -std=c++26

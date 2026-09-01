@@ -1,10 +1,12 @@
-# ADMISSION-BUDGET — PoC-A measured admission baseline (T8, frozen Gate-A output)
+# ADMISSION-BUDGET — PoC-A measured admission baseline (T8 + T10 capacity, frozen Gate-A output)
 
-Development-plan §4 item 7 / appendix D "hot-update peak" row. All numbers
-are measured on the ESP32-S3-RLCD-4.2 (N16R8) board over `/dev/ttyACM0`,
-poc_a harness at commit range T1..T8 (elf_loader 1.3.3 vendored + patches
-p1..p5, plugin ABI 1.2). Raw transcript: `.omo/evidence/poca/task-8-poc-a-dynamic-elf.log`
-(`poca coexist` phase snapshots and `poca status` lines).
+Development-plan §4 item 7 / appendix D "hot-update peak" row (T8) and §4
+item 8 capacity ladder (T10). All numbers are measured on the
+ESP32-S3-RLCD-4.2 (N16R8) board over `/dev/ttyACM0`, poc_a harness at
+commit range T1..T10 (elf_loader 1.3.3 vendored + patches p1..p5, plugin
+ABI 1.2). Raw transcripts: `.omo/evidence/poca/task-8-poc-a-dynamic-elf.log`
+(`poca coexist` phase snapshots and `poca status` lines) and
+`.omo/evidence/poca/task-10-poc-a-dynamic-elf.log` (capacity ladder).
 
 ## MEM-001 caveat (frozen scope)
 
@@ -87,3 +89,54 @@ Stale-state guard: every load closes the loop build→device (per-mpb
 SHA-256 assert) and asserts manifest name/version identity (`name=baseline
 version=1.0.0/2.0.0 MATCH`) — the two generations differ by version bytes
 inside the signed manifest, so a swapped embed is caught before relocation.
+
+## Capacity (T10, development-plan §4 item 8 / PLUG-004 / MEM-007)
+
+Eight name-parameterized plugins `cap01..cap08` (baseline source template,
+distinct manifest name `capNN` / version `1.0.N` / activate magic
+0x4341503N "CAP1".."CAP8"; elf 1708 B, mpb 1984 B each). `poca capacity <n>`
+loads n plugins sequentially — each a distinct `esp_elf_t` instance held
+live — then a check-fn round over all n resident generations, a peak
+heap/stack snapshot, and a reverse-order unload. Ladder policy (host runner
+`plugins/capacity_ladder.py`): rung 8 first, retry-once per rung, descend
+8→7→6→5, rung 5 failure = Gate FAIL. Raw transcript:
+`.omo/evidence/poca/task-10-poc-a-dynamic-elf.log`.
+
+**Ladder result: PASS at 8** (rung 8, attempt 1; three consecutive full
+runs identical — ladder runner ×2 + post-format confirmation; rungs 7/6/5
+never executed, descent path unexercised on this hardware).
+
+| metric (measured at rung 8) | value |
+| --- | --- |
+| PSRAM free, harness baseline | 8385920 B (Wi-Fi off — MEM-001 caveat above) |
+| per-instance cost | **3356 B** = staging container 1984 B + loader arena 1352 B |
+| 8-instance peak consumption | 26848 B = **0.32 %** of the 8 MiB pool |
+| per-instance PSRAM text base | 0x3c071248 … 0x3c076e0c, stride 0xd1c, all 8 pairwise distinct |
+| per-instance IRAM / internal delta | **0 B / 0 B** (baseline-class plugins: no `.plugin_iram`; the 8 `esp_elf_t`+slot array lives in firmware `.bss`) |
+| `largest_free_block` at peak | 8257536 B (unchanged from baseline — zero fragmentation pressure) |
+| PSRAM after reverse unload | 8385920 B (exactly restored; `min_ever` floor = peak) |
+| stack HWM at peak | console_repl 2040/6144 B, IDLE0 756 B, IDLE1 864 B, ipc0 568 B, ipc1 596 B |
+| execution canary | +8 per rung-8 run (== 8 entry queries, no extra/missing queries) |
+
+Cross-check vs T8: baseline-class per-instance 3388 B there (staging 1988 B)
+vs 3356 B here (staging 1984 B — shorter manifest name `capNN` vs
+`baseline`); same order, arena identical class. Adversarial guards: 8
+DISTINCT staging SHA-256 observed on-device (matching the 8 build-time
+hashes — stale-embed guard), 8 DISTINCT magics all matching at 8 DISTINCT
+text bases simultaneously (misleading-success guard: one plugin called 8
+times cannot produce this), transcript markers `[PASS-cap-8-load]`
+`[PASS-cap-8-respond]` `[PASS-cap-8-unload]` `[PASS-capacity-8]`.
+
+Headroom math: measured envelope 8 × 3356 B = 26848 B ≪ 8 MiB. Worst-case
+*policy* envelope: 8 × (512 KiB declared arena + 512 KiB max container)
+≈ 8 MiB ≱ pool — so the product admission controller must gate the SUM of
+resident declarations against the pool (global budget), not only the
+per-plugin 512 KiB hard max. Recorded as an ADR-0002 amendment note with
+the proposal value below.
+
+**Signed budget line:** Capacity: 8 ACTIVE verified (8 attempted),
+per-instance cost 3356 B (3.28 KiB) PSRAM, 8-instance peak 26848 B =
+0.32 % of the 8 MiB pool (IRAM delta 0 B, internal delta 0 B,
+largest_free_block unchanged), headroom to MEM-007 floor 5: 8/5,
+MEM-007 → ADR-0002 proposal value: 8 ACTIVE generations per distinct
+plugin name (PSRAM class; re-measure with Wi-Fi at the next gate).

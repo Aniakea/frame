@@ -17,6 +17,14 @@
 #include "poca_baseline_300k_meta.h"
 #include "poca_baseline_meta.h"
 #include "poca_baseline_v2_meta.h"
+#include "poca_cap01_meta.h"
+#include "poca_cap02_meta.h"
+#include "poca_cap03_meta.h"
+#include "poca_cap04_meta.h"
+#include "poca_cap05_meta.h"
+#include "poca_cap06_meta.h"
+#include "poca_cap07_meta.h"
+#include "poca_cap08_meta.h"
 #include "poca_console.hh"
 #include "poca_cxx_ctor_meta.h"
 #include "poca_cxx_tls_meta.h"
@@ -76,6 +84,22 @@ extern "C" const uint8_t _binary_iram_probe_mpb_start[];
 extern "C" const uint8_t _binary_iram_probe_mpb_end[];
 extern "C" const uint8_t _binary_iram_mismatch_mpb_start[];
 extern "C" const uint8_t _binary_iram_mismatch_mpb_end[];
+extern "C" const uint8_t _binary_cap01_mpb_start[];
+extern "C" const uint8_t _binary_cap01_mpb_end[];
+extern "C" const uint8_t _binary_cap02_mpb_start[];
+extern "C" const uint8_t _binary_cap02_mpb_end[];
+extern "C" const uint8_t _binary_cap03_mpb_start[];
+extern "C" const uint8_t _binary_cap03_mpb_end[];
+extern "C" const uint8_t _binary_cap04_mpb_start[];
+extern "C" const uint8_t _binary_cap04_mpb_end[];
+extern "C" const uint8_t _binary_cap05_mpb_start[];
+extern "C" const uint8_t _binary_cap05_mpb_end[];
+extern "C" const uint8_t _binary_cap06_mpb_start[];
+extern "C" const uint8_t _binary_cap06_mpb_end[];
+extern "C" const uint8_t _binary_cap07_mpb_start[];
+extern "C" const uint8_t _binary_cap07_mpb_end[];
+extern "C" const uint8_t _binary_cap08_mpb_start[];
+extern "C" const uint8_t _binary_cap08_mpb_end[];
 
 namespace frame::poca {
 namespace {
@@ -148,6 +172,14 @@ const EmbeddedPackage k_packages[] = {
     POCAPKG(neg_tls_nosect, NEG_TLS_NOSECT, POCA_PLUGIN_MAGIC),
     POCAPKG(iram_probe, IRAM_PROBE, POCA_PLUGIN_MAGIC),
     POCAPKG(iram_mismatch, IRAM_MISMATCH, POCA_PLUGIN_MAGIC),
+    POCAPKG(cap01, CAP01, POCA_CAP01_MAGIC),
+    POCAPKG(cap02, CAP02, POCA_CAP02_MAGIC),
+    POCAPKG(cap03, CAP03, POCA_CAP03_MAGIC),
+    POCAPKG(cap04, CAP04, POCA_CAP04_MAGIC),
+    POCAPKG(cap05, CAP05, POCA_CAP05_MAGIC),
+    POCAPKG(cap06, CAP06, POCA_CAP06_MAGIC),
+    POCAPKG(cap07, CAP07, POCA_CAP07_MAGIC),
+    POCAPKG(cap08, CAP08, POCA_CAP08_MAGIC),
 };
 
 /* Expected outcome per package: the on-board matrix rows. Every negative
@@ -180,6 +212,14 @@ const PackageExpect k_expects[] = {
     {"neg_tls_nosect", Expect::kRelocateErrno, -22}, /* -EINVAL: patch p1, TLSDESC relocs */
     {"iram_probe", Expect::kLoadOk, 0},
     {"iram_mismatch", Expect::kRelocateErrno, -22}, /* -EINVAL: patch p5, iram budget */
+    {"cap01", Expect::kLoadOk, 0},
+    {"cap02", Expect::kLoadOk, 0},
+    {"cap03", Expect::kLoadOk, 0},
+    {"cap04", Expect::kLoadOk, 0},
+    {"cap05", Expect::kLoadOk, 0},
+    {"cap06", Expect::kLoadOk, 0},
+    {"cap07", Expect::kLoadOk, 0},
+    {"cap08", Expect::kLoadOk, 0},
 };
 
 /* MEM-003 admission budget: every plugin generation gets the 256 KiB default
@@ -213,6 +253,27 @@ bool g_host_symbols_registered = false;
 /* Execution canary: incremented exactly once per entry-table query. It must
  * stay unchanged across every negative probe (fail-before-execute proof). */
 uint32_t g_entry_queries = 0;
+
+/* T10 capacity ladder slots (PLUG-004/MEM-007): up to kCapMaxPlugins
+ * concurrently ACTIVE plugins, one per DISTINCT manifest name (one ACTIVE
+ * generation per name - the ladder never loads two generations of the same
+ * name, so the single-candidate semantics of T8 are orthogonal and unused
+ * here). Each slot owns an independent staging buffer and esp_elf_t
+ * instance, so N resident plugins occupy N disjoint PSRAM arenas; the
+ * runtime array itself lives in firmware .bss (no heap cost per slot). */
+constexpr unsigned kCapMaxPlugins = 8;
+PluginRuntime g_cap_slots[kCapMaxPlugins];
+const char* const k_cap_names[kCapMaxPlugins] = {"cap01", "cap02", "cap03", "cap04",
+                                                 "cap05", "cap06", "cap07", "cap08"};
+
+bool cap_slots_busy() {
+    for (const PluginRuntime& slot : g_cap_slots) {
+        if (slot.loaded) {
+            return true;
+        }
+    }
+    return false;
+}
 
 const EmbeddedPackage* find_package(const char* name) {
     for (const EmbeddedPackage& package : k_packages) {
@@ -1002,6 +1063,11 @@ int cmd_poca_verify(const char* name) {
 }
 
 int cmd_poca_load(const char* name) {
+    if (cap_slots_busy()) {
+        std::printf("[poca-load] FAIL capacity-ladder plugins resident; run poca capacity 1..8 "
+                    "to completion first\n");
+        return 1;
+    }
     if (g_candidate.loaded) {
         std::printf("[poca-load] FAIL a candidate generation is staged; finish the swap first\n");
         return 1;
@@ -1328,6 +1394,10 @@ void stop_gen_loop() {
 }
 
 int cmd_poca_coexist() {
+    if (cap_slots_busy()) {
+        std::printf("[poca-coexist] FAIL capacity-ladder plugins resident\n");
+        return 1;
+    }
     if (g_active.loaded || g_candidate.loaded) {
         std::printf("[poca-coexist] FAIL slots busy; run poca unload first\n");
         return 1;
@@ -1711,6 +1781,10 @@ bool soak_swap_cycle(const EmbeddedPackage& v1, const EmbeddedPackage& v2, unsig
 }
 
 int cmd_poca_soak(unsigned cycles, const char* mix) {
+    if (cap_slots_busy()) {
+        std::printf("[poca-soak] FAIL capacity-ladder plugins resident\n");
+        return 1;
+    }
     if (g_active.loaded || g_candidate.loaded) {
         std::printf("[poca-soak] FAIL slots busy; run poca unload first\n");
         return 1;
@@ -1850,6 +1924,182 @@ int cmd_poca_soak(unsigned cycles, const char* mix) {
     std::printf("[poca-soak] DONE (%u cycles, verdict authority = host judge on samples)\n",
                 static_cast<unsigned>(cycles));
     return 0;
+}
+
+/* ====================== T10: capacity ladder ====================== */
+
+/* `poca capacity <n>` (development-plan section 4 item 8, PLUG-004/MEM-007):
+ * sequentially load n DISTINCT-name plugins cap01..cap0n - each into its own
+ * esp_elf_t instance held live - then a check-fn round over all n resident
+ * generations, a peak heap/stack snapshot, and a reverse-order unload.
+ * Transcript markers per step: [PASS-cap-N-load] / [PASS-cap-N-respond] /
+ * [PASS-cap-N-unload] / [PASS-capacity-N] (FAIL- counterparts carry the
+ * failing stage and step for the host ladder runner, which owns the 8->7->6->5
+ * descent and the retry-once fail-closed policy). */
+int cmd_poca_capacity(unsigned count) {
+    if (g_active.loaded || g_candidate.loaded) {
+        std::printf("[poca-cap] FAIL active/candidate plugin resident; run poca unload first\n");
+        return 1;
+    }
+    if (count == 0u || count > kCapMaxPlugins) {
+        std::printf("[poca-cap] FAIL count out of range (1..%u)\n", kCapMaxPlugins);
+        return 1;
+    }
+    const EmbeddedPackage* pkgs[kCapMaxPlugins] = {};
+    for (unsigned i = 0; i < count; ++i) {
+        pkgs[i] = find_package(k_cap_names[i]);
+        if (pkgs[i] == nullptr) {
+            std::printf("[poca-cap] FAIL fixture package '%s' missing\n", k_cap_names[i]);
+            return 1;
+        }
+    }
+    std::printf("[poca-cap] ladder step N=%u: %u plugin(s) cap01..cap%02u, all DISTINCT names "
+                "(PLUG-004: one ACTIVE generation per name)\n",
+                count, count, count);
+    const HeapSnap baseline = heap_snap();
+    print_heap_snap("cap-baseline", baseline);
+
+    /* Load phase: each load runs the full verify->admission->relocate->query
+     * ->prepare pipeline; every successful instance stays resident. */
+    esp_log_level_set("ELF", ESP_LOG_ERROR);
+    unsigned loaded = 0u;
+    bool load_ok = true;
+    for (unsigned i = 0; i < count; ++i) {
+        if (!load_positive_into(g_cap_slots[i], *pkgs[i], "poca-cap", /*quiet=*/true)) {
+            std::printf("[FAIL-cap-%u-load] step=%u name=%s reason=load-failed (FAIL lines "
+                        "above)\n",
+                        count, i + 1u, pkgs[i]->name);
+            load_ok = false;
+            break;
+        }
+        loaded += 1u;
+        /* The stale-embed guard inside the load asserted staging == build-time
+         * sha; reprint the OBSERVED hash so the transcript carries n
+         * DISTINCT container hashes (stale-state guard). */
+        char hex[65];
+        sha256_hex(g_cap_slots[i].staging, g_cap_slots[i].staging_size, hex);
+        std::printf("[cap-load] idx=%u name=%s magic=0x%08" PRIx32 " text=0x%08" PRIx32
+                    " staging=%zuB sha256=%s psram_free=%" PRIu32 "\n",
+                    i + 1u, pkgs[i]->name, pkgs[i]->magic,
+                    reinterpret_cast<uint32_t>(g_cap_slots[i].elf.ptext),
+                    g_cap_slots[i].staging_size, hex, psram_free_bytes());
+        vTaskDelay(1);
+    }
+    esp_log_level_set("ELF", ESP_LOG_INFO);
+    if (!load_ok) {
+        for (unsigned i = loaded; i >= 1u; --i) {
+            g_cap_slots[i - 1u].table->unload();
+            release_slot(g_cap_slots[i - 1u], true);
+        }
+        return 1;
+    }
+    std::printf("[PASS-cap-%u-load] %u/%u instances resident\n", count, loaded, count);
+
+    const HeapSnap peak = heap_snap();
+    print_heap_snap("cap-peak", peak);
+    print_stack_snap("cap-peak");
+
+    /* Respond round (misleading-success guard): every STILL-resident
+     * generation must return its OWN magic - n distinct magics all matching
+     * proves n distinct live generations, not one plugin called n times -
+     * and the per-instance PSRAM text base addresses must be pairwise
+     * distinct (n disjoint arenas). */
+    bool respond_ok = true;
+    bool distinct_ok = true;
+    uint32_t text_bases[kCapMaxPlugins] = {0};
+    uint32_t expected_values[kCapMaxPlugins] = {0};
+    for (unsigned i = 0; i < count; ++i) {
+        const int32_t returned = g_cap_slots[i].table->activate();
+        const int32_t expected = expected_activate(*pkgs[i]);
+        const bool match = returned == expected;
+        respond_ok = respond_ok && match;
+        text_bases[i] = reinterpret_cast<uint32_t>(g_cap_slots[i].elf.ptext);
+        expected_values[i] = static_cast<uint32_t>(expected);
+        std::printf("[cap-respond] idx=%u name=%s fn=0x%08" PRIx32 " text=0x%08" PRIx32
+                    " returned=0x%08x expected=0x%08x %s\n",
+                    i + 1u, pkgs[i]->name,
+                    reinterpret_cast<uint32_t>(g_cap_slots[i].table->activate), text_bases[i],
+                    static_cast<unsigned>(returned), static_cast<unsigned>(expected),
+                    match ? "MATCH" : "MISMATCH");
+        vTaskDelay(1);
+    }
+    for (unsigned i = 0; i < count; ++i) {
+        for (unsigned j = i + 1u; j < count; ++j) {
+            if (text_bases[i] == text_bases[j] || expected_values[i] == expected_values[j]) {
+                distinct_ok = false;
+                std::printf("[poca-cap] FAIL collision idx=%u/%u text 0x%08" PRIx32 "/0x%08" PRIx32
+                            " expected 0x%08" PRIx32 "/0x%08" PRIx32 "\n",
+                            i + 1u, j + 1u, text_bases[i], text_bases[j], expected_values[i],
+                            expected_values[j]);
+            }
+        }
+    }
+    std::printf("[cap-distinct] text_bases_all_distinct=%s expected_magics_all_distinct=%s\n",
+                distinct_ok ? "yes" : "NO", distinct_ok ? "yes" : "NO");
+    if (respond_ok && distinct_ok) {
+        std::printf("[PASS-cap-%u-respond] %u/%u magics match, all distinct\n", count, count,
+                    count);
+    }
+
+    /* Measured budget at this ladder step (feeds the capacity section of
+     * ADMISSION-BUDGET.md). All instances share the baseline template, so
+     * instance 0's section table is the per-instance loader metadata. */
+    const uint32_t consumed = baseline.psram_free - peak.psram_free;
+    const uint32_t per_instance = consumed / count;
+    const int32_t iram_delta =
+        static_cast<int32_t>(peak.iram_free) - static_cast<int32_t>(baseline.iram_free);
+    const int32_t internal_delta =
+        static_cast<int32_t>(peak.internal_free) - static_cast<int32_t>(baseline.internal_free);
+    const size_t mpb_size = g_cap_slots[0].staging_size;
+    const size_t arena_bytes =
+        g_cap_slots[0].elf.sec[ELF_SEC_TEXT].size + g_cap_slots[0].elf.sec[ELF_SEC_DATA].size +
+        g_cap_slots[0].elf.sec[ELF_SEC_RODATA].size + g_cap_slots[0].elf.sec[ELF_SEC_DRLRO].size +
+        g_cap_slots[0].elf.sec[ELF_SEC_BSS].size;
+    std::printf("[T10-budget] psram base_free=%" PRIu32 " peak_free=%" PRIu32 " consumed=%" PRIu32
+                " per_instance=%" PRIu32 " (staging %zuB + loader arena %zuB) iram_delta=%" PRId32
+                " internal_delta=%" PRId32 "\n",
+                baseline.psram_free, peak.psram_free, consumed, per_instance, mpb_size, arena_bytes,
+                iram_delta, internal_delta);
+    std::printf("CAPBUD,count=%u,psram_base_free=%" PRIu32 ",psram_peak_free=%" PRIu32
+                ",consumed=%" PRIu32 ",per_instance=%" PRIu32 ",mpb_size=%zu,arena_size=%zu"
+                ",iram_delta=%" PRId32 ",internal_delta=%" PRId32 "\n",
+                count, baseline.psram_free, peak.psram_free, consumed, per_instance, mpb_size,
+                arena_bytes, iram_delta, internal_delta);
+
+    /* Unload phase: reverse load order, each generation's own unload(). */
+    bool unload_ok = true;
+    for (unsigned i = count; i >= 1u; --i) {
+        const int32_t unload_err = g_cap_slots[i - 1u].table->unload();
+        if (unload_err != 0) {
+            unload_ok = false;
+        }
+        release_slot(g_cap_slots[i - 1u], true);
+        std::printf("[cap-unload] idx=%u name=%s unload_err=%d psram_free=%" PRIu32 "\n", i,
+                    pkgs[i - 1u]->name, static_cast<int>(unload_err), psram_free_bytes());
+        vTaskDelay(1);
+    }
+    if (unload_ok) {
+        std::printf("[PASS-cap-%u-unload] %u/%u released in reverse order\n", count, count, count);
+    }
+
+    const HeapSnap final_snap = heap_snap();
+    print_heap_snap("cap-final", final_snap);
+    const bool restored = final_snap.psram_free == baseline.psram_free &&
+                          final_snap.psram_min_ever >= peak.psram_min_ever;
+    std::printf("[poca-cap] restored=%s (final_free=%" PRIu32 " base_free=%" PRIu32
+                " peak min_ever floor=%" PRIu32 ")\n",
+                restored ? "yes" : "NO", final_snap.psram_free, baseline.psram_free,
+                peak.psram_min_ever);
+    if (load_ok && respond_ok && distinct_ok && unload_ok && restored) {
+        std::printf("[PASS-capacity-%u] %u concurrent ACTIVE generations verified (distinct "
+                    "names/magics/text bases)\n",
+                    count, count);
+        return 0;
+    }
+    std::printf("[FAIL-capacity-%u] load=%s respond=%s distinct=%s unload=%s restored=%s\n", count,
+                load_ok ? "ok" : "FAIL", respond_ok ? "ok" : "FAIL", distinct_ok ? "ok" : "FAIL",
+                unload_ok ? "ok" : "FAIL", restored ? "ok" : "FAIL");
+    return 1;
 }
 
 } // namespace frame::poca
