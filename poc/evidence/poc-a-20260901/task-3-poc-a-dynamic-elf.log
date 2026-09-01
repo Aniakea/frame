@@ -1,0 +1,292 @@
+=== T3 MPB C parser (host/target same source) — 2026-08-31T21:13:42+08:00 ===
+Traceback (most recent call last):
+  File "/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/gen_mpb_corpus.py", line 496, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/gen_mpb_corpus.py", line 305, in main
+    neg_target = build_mpb(
+                 ^^^^^^^^^^
+  File "/home/lain/Projects/esp_study/poc-a-wt/tools/frame_tools/manifest_builder.py", line 632, in build_mpb
+    return assemble_mpb(
+           ^^^^^^^^^^^^^
+  File "/home/lain/Projects/esp_study/poc-a-wt/tools/frame_tools/manifest_builder.py", line 736, in assemble_mpb
+    return sign_mpb(container, signing_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/lain/Projects/esp_study/poc-a-wt/tools/frame_tools/manifest_builder.py", line 759, in sign_mpb
+    verify_mpb(result, private_key.public_key())
+  File "/home/lain/Projects/esp_study/poc-a-wt/tools/frame_tools/manifest_builder.py", line 1006, in verify_mpb
+    raise MpbError(
+frame_tools.manifest_builder.MpbError: [-35] target_id 0x53454c46 != 0x33505345
+Traceback (most recent call last):
+  File "/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/gen_mpb_corpus.py", line 501, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/gen_mpb_corpus.py", line 350, in main
+    expect_oracle(FRAME_ERR_ABI_MISMATCH, neg_abi, pub_a)
+  File "/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/gen_mpb_corpus.py", line 159, in expect_oracle
+    raise AssertionError(f"oracle accepted a fixture expected to fail with {code}")
+AssertionError: oracle accepted a fixture expected to fail with -7
+wrote 18 fixtures + corpus_manifest.h to /home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/mpb_corpus
+  pos_code.mpb                 expected=   0 positive-code
+  pos_resource_only.mpb        expected=   0 positive-resource-only
+  neg_magic.mpb                expected= -18 negative-magic
+  neg_total_size.mpb           expected= -18 negative-total-size
+  neg_offset_oob.mpb           expected= -18 negative-offset-oob
+  neg_overlap.mpb              expected= -18 negative-overlap
+  neg_dup_required.mpb         expected= -18 negative-dup-required
+  neg_unknown_required_tlv.mpb expected= -18 negative-unknown-required-tlv
+  neg_mixed_elf_in_res.mpb     expected= -18 negative-mixed-elf-in-res
+  neg_mixed_res_in_elf.mpb     expected= -18 negative-mixed-res-in-elf
+  neg_payload_hash.mpb         expected= -19 negative-payload-hash
+  neg_signature.mpb            expected= -17 negative-signature
+  neg_double_fault.mpb         expected= -17 negative-double-fault
+  neg_key_id.mpb               expected= -17 negative-key-id
+  neg_target.mpb               expected= -35 negative-target
+  neg_abi.mpb                  expected=  -7 negative-abi
+  neg_features.mpb             expected=  -7 negative-features
+  neg_epoch.mpb                expected= -34 negative-epoch
+total 80
+drwxr-xr-x 1 lain lain  670 Aug 31 21:18 .
+drwxr-xr-x 1 lain lain  390 Aug 31 21:17 ..
+-rw-r--r-- 1 lain lain 5769 Aug 31 21:18 corpus_manifest.h
+-rw-r--r-- 1 lain lain  472 Aug 31 21:18 neg_abi.mpb
+-rw-r--r-- 1 lain lain  516 Aug 31 21:18 neg_double_fault.mpb
+-rw-r--r-- 1 lain lain  260 Aug 31 21:18 neg_dup_required.mpb
+-rw-r--r-- 1 lain lain  472 Aug 31 21:18 neg_epoch.mpb
+-rw-r--r-- 1 lain lain  476 Aug 31 21:18 neg_features.mpb
+-rw-r--r-- 1 lain lain  268 Aug 31 21:18 neg_key_id.mpb
+-rw-r--r-- 1 lain lain  516 Aug 31 21:18 neg_magic.mpb
+-rw-r--r-- 1 lain lain  524 Aug 31 21:18 neg_mixed_elf_in_res.mpb
+-rw-r--r-- 1 lain lain  524 Aug 31 21:18 neg_mixed_res_in_elf.mpb
+-rw-r--r-- 1 lain lain  252 Aug 31 21:18 neg_offset_oob.mpb
+-rw-r--r-- 1 lain lain  320 Aug 31 21:18 neg_overlap.mpb
+-rw-r--r-- 1 lain lain  516 Aug 31 21:18 neg_payload_hash.mpb
+-rw-r--r-- 1 lain lain  516 Aug 31 21:18 neg_signature.mpb
+-rw-r--r-- 1 lain lain  464 Aug 31 21:18 neg_target.mpb
+-rw-r--r-- 1 lain lain  515 Aug 31 21:18 neg_total_size.mpb
+-rw-r--r-- 1 lain lain  272 Aug 31 21:18 neg_unknown_required_tlv.mpb
+-rw-r--r-- 1 lain lain  516 Aug 31 21:18 pos_code.mpb
+-rw-r--r-- 1 lain lain  380 Aug 31 21:18 pos_resource_only.mpb
+make[1]: *** [CMakeFiles/Makefile2:341: CMakeFiles/mpb_parser_test.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+[ 76%] Linking CXX executable frame_abi_test
+[ 80%] Linking CXX executable lifecycle_state_test
+[ 80%] Built target frame_abi_test
+[ 84%] Linking CXX executable frame_handle_test
+[ 84%] Built target lifecycle_state_test
+[ 84%] Built target frame_handle_test
+[ 88%] Linking CXX static library ../../../lib/libgmock_main.a
+[ 88%] Built target gmock_main
+[ 92%] Linking CXX executable frame_strand_test
+[ 96%] Linking CXX executable frame_completion_test
+[ 96%] Built target frame_strand_test
+[ 96%] Built target frame_completion_test
+make: *** [Makefile:101: all] Error 2
+[ RUN      ] MpbParser.TamperedElfPayloadByteRejectedAsHashMismatch
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/mpb_parser_test.cc:480: Failure
+Expected equality of these values:
+  parse_with(*entry, data, default_policy(), &view, &kat)
+    Which is: -18
+  FRAME_OK
+    Which is: 0
+
+[  FAILED  ] MpbParser.TamperedElfPayloadByteRejectedAsHashMismatch (0 ms)
+[ RUN      ] MpbParser.TruncationFuzzAlwaysFailsClosed
+[       OK ] MpbParser.TruncationFuzzAlwaysFailsClosed (32 ms)
+[ RUN      ] MpbParser.RandomTruncationsFailClosed
+[       OK ] MpbParser.RandomTruncationsFailClosed (35 ms)
+[ RUN      ] MpbParser.ByteFlipFuzzNeverCrashes
+[       OK ] MpbParser.ByteFlipFuzzNeverCrashes (70 ms)
+[----------] 28 tests from MpbParser (156 ms total)
+
+[----------] Global test environment tear-down
+[==========] 28 tests from 1 test suite ran. (156 ms total)
+[  PASSED  ] 6 tests.
+[  FAILED  ] 22 tests, listed below:
+[  FAILED  ] MpbParser.EveryFixtureMatchesItsExpectedErrorCode
+[  FAILED  ] MpbParser.CodePositiveVerifiesAndExposesView
+[  FAILED  ] MpbParser.ResourceOnlyPositiveVerifiesWithWindowPadding
+[  FAILED  ] MpbParser.ManifestFieldAccessorRoundTrip
+[  FAILED  ] MpbParser.CorpusMagic
+[  FAILED  ] MpbParser.CorpusTotalSize
+[  FAILED  ] MpbParser.CorpusOffsetOutOfBounds
+[  FAILED  ] MpbParser.CorpusRegionOverlap
+[  FAILED  ] MpbParser.CorpusDuplicateRequiredTlv
+[  FAILED  ] MpbParser.CorpusUnknownRequiredTlv
+[  FAILED  ] MpbParser.CorpusMixedElfInResourceOnly
+[  FAILED  ] MpbParser.CorpusMixedResourceInCode
+[  FAILED  ] MpbParser.CorpusPayloadHash
+[  FAILED  ] MpbParser.CorpusSignatureTamper
+[  FAILED  ] MpbParser.CorpusWrongKeyId
+[  FAILED  ] MpbParser.CorpusTargetMismatch
+[  FAILED  ] MpbParser.CorpusAbiMismatch
+[  FAILED  ] MpbParser.CorpusFeaturesExceedDevice
+[  FAILED  ] MpbParser.CorpusEpochRollback
+[  FAILED  ] MpbParser.DoubleFaultReportsSignatureBeforeHash
+[  FAILED  ] MpbParser.EpochFloorEqualStillVerifies
+[  FAILED  ] MpbParser.TamperedElfPayloadByteRejectedAsHashMismatch
+
+22 FAILED TESTS
+[  FAILED  ] MpbParser.CorpusWrongKeyId
+[  FAILED  ] MpbParser.CorpusTargetMismatch
+[  FAILED  ] MpbParser.CorpusAbiMismatch
+[  FAILED  ] MpbParser.CorpusFeaturesExceedDevice
+[  FAILED  ] MpbParser.CorpusEpochRollback
+[  FAILED  ] MpbParser.DoubleFaultReportsSignatureBeforeHash
+
+17 FAILED TESTS
+[  FAILED  ] MpbParser.CorpusTargetMismatch
+[  FAILED  ] MpbParser.CorpusAbiMismatch
+[  FAILED  ] MpbParser.CorpusFeaturesExceedDevice
+[  FAILED  ] MpbParser.CorpusEpochRollback
+
+ 6 FAILED TESTS
+[  FAILED  ] 2 tests, listed below:
+[  FAILED  ] MpbParser.EveryFixtureMatchesItsExpectedErrorCode
+[  FAILED  ] MpbParser.CorpusTotalSize
+
+ 2 FAILED TESTS
+
+[----------] Global test environment tear-down
+[==========] 28 tests from 1 test suite ran. (189 ms total)
+[  PASSED  ] 28 tests.
+Test project /tmp/opencode/poc-host-asan
+No tests were found!!!
+Test project /tmp/opencode/poc-host-gcc
+No tests were found!!!
+
+100% tests passed out of 28
+
+Total Test time (real) =   0.63 sec
+
+100% tests passed out of 28
+
+Total Test time (real) =   0.11 sec
+The following tests FAILED:
+	 51 - FrameCompletion.ThreeWayRaceCompleteCancelQuiesce (Failed)
+Errors while running CTest
+Output from these tests are in: /tmp/opencode/poc-host-asan/Testing/Temporary/LastTest.log
+Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.
+FORMAT_OK
+=== python gates (must stay green, no tool changes) ===
+18 files already formatted
+RUFF_FORMAT_EXIT=0
+All checks passed!
+RUFF_EXIT=0
+0 errors, 0 warnings, 0 informations
+PYRIGHT_EXIT=0
+..................................................                       [100%]
+50 passed in 0.38s
+PYTEST_EXIT=0
+[==========] 28 tests from 1 test suite ran. (183 ms total)
+[  PASSED  ] 28 tests.
+=== target build: poc_a with frame_poc_mpb (IDF v6.0.2) ===
+CMake Error at /home/lain/Projects/esp_study/poc-a-wt/cmake/FramePlatform.cmake:5 (message):
+-- Configuring incomplete, errors occurred!
+CMake Error at /home/lain/Projects/esp_study/poc-a-wt/cmake/FramePlatform.cmake:5 (message):
+-- Configuring incomplete, errors occurred!
+ninja: error: rebuilding 'build.ninja': subcommand failed
+BUILD_EXIT=0
+0
+IDF_PATH=
+=== configure ===
+CMake Error at /home/lain/Projects/esp_study/poc-a-wt/cmake/FramePlatform.cmake:5 (message):
+-- Configuring incomplete, errors occurred!
+=== build ===
+0
+WARNINGS_ABOVE
+FAILED: build.ninja /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/xtensa/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_stdio/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_dma/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_gpspi/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_clock/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_mspi/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_blockdev/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_security/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/bootloader/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esptool_py/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/partition_table/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_app_format/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_bootloader_format/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/app_update/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_partition/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/efuse/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_security/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_gpio/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_uart/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_pm/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_mm/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_dma/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/include/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/include/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/drivers/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/drivers/everest/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/drivers/p256-m/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/drivers/builtin/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/drivers/pqcp/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/extras/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/platform/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/utilities/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/core/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/pkgconfig/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/library/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/pkgconfig/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_timg/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_wdt/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_ana_conv/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_rtc_timer/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/bootloader_support/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/spi_flash/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_usb_cdc_rom_console/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_system/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_system/port/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_system/port/soc/esp32s3/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_common/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_rom/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/hal/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/log/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/heap/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/soc/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_gpio/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_usb/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_pmu/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_touch_sens/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_i2s/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hw_support/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hw_support/port/esp32s3/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hw_support/mspi_timing_tuning/port/esp32s3/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hw_support/lowpower/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/freertos/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_libc/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_libc/src/port/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/pthread/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/cxx/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_timer/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_ringbuf/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_psram/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_psram/device/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_psram/xip_impl/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_uart/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_gptimer/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/app_trace/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_event/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/nvs_sec_provider/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/nvs_flash/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_phy/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_usb_serial_jtag/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/vfs/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/lwip/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_netif_stack/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_netif/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/wpa_supplicant/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_coex/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_wifi/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_spi/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_gdbstub/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/bt/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/unity/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/cmock/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/console/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_i2c/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_twai/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/driver/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/http_parser/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp-tls/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_adc/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_blockdev_util/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_ana_cmpr/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_ana_cmpr/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_bitscrambler/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_cam/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_isp/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_cam/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_dac/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_i2c/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_i2s/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_i3c/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_jpeg/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_jpeg/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_ledc/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_ledc/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_mcpwm/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_mcpwm/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_parlio/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_parlio/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_pcnt/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_pcnt/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_ppa/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_ppa/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_rmt/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_rmt/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_sd/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/sdmmc/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_sd_intf/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_sdio/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_sdm/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_sdmmc/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_sdspi/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_touch_sens/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_tsens/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_driver_twai/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_eth/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_ieee802154/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hal_lcd/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_hid/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/tcp_transport/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_http_client/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_http_server/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_https_ota/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_https_server/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_lcd/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/protobuf-c/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/protocomm/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_local_ctrl/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_trace/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/espcoredump/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/wear_levelling/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/fatfs/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/idf_test/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/ieee802154/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/openthread/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/perfmon/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/rt/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/spiffs/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/ulp/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/espressif__cmake_utilities/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/elf_loader/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/frame_poc_runtime/cmake_install.cmake /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/main/cmake_install.cmake 
+/usr/bin/cmake --regenerate-during-build -S/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a -B/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default
+ninja: error: rebuilding 'build.ninja': subcommand failed
+IDF_PATH=/home/lain/.espressif/v6.0.2/esp-idf
+=== configure ===
+-- Components: app_trace app_update bootloader bootloader_support bt cmock console cxx driver efuse elf_loader esp-tls esp_adc esp_app_format esp_blockdev esp_blockdev_util esp_bootloader_format esp_coex esp_common esp_driver_ana_cmpr esp_driver_bitscrambler esp_driver_cam esp_driver_dac esp_driver_dma esp_driver_gpio esp_driver_gptimer esp_driver_i2c esp_driver_i2s esp_driver_i3c esp_driver_isp esp_driver_jpeg esp_driver_ledc esp_driver_mcpwm esp_driver_parlio esp_driver_pcnt esp_driver_ppa esp_driver_rmt esp_driver_sd_intf esp_driver_sdio esp_driver_sdm esp_driver_sdmmc esp_driver_sdspi esp_driver_spi esp_driver_touch_sens esp_driver_tsens esp_driver_twai esp_driver_uart esp_driver_usb_serial_jtag esp_eth esp_event esp_gdbstub esp_hal_ana_cmpr esp_hal_ana_conv esp_hal_cam esp_hal_clock esp_hal_dma esp_hal_gpio esp_hal_gpspi esp_hal_i2c esp_hal_i2s esp_hal_ieee802154 esp_hal_jpeg esp_hal_lcd esp_hal_ledc esp_hal_mcpwm esp_hal_mspi esp_hal_parlio esp_hal_pcnt esp_hal_pmu esp_hal_ppa esp_hal_rmt esp_hal_rtc_timer esp_hal_sd esp_hal_security esp_hal_timg esp_hal_touch_sens esp_hal_twai esp_hal_uart esp_hal_usb esp_hal_wdt esp_hid esp_http_client esp_http_server esp_https_ota esp_https_server esp_hw_support esp_lcd esp_libc esp_local_ctrl esp_mm esp_netif esp_netif_stack esp_partition esp_phy esp_pm esp_psram esp_ringbuf esp_rom esp_security esp_stdio esp_system esp_timer esp_trace esp_usb_cdc_rom_console esp_wifi espcoredump espressif__cmake_utilities esptool_py fatfs frame_poc_mpb frame_poc_runtime freertos hal heap http_parser idf_test ieee802154 log lwip main mbedtls nvs_flash nvs_sec_provider openthread partition_table perfmon protobuf-c protocomm pthread rt sdmmc soc spi_flash spiffs tcp_transport ulp unity vfs wear_levelling wpa_supplicant xtensa
+-- Component paths: /home/lain/.espressif/v6.0.2/esp-idf/components/app_trace /home/lain/.espressif/v6.0.2/esp-idf/components/app_update /home/lain/.espressif/v6.0.2/esp-idf/components/bootloader /home/lain/.espressif/v6.0.2/esp-idf/components/bootloader_support /home/lain/.espressif/v6.0.2/esp-idf/components/bt /home/lain/.espressif/v6.0.2/esp-idf/components/cmock /home/lain/.espressif/v6.0.2/esp-idf/components/console /home/lain/.espressif/v6.0.2/esp-idf/components/cxx /home/lain/.espressif/v6.0.2/esp-idf/components/driver /home/lain/.espressif/v6.0.2/esp-idf/components/efuse /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/components/elf_loader /home/lain/.espressif/v6.0.2/esp-idf/components/esp-tls /home/lain/.espressif/v6.0.2/esp-idf/components/esp_adc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_app_format /home/lain/.espressif/v6.0.2/esp-idf/components/esp_blockdev /home/lain/.espressif/v6.0.2/esp-idf/components/esp_blockdev_util /home/lain/.espressif/v6.0.2/esp-idf/components/esp_bootloader_format /home/lain/.espressif/v6.0.2/esp-idf/components/esp_coex /home/lain/.espressif/v6.0.2/esp-idf/components/esp_common /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_ana_cmpr /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_bitscrambler /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_cam /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_dac /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_dma /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_gpio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_gptimer /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_i2c /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_i2s /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_i3c /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_isp /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_jpeg /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_ledc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_mcpwm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_parlio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_pcnt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_ppa /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_rmt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sd_intf /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdmmc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdspi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_spi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_touch_sens /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_tsens /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_twai /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_uart /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_usb_serial_jtag /home/lain/.espressif/v6.0.2/esp-idf/components/esp_eth /home/lain/.espressif/v6.0.2/esp-idf/components/esp_event /home/lain/.espressif/v6.0.2/esp-idf/components/esp_gdbstub /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ana_cmpr /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ana_conv /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_cam /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_clock /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_dma /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_gpio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_gpspi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_i2c /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_i2s /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ieee802154 /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_jpeg /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_lcd /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ledc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_mcpwm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_mspi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_parlio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_pcnt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_pmu /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ppa /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_rmt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_rtc_timer /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_sd /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_security /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_timg /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_touch_sens /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_twai /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_uart /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_usb /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_wdt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hid /home/lain/.espressif/v6.0.2/esp-idf/components/esp_http_client /home/lain/.espressif/v6.0.2/esp-idf/components/esp_http_server /home/lain/.espressif/v6.0.2/esp-idf/components/esp_https_ota /home/lain/.espressif/v6.0.2/esp-idf/components/esp_https_server /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support /home/lain/.espressif/v6.0.2/esp-idf/components/esp_lcd /home/lain/.espressif/v6.0.2/esp-idf/components/esp_libc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_local_ctrl /home/lain/.espressif/v6.0.2/esp-idf/components/esp_mm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_netif /home/lain/.espressif/v6.0.2/esp-idf/components/esp_netif_stack /home/lain/.espressif/v6.0.2/esp-idf/components/esp_partition /home/lain/.espressif/v6.0.2/esp-idf/components/esp_phy /home/lain/.espressif/v6.0.2/esp-idf/components/esp_pm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_psram /home/lain/.espressif/v6.0.2/esp-idf/components/esp_ringbuf /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom /home/lain/.espressif/v6.0.2/esp-idf/components/esp_security /home/lain/.espressif/v6.0.2/esp-idf/components/esp_stdio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_system /home/lain/.espressif/v6.0.2/esp-idf/components/esp_timer /home/lain/.espressif/v6.0.2/esp-idf/components/esp_trace /home/lain/.espressif/v6.0.2/esp-idf/components/esp_usb_cdc_rom_console /home/lain/.espressif/v6.0.2/esp-idf/components/esp_wifi /home/lain/.espressif/v6.0.2/esp-idf/components/espcoredump /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/managed_components/espressif__cmake_utilities /home/lain/.espressif/v6.0.2/esp-idf/components/esptool_py /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs /home/lain/Projects/esp_study/poc-a-wt/poc/common/components/frame_poc_mpb /home/lain/Projects/esp_study/poc-a-wt/poc/common/components/frame_poc_runtime /home/lain/.espressif/v6.0.2/esp-idf/components/freertos /home/lain/.espressif/v6.0.2/esp-idf/components/hal /home/lain/.espressif/v6.0.2/esp-idf/components/heap /home/lain/.espressif/v6.0.2/esp-idf/components/http_parser /home/lain/.espressif/v6.0.2/esp-idf/components/idf_test /home/lain/.espressif/v6.0.2/esp-idf/components/ieee802154 /home/lain/.espressif/v6.0.2/esp-idf/components/log /home/lain/.espressif/v6.0.2/esp-idf/components/lwip /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main /home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls /home/lain/.espressif/v6.0.2/esp-idf/components/nvs_flash /home/lain/.espressif/v6.0.2/esp-idf/components/nvs_sec_provider /home/lain/.espressif/v6.0.2/esp-idf/components/openthread /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table /home/lain/.espressif/v6.0.2/esp-idf/components/perfmon /home/lain/.espressif/v6.0.2/esp-idf/components/protobuf-c /home/lain/.espressif/v6.0.2/esp-idf/components/protocomm /home/lain/.espressif/v6.0.2/esp-idf/components/pthread /home/lain/.espressif/v6.0.2/esp-idf/components/rt /home/lain/.espressif/v6.0.2/esp-idf/components/sdmmc /home/lain/.espressif/v6.0.2/esp-idf/components/soc /home/lain/.espressif/v6.0.2/esp-idf/components/spi_flash /home/lain/.espressif/v6.0.2/esp-idf/components/spiffs /home/lain/.espressif/v6.0.2/esp-idf/components/tcp_transport /home/lain/.espressif/v6.0.2/esp-idf/components/ulp /home/lain/.espressif/v6.0.2/esp-idf/components/unity /home/lain/.espressif/v6.0.2/esp-idf/components/vfs /home/lain/.espressif/v6.0.2/esp-idf/components/wear_levelling /home/lain/.espressif/v6.0.2/esp-idf/components/wpa_supplicant /home/lain/.espressif/v6.0.2/esp-idf/components/xtensa
+-- Configuring done (6.4s)
+=== build ===
+BUILD_EXIT=0
+0
+WARNING_COUNT_ABOVE
+[4/17] Building C object esp-idf/frame_poc_mpb/CMakeFiles/__idf_frame_poc_mpb.dir/src/mpb_mbedtls_glue.c.obj
+[7/17] Building C object esp-idf/frame_poc_mpb/CMakeFiles/__idf_frame_poc_mpb.dir/src/mpb_parser.c.obj
+[10/17] Linking C static library esp-idf/frame_poc_mpb/libframe_poc_mpb.a
+Generated /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/frame_poc_a.bin
+[17/17] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default && python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/partition_table/partition-table.bin /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/frame_poc_a.bin
+frame_poc_a.bin binary size 0x4a8b0 bytes. Smallest app partition is 0x100000 bytes. 0xb5750 bytes (71%) free.
+=== corpus determinism probe (regenerate → compare) ===
+0
+MISMATCH_COUNT_ABOVE(must be 0)
+0
+ASAN_BUILD_ERRORS_ABOVE
+100% tests passed out of 52
+
+Total Test time (real) =  14.38 sec
+===
+0
+GCC_BUILD_ERRORS_ABOVE
+100% tests passed out of 52
+
+Total Test time (real) =  13.18 sec
+ create mode 100644 poc/host/tests/mpb_corpus/neg_magic.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/neg_mixed_elf_in_res.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/neg_mixed_res_in_elf.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/neg_offset_oob.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/neg_overlap.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/neg_payload_hash.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/neg_signature.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/neg_target.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/neg_total_size.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/neg_unknown_required_tlv.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/pos_code.mpb
+ create mode 100644 poc/host/tests/mpb_corpus/pos_resource_only.mpb
+ create mode 100644 poc/host/tests/mpb_parser_test.cc
+ create mode 100644 poc/host/tests/sha256_ref.c
+ create mode 100644 poc/host/tests/sha256_ref.h
+8cb34bb feat(poc-a): strict single-type mpb parser shared host/target
+=== CI-format-gate (exact ci.yml command, clang-format 18) ===
+FORMAT_GATE_EXIT=1
+FORMAT_GATE_EXIT=0
+[poc-a-dynamic-elf 408df44] feat(poc-a): strict single-type mpb parser shared host/target
+ Date: Mon Aug 31 21:30:05 2026 +0800
+ 31 files changed, 2111 insertions(+)
+408df44 feat(poc-a): strict single-type mpb parser shared host/target
+1c3ad59 feat(poc-a): completion-cancel cas and cleanup semantics
+=== FINAL GATES (committed tree 408df44) ===
+0
+ASAN_BUILD_ERRS
+0
+GCC_BUILD_ERRS
+
+Total Test time (real) =  14.39 sec
+
+Total Test time (real) =  13.19 sec
+RUFF_FORMAT=0
+RUFF=0
+PYRIGHT=0
+50 passed in 0.37s
+=== corpus expected-vs-actual (from green test run) ===
+Running main() from /tmp/opencode/poc-host-asan/_deps/googletest-src/googletest/src/gtest_main.cc
+MpbParser.
+  EveryFixtureMatchesItsExpectedErrorCode
+100% tests passed out of 52
+100% tests passed out of 52
+=== commit stat ===
+ poc/host/tests/mpb_corpus/neg_total_size.mpb       | Bin 0 -> 515 bytes
+ .../tests/mpb_corpus/neg_unknown_required_tlv.mpb  | Bin 0 -> 272 bytes
+ poc/host/tests/mpb_corpus/pos_code.mpb             | Bin 0 -> 516 bytes
+ poc/host/tests/mpb_corpus/pos_resource_only.mpb    | Bin 0 -> 380 bytes
+ poc/host/tests/mpb_parser_test.cc                  | 542 +++++++++++++++++++++
+ poc/host/tests/sha256_ref.c                        | 105 ++++
+ poc/host/tests/sha256_ref.h                        |  20 +
+ 31 files changed, 2111 insertions(+)
+
+=== T3 SUMMARY ===
+commit: 408df44 feat(poc-a): strict single-type mpb parser shared host/target (31 files, +2111)
+gates: host ASan ctest 52/52 PASS · host GCC ctest 52/52 PASS · ruff format/check 0 · pyright 0 · pytest 50 PASS
+       clang-format 18 (exact ci.yml gate) EXIT=0 · poc_a IDF build EXIT=0 warnings=0 (frame_poc_mpb compiled)
+       corpus regeneration determinism: 19/19 files byte-identical
+fuzz: exhaustive truncations (every prefix, both positives) + 1000 seeded random truncations -> all rejected
+      fail-closed (view zeroed); 1000 seeded byte-flips x2 positives -> no crash, rc==0 only possible via
+      unauthenticated padding (view re-validated), all other outcomes error codes.
+note: mid-run ctest failure FrameCompletion.ThreeWayRaceCompleteCancelQuiesce belonged to the parallel
+      T12 agent's WIP (untracked then); after their commit 1c3ad59 the full suite is 52/52 green.

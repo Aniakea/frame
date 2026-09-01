@@ -1,0 +1,1205 @@
+TASK 13 — on-target scheduler semantics validation (poc-a-dynamic-elf)
+Date: 2026-09-01T01:12:20+08:00
+Worktree: /home/lain/Projects/esp_study/poc-a-wt @ pre-commit 2a37556
+Board: /dev/ttyACM0
+
+=== PHASE 1: port build ===
+ninja: Entering directory `poc/apps/poc_a/build/default'
+[0/1] Re-running CMake...
+-- Component directory /home/lain/.espressif/v6.0.2/esp-idf/components/mqtt does not contain a CMakeLists.txt file. No component will be added
+-- Minimal build - OFF
+-- Building ESP-IDF components for target esp32s3
+NOTICE: Processing 2 dependencies:
+NOTICE: [1/2] espressif/cmake_utilities (0.5.3)
+NOTICE: [2/2] idf (6.0.2)
+-- ESP-TEE is currently supported only on the esp32c6;esp32h2;esp32c5;esp32c61 SoCs
+-- KCONFIG_REPORT_VERBOSITY not set, using default
+-- Project sdkconfig file /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/sdkconfig
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/bt/host/nimble/Kconfig.in:1421: BT_NIMBLE_MESH_PROVISIONER: 'default 0' is not a valid bool value (only 'y' and 'n' are allowed). Value is treated as 'n'.
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs/Kconfig:230: FATFS_PRINT_LLI: 'default 0' is not a valid bool value (only 'y' and 'n' are allowed). Value is treated as 'n'.
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs/Kconfig:235: FATFS_PRINT_FLOAT: 'default 0' is not a valid bool value (only 'y' and 'n' are allowed). Value is treated as 'n'.
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/bt/sdkconfig.rename.esp32s3:4: duplicate rename mapping for CONFIG_BT_NIMBLE_COEX_PHY_CODED_TX_RX_TLIM_EN: previous target CONFIG_BT_LE_COEX_PHY_CODED_TX_RX_TLIM_EN, new target CONFIG_BT_CTRL_COEX_PHY_CODED_TX_RX_TLIM_EN - last mapping is used
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/bt/sdkconfig.rename.esp32s3:5: duplicate rename mapping for CONFIG_BT_NIMBLE_COEX_PHY_CODED_TX_RX_TLIM_DIS: previous target CONFIG_BT_LE_COEX_PHY_CODED_TX_RX_TLIM_DIS, new target CONFIG_BT_CTRL_COEX_PHY_CODED_TX_RX_TLIM_DIS - last mapping is used
+Loading defaults file /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/sdkconfig.defaults...
+NOTE: Kconfig parser version: 1
+NOTE: Kconfig defaults policy: use sdkconfig
+NOTE: Status: Finished successfully
+-- Compiler supported targets: xtensa-esp-elf
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- App "frame_poc_a" version: 2a37556-dirty
+-- Setting up mbedtls configuration
+-- Linkage type is PUBLIC
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_wdt/esp32s3/rom.wdt.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/ld/esp32s3/memory.ld.in
+--   -> Preprocessing .in script: /home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/ld/esp32s3/memory.ld.in
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/ld/esp32s3/sections.ld.in
+--   -> Preprocessing .in script: /home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/ld/esp32s3/sections.ld.in
+--   -> Applying ldgen processing: /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_system/ld/sections.ld.in
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.api.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.bt_funcs.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.libgcc.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.version.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_master.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_50.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_smp.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_dtm.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_test.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_scan.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.libc.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/soc/esp32s3/ld/esp32s3.peripherals.ld
+-- ELF_LOADER: 1.3.3
+-- [poca-plugin] pubkey key_id=e5677a1c point=0x04||X||Y(64B) -> /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/plugins/generated/poca_pubkey.h
+-- [poca-plugin] registered baseline (entry frame_plugin_entry, version 1.0.0)
+-- [poca-plugin] registered globdat (entry frame_plugin_entry, version 1.0.0)
+-- [poca-plugin] registered plt (entry frame_plugin_entry, version 1.0.0)
+-- [poca-plugin] registered import_neg (entry frame_plugin_entry, version 1.0.0)
+-- [poca-plugin] registered iram_probe (entry frame_plugin_entry, version 1.0.0)
+-- [poca-plugin] registered baseline_v2 (entry frame_plugin_entry, version 2.0.0)
+-- [poca-plugin] registered baseline_300k (entry frame_plugin_entry, version 1.0.1)
+-- [cxx-probe] registered cxx_ctor (entry frame_plugin_entry, expect-reject: forbidden C++ feature section;.ctors)
+-- [cxx-probe] registered cxx_dtor (entry frame_plugin_entry, expect-reject: forbidden C++ feature section;.dtors)
+-- [cxx-probe] registered cxx_tls (entry frame_plugin_entry, expect-reject: relocation allowlist violated;R_XTENSA_TLS)
+-- [cxx-probe] registered cxx_exceptions (entry frame_plugin_entry, expect-reject: forbidden C++ feature section;.eh_frame)
+-- [cxx-probe] registered cxx_rtti (entry frame_plugin_entry, expect-reject: import gate failed;__dynamic_cast)
+-- [cxx-probe] registered cxx_unwind (entry frame_plugin_entry, expect-reject: forbidden C++ feature section;.eh_frame)
+-- Component idf::esp_trace will be linked with -Wl,--whole-archive
+-- Components: app_trace app_update bootloader bootloader_support bt cmock console cxx driver efuse elf_loader esp-tls esp_adc esp_app_format esp_blockdev esp_blockdev_util esp_bootloader_format esp_coex esp_common esp_driver_ana_cmpr esp_driver_bitscrambler esp_driver_cam esp_driver_dac esp_driver_dma esp_driver_gpio esp_driver_gptimer esp_driver_i2c esp_driver_i2s esp_driver_i3c esp_driver_isp esp_driver_jpeg esp_driver_ledc esp_driver_mcpwm esp_driver_parlio esp_driver_pcnt esp_driver_ppa esp_driver_rmt esp_driver_sd_intf esp_driver_sdio esp_driver_sdm esp_driver_sdmmc esp_driver_sdspi esp_driver_spi esp_driver_touch_sens esp_driver_tsens esp_driver_twai esp_driver_uart esp_driver_usb_serial_jtag esp_eth esp_event esp_gdbstub esp_hal_ana_cmpr esp_hal_ana_conv esp_hal_cam esp_hal_clock esp_hal_dma esp_hal_gpio esp_hal_gpspi esp_hal_i2c esp_hal_i2s esp_hal_ieee802154 esp_hal_jpeg esp_hal_lcd esp_hal_ledc esp_hal_mcpwm esp_hal_mspi esp_hal_parlio esp_hal_pcnt esp_hal_pmu esp_hal_ppa esp_hal_rmt esp_hal_rtc_timer esp_hal_sd esp_hal_security esp_hal_timg esp_hal_touch_sens esp_hal_twai esp_hal_uart esp_hal_usb esp_hal_wdt esp_hid esp_http_client esp_http_server esp_https_ota esp_https_server esp_hw_support esp_lcd esp_libc esp_local_ctrl esp_mm esp_netif esp_netif_stack esp_partition esp_phy esp_pm esp_psram esp_ringbuf esp_rom esp_security esp_stdio esp_system esp_timer esp_trace esp_usb_cdc_rom_console esp_wifi espcoredump espressif__cmake_utilities esptool_py fatfs frame_poc_mpb frame_poc_runtime freertos hal heap http_parser idf_test ieee802154 log lwip main mbedtls nvs_flash nvs_sec_provider openthread partition_table perfmon protobuf-c protocomm pthread rt sdmmc soc spi_flash spiffs tcp_transport ulp unity vfs wear_levelling wpa_supplicant xtensa
+-- Component paths: /home/lain/.espressif/v6.0.2/esp-idf/components/app_trace /home/lain/.espressif/v6.0.2/esp-idf/components/app_update /home/lain/.espressif/v6.0.2/esp-idf/components/bootloader /home/lain/.espressif/v6.0.2/esp-idf/components/bootloader_support /home/lain/.espressif/v6.0.2/esp-idf/components/bt /home/lain/.espressif/v6.0.2/esp-idf/components/cmock /home/lain/.espressif/v6.0.2/esp-idf/components/console /home/lain/.espressif/v6.0.2/esp-idf/components/cxx /home/lain/.espressif/v6.0.2/esp-idf/components/driver /home/lain/.espressif/v6.0.2/esp-idf/components/efuse /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/components/elf_loader /home/lain/.espressif/v6.0.2/esp-idf/components/esp-tls /home/lain/.espressif/v6.0.2/esp-idf/components/esp_adc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_app_format /home/lain/.espressif/v6.0.2/esp-idf/components/esp_blockdev /home/lain/.espressif/v6.0.2/esp-idf/components/esp_blockdev_util /home/lain/.espressif/v6.0.2/esp-idf/components/esp_bootloader_format /home/lain/.espressif/v6.0.2/esp-idf/components/esp_coex /home/lain/.espressif/v6.0.2/esp-idf/components/esp_common /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_ana_cmpr /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_bitscrambler /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_cam /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_dac /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_dma /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_gpio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_gptimer /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_i2c /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_i2s /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_i3c /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_isp /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_jpeg /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_ledc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_mcpwm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_parlio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_pcnt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_ppa /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_rmt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sd_intf /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdmmc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdspi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_spi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_touch_sens /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_tsens /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_twai /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_uart /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_usb_serial_jtag /home/lain/.espressif/v6.0.2/esp-idf/components/esp_eth /home/lain/.espressif/v6.0.2/esp-idf/components/esp_event /home/lain/.espressif/v6.0.2/esp-idf/components/esp_gdbstub /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ana_cmpr /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ana_conv /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_cam /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_clock /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_dma /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_gpio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_gpspi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_i2c /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_i2s /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ieee802154 /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_jpeg /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_lcd /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ledc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_mcpwm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_mspi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_parlio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_pcnt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_pmu /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ppa /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_rmt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_rtc_timer /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_sd /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_security /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_timg /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_touch_sens /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_twai /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_uart /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_usb /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_wdt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hid /home/lain/.espressif/v6.0.2/esp-idf/components/esp_http_client /home/lain/.espressif/v6.0.2/esp-idf/components/esp_http_server /home/lain/.espressif/v6.0.2/esp-idf/components/esp_https_ota /home/lain/.espressif/v6.0.2/esp-idf/components/esp_https_server /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support /home/lain/.espressif/v6.0.2/esp-idf/components/esp_lcd /home/lain/.espressif/v6.0.2/esp-idf/components/esp_libc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_local_ctrl /home/lain/.espressif/v6.0.2/esp-idf/components/esp_mm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_netif /home/lain/.espressif/v6.0.2/esp-idf/components/esp_netif_stack /home/lain/.espressif/v6.0.2/esp-idf/components/esp_partition /home/lain/.espressif/v6.0.2/esp-idf/components/esp_phy /home/lain/.espressif/v6.0.2/esp-idf/components/esp_pm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_psram /home/lain/.espressif/v6.0.2/esp-idf/components/esp_ringbuf /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom /home/lain/.espressif/v6.0.2/esp-idf/components/esp_security /home/lain/.espressif/v6.0.2/esp-idf/components/esp_stdio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_system /home/lain/.espressif/v6.0.2/esp-idf/components/esp_timer /home/lain/.espressif/v6.0.2/esp-idf/components/esp_trace /home/lain/.espressif/v6.0.2/esp-idf/components/esp_usb_cdc_rom_console /home/lain/.espressif/v6.0.2/esp-idf/components/esp_wifi /home/lain/.espressif/v6.0.2/esp-idf/components/espcoredump /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/managed_components/espressif__cmake_utilities /home/lain/.espressif/v6.0.2/esp-idf/components/esptool_py /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs /home/lain/Projects/esp_study/poc-a-wt/poc/common/components/frame_poc_mpb /home/lain/Projects/esp_study/poc-a-wt/poc/common/components/frame_poc_runtime /home/lain/.espressif/v6.0.2/esp-idf/components/freertos /home/lain/.espressif/v6.0.2/esp-idf/components/hal /home/lain/.espressif/v6.0.2/esp-idf/components/heap /home/lain/.espressif/v6.0.2/esp-idf/components/http_parser /home/lain/.espressif/v6.0.2/esp-idf/components/idf_test /home/lain/.espressif/v6.0.2/esp-idf/components/ieee802154 /home/lain/.espressif/v6.0.2/esp-idf/components/log /home/lain/.espressif/v6.0.2/esp-idf/components/lwip /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main /home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls /home/lain/.espressif/v6.0.2/esp-idf/components/nvs_flash /home/lain/.espressif/v6.0.2/esp-idf/components/nvs_sec_provider /home/lain/.espressif/v6.0.2/esp-idf/components/openthread /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table /home/lain/.espressif/v6.0.2/esp-idf/components/perfmon /home/lain/.espressif/v6.0.2/esp-idf/components/protobuf-c /home/lain/.espressif/v6.0.2/esp-idf/components/protocomm /home/lain/.espressif/v6.0.2/esp-idf/components/pthread /home/lain/.espressif/v6.0.2/esp-idf/components/rt /home/lain/.espressif/v6.0.2/esp-idf/components/sdmmc /home/lain/.espressif/v6.0.2/esp-idf/components/soc /home/lain/.espressif/v6.0.2/esp-idf/components/spi_flash /home/lain/.espressif/v6.0.2/esp-idf/components/spiffs /home/lain/.espressif/v6.0.2/esp-idf/components/tcp_transport /home/lain/.espressif/v6.0.2/esp-idf/components/ulp /home/lain/.espressif/v6.0.2/esp-idf/components/unity /home/lain/.espressif/v6.0.2/esp-idf/components/vfs /home/lain/.espressif/v6.0.2/esp-idf/components/wear_levelling /home/lain/.espressif/v6.0.2/esp-idf/components/wpa_supplicant /home/lain/.espressif/v6.0.2/esp-idf/components/xtensa
+-- Frame platform: IDF 7101770dc6db2667b3c477cc31365dd1acd6db4e, xtensa-esp-elf GCC 15.2.0, esp32s3
+-- Configuring done (6.1s)
+-- Generating done (0.7s)
+-- Build files have been written to: /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default
+[1/14] Building C object esp-idf/esp_app_format/CMakeFiles/__idf_esp_app_format.dir/esp_app_desc.c.obj
+[2/14] Linking C static library esp-idf/esp_app_format/libesp_app_format.a
+[3/14] Performing build step for 'bootloader'
+[1/1] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader/bootloader.bin
+Bootloader binary size 0x5800 bytes. 0x2800 bytes (31%) free.
+[4/14] No install step for 'bootloader'
+[5/14] Completed 'bootloader'
+[6/14] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/poca_console.cc.obj
+[7/14] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/poca_plugin.cc.obj
+[8/14] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/poca_sched.cc.obj
+FAILED: esp-idf/main/CMakeFiles/__idf_main.dir/poca_sched.cc.obj 
+/home/lain/.espressif/tools/xtensa-esp-elf/esp-15.2.0_20251204/xtensa-esp-elf/bin/xtensa-esp32s3-elf-g++ -DESP_PLATFORM -DESP_PSA_ITS_AVAILABLE -DIDF_VER=\"v6.0.2\" -DMBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\" -DMBEDTLS_MAJOR_VERSION=4 -DSOC_MMU_PAGE_SIZE=CONFIG_MMU_PAGE_SIZE -DSOC_XTAL_FREQ_MHZ=CONFIG_XTAL_FREQ -DTF_PSA_CRYPTO_USER_CONFIG_FILE=\"mbedtls/esp_config.h\" -D_GLIBCXX_HAVE_POSIX_SEMAPHORE -D_GLIBCXX_USE_POSIX_SEMAPHORE -D_GNU_SOURCE -D_POSIX_READER_WRITER_LOCKS -D__STDC_WANT_LIB_EXT1__=0 -I/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/config -I/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main -I/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main/../plugins -I/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/plugins/generated -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_libc/platform_include -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/config/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/config/include/freertos -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/config/xtensa/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/FreeRTOS-Kernel/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/esp_additions/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/include/soc -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/ldo/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/debug_probe/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/etm/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/mspi_timing_tuning/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/mspi_timing_tuning/tuning_scheme_impl/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/power_supply/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/modem/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/include/soc/esp32s3 -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/port/esp32s3/. -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/port/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/mspi_timing_tuning/port/esp32s3/. -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/mspi_timing_tuning/port/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/heap/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/heap/tlsf -I/home/lain/.espressif/v6.0.2/esp-idf/components/log/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/soc/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/soc/esp32s3 -I/home/lain/.espressif/v6.0.2/esp-idf/components/soc/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/soc/esp32s3/register -I/home/lain/.espressif/v6.0.2/esp-idf/components/hal/platform_port/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/hal/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/hal/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/include/esp32s3 -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3 -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_common/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/port/soc -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/port/include/private -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_stdio/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/xtensa/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/xtensa/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/xtensa/deprecated_include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_gpio/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_gpio/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_usb/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_usb/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_pmu/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_pmu/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ana_conv/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ana_conv/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_dma/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_dma/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/include/apps -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/lwip/src/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/port/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/port/freertos/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/port/esp32xx/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/port/esp32xx/include/arch -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/port/esp32xx/include/sys -I/home/lain/.espressif/v6.0.2/esp-idf/components/console -I/home/lain/.espressif/v6.0.2/esp-idf/components/vfs/include -I/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/components/elf_loader/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_timer/include -I/home/lain/Projects/esp_study/poc-a-wt/poc/common/components/frame_poc_mpb/include -I/home/lain/Projects/esp_study/poc-a-wt/poc/common/components/frame_poc_runtime/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/port/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/mbedtls/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/mbedtls/library -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/mbedtls/tf-psa-crypto/core -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/mbedtls/tf-psa-crypto/drivers/builtin/src -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/mbedtls/tf-psa-crypto/extras -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/esp_crt_bundle/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/port/psa_driver/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_security/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_security/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_security/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/mbedtls/tf-psa-crypto/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/mbedtls/tf-psa-crypto/drivers/builtin/include -I/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/mbedtls/mbedtls/tf-psa-crypto/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/mbedtls/tf-psa-crypto/drivers/everest/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/mbedtls/tf-psa-crypto/drivers/p256-m/p256-m -I/home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls/mbedtls/tf-psa-crypto/drivers/pqcp/include @"/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/toolchain/cxxflags" -std=c++26 -fdiagnostics-color=always -fdiagnostics-color=always -ffunction-sections -fdata-sections -Wall -Werror -Wno-error=unused-function -Wno-error=unused-variable -Wno-error=unused-but-set-variable -Wno-error=deprecated-declarations -Wextra -Wno-error=extra -Wno-unused-parameter -Wno-sign-compare -Wno-enum-conversion -gdwarf-4 -ggdb -Og -fno-shrink-wrap -fmacro-prefix-map=/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a=. -fmacro-prefix-map=/home/lain/.espressif/v6.0.2/esp-idf=/IDF -fstrict-volatile-bitfields -fno-jump-tables -fno-tree-switch-conversion -std=gnu++26 -fno-exceptions -fuse-cxa-atexit -std=c++26 -Wconversion -Werror=return-type -fno-rtti -fno-unwind-tables -DELF_LOADER_VER_MAJOR=1 -DELF_LOADER_VER_MINOR=3 -DELF_LOADER_VER_PATCH=3 -MD -MT esp-idf/main/CMakeFiles/__idf_main.dir/poca_sched.cc.obj -MF esp-idf/main/CMakeFiles/__idf_main.dir/poca_sched.cc.obj.d -o esp-idf/main/CMakeFiles/__idf_main.dir/poca_sched.cc.obj -c /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main/poca_sched.cc
+/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main/poca_sched.cc: In function 'int frame::poca::{anonymous}::vector_fair()':
+/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main/poca_sched.cc:643:31: error: format '%u' expects argument of type 'unsigned int', but argument 2 has type 'std::__atomic_base<long unsigned int>::__int_type' {aka 'long unsigned int'} [-Werror=format=]
+  643 |     std::printf(" seq_faults=%u drained=%d\n", g_fair_seq_faults.load(), drained ? 1 : 0);
+      |                              ~^                ~~~~~~~~~~~~~~~~~~~~~~~~
+      |                               |                                      |
+      |                               unsigned int                           std::__atomic_base<long unsigned int>::__int_type {aka long unsigned int}
+      |                              %lu
+cc1plus: all warnings being treated as errors
+ninja: build stopped: subcommand failed.
+ninja: Entering directory `poc/apps/poc_a/build/default'
+[1/9] Performing build step for 'bootloader'
+[1/1] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader/bootloader.bin
+Bootloader binary size 0x5800 bytes. 0x2800 bytes (31%) free.
+[2/9] No install step for 'bootloader'
+[3/9] Completed 'bootloader'
+[4/9] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/poca_sched.cc.obj
+[5/9] Linking C static library esp-idf/main/libmain.a
+[6/9] Generating esp-idf/esp_system/ld/sections.ld
+NOTE: 
+/home/lain/.espressif/v6.0.2/esp-idf/components/bt/host/nimble/Kconfig.in:1421: 
+BT_NIMBLE_MESH_PROVISIONER: 'default 0' is not a valid bool value (only 'y' and 
+'n' are allowed). Value is treated as 'n'.
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs/Kconfig:230: 
+FATFS_PRINT_LLI: 'default 0' is not a valid bool value (only 'y' and 'n' are 
+allowed). Value is treated as 'n'.
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs/Kconfig:235: 
+FATFS_PRINT_FLOAT: 'default 0' is not a valid bool value (only 'y' and 'n' are 
+allowed). Value is treated as 'n'.
+[7/9] Linking CXX executable frame_poc_a.elf
+[8/9] Generating binary image from built executable
+esptool v5.3.1
+Creating ESP32-S3 image...
+Merged 3 ELF sections.
+Successfully created ESP32-S3 image.
+Generated /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/frame_poc_a.bin
+[9/9] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/partition_table/partition-table.bin /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/frame_poc_a.bin
+frame_poc_a.bin binary size 0x6d790 bytes. Smallest app partition is 0x100000 bytes. 0x92870 bytes (57%) free.
+ninja: Entering directory `poc/apps/poc_a/build/default'
+[1/9] Performing build step for 'bootloader'
+[1/1] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader/bootloader.bin
+Bootloader binary size 0x5800 bytes. 0x2800 bytes (31%) free.
+[2/9] No install step for 'bootloader'
+[3/9] Completed 'bootloader'
+[4/9] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/poca_sched.cc.obj
+[5/9] Linking C static library esp-idf/main/libmain.a
+[6/9] Generating esp-idf/esp_system/ld/sections.ld
+NOTE: 
+/home/lain/.espressif/v6.0.2/esp-idf/components/bt/host/nimble/Kconfig.in:1421: 
+BT_NIMBLE_MESH_PROVISIONER: 'default 0' is not a valid bool value (only 'y' and 
+'n' are allowed). Value is treated as 'n'.
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs/Kconfig:230: 
+FATFS_PRINT_LLI: 'default 0' is not a valid bool value (only 'y' and 'n' are 
+allowed). Value is treated as 'n'.
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs/Kconfig:235: 
+FATFS_PRINT_FLOAT: 'default 0' is not a valid bool value (only 'y' and 'n' are 
+allowed). Value is treated as 'n'.
+[7/9] Linking CXX executable frame_poc_a.elf
+[8/9] Generating binary image from built executable
+esptool v5.3.1
+Creating ESP32-S3 image...
+Merged 3 ELF sections.
+Successfully created ESP32-S3 image.
+Generated /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/frame_poc_a.bin
+[9/9] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/partition_table/partition-table.bin /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/frame_poc_a.bin
+frame_poc_a.bin binary size 0x6d790 bytes. Smallest app partition is 0x100000 bytes. 0x92870 bytes (57%) free.
+[0;33mCMake presets file found but no preset name given; using 'default' preset[0m
+Adding "flash"'s dependency "all" to list of commands with default set of options.
+Executing action: all (aliases: build)
+Running ninja in directory /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default
+Executing "ninja all"...
+[1/4] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/partition_table/partition-table.bin /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/frame_poc_a.bin
+frame_poc_a.bin binary size 0x6d790 bytes. Smallest app partition is 0x100000 bytes. 0x92870 bytes (57%) free.
+[2/4] Performing build step for 'bootloader'
+[1/1] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader/bootloader.bin
+Bootloader binary size 0x5800 bytes. 0x2800 bytes (31%) free.
+[3/4] No install step for 'bootloader'
+[4/4] Completed 'bootloader'
+Executing action: flash
+Running ninja in directory /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default
+Executing "ninja flash"...
+[1/5] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/partition_table/partition-table.bin /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/frame_poc_a.bin
+frame_poc_a.bin binary size 0x6d790 bytes. Smallest app partition is 0x100000 bytes. 0x92870 bytes (57%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader/bootloader.bin
+Bootloader binary size 0x5800 bytes. 0x2800 bytes (31%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] Running utility command for flash
+esptool --chip esp32s3 -p /dev/ttyACM0 -b 460800 --before=default-reset --after=hard-reset write-flash --flash-mode dio --flash-freq 80m --flash-size 16MB 0x0 bootloader/bootloader.bin 0x8000 partition_table/partition-table.bin 0x10000 frame_poc_a.bin
+esptool v5.3.1
+Serial port /dev/ttyACM0:
+Connecting...
+[1A[2K[1A[2KConnected to ESP32-S3 on /dev/ttyACM0:
+Chip type:          ESP32-S3 (QFN56) (revision v0.2)
+Features:           Wi-Fi, BT 5 (LE), Dual Core + LP Core, 240MHz, Embedded PSRAM 8MB (AP_3v3)
+Crystal frequency:  40MHz
+USB mode:           USB-Serial/JTAG
+MAC:                a4:cb:8f:cf:cd:5c
+
+Uploading stub flasher...
+Running stub flasher...
+[1A[2K[1A[2KStub flasher running.
+Changing baud rate to 460800...
+Changed.
+
+Configuring flash size...
+
+Writing 'bootloader/bootloader.bin' at 0x00000000...
+SHA digest in image updated.
+Flash will be erased from 0x00000000 to 0x00005fff...
+Compressed 22528 bytes to 14417...
+[KWriting at 0x00000000 [                              ]   0.0% 0/14417 bytes... [KWriting at 0x00005800 [==============================] 100.0% 14417/14417 bytes... 
+[1A[2K[1A[2KWrote 22528 bytes (14417 compressed) at 0x00000000 in 0.2 seconds (798.3 kbit/s).
+Verifying written data...
+[1A[2KHash of data verified.
+
+Writing 'partition_table/partition-table.bin' at 0x00008000...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Compressed 3072 bytes to 103...
+[KWriting at 0x00008000 [                              ]   0.0% 0/103 bytes... [KWriting at 0x00008c00 [==============================] 100.0% 103/103 bytes... 
+[1A[2K[1A[2KWrote 3072 bytes (103 compressed) at 0x00008000 in 0.0 seconds (970.5 kbit/s).
+Verifying written data...
+[1A[2KHash of data verified.
+
+Writing 'frame_poc_a.bin' at 0x00010000...
+Flash will be erased from 0x00010000 to 0x0007dfff...
+Compressed 448400 bytes to 256701...
+[KWriting at 0x00010000 [                              ]   0.0% 0/256701 bytes... [KWriting at 0x0001b42c [>                             ]   6.4% 16384/256701 bytes... [KWriting at 0x0002bad4 [==>                           ]  12.8% 32768/256701 bytes... [KWriting at 0x000337ce [====>                         ]  19.1% 49152/256701 bytes... [KWriting at 0x0003917e [======>                       ]  25.5% 65536/256701 bytes... [KWriting at 0x0003ee6b [========>                     ]  31.9% 81920/256701 bytes... [KWriting at 0x00044786 [==========>                   ]  38.3% 98304/256701 bytes... [KWriting at 0x0004a3ec [============>                 ]  44.7% 114688/256701 bytes... [KWriting at 0x0004fef5 [==============>               ]  51.1% 131072/256701 bytes... [KWriting at 0x00055c9c [================>             ]  57.4% 147456/256701 bytes... [KWriting at 0x0005b43c [==================>           ]  63.8% 163840/256701 bytes... [KWriting at 0x0006099b [====================>         ]  70.2% 180224/256701 bytes... [KWriting at 0x00065d45 [=====================>        ]  76.6% 196608/256701 bytes... [KWriting at 0x0006c261 [=======================>      ]  83.0% 212992/256701 bytes... [KWriting at 0x00072d1f [=========================>    ]  89.4% 229376/256701 bytes... [KWriting at 0x0007936b [===========================>  ]  95.7% 245760/256701 bytes... [KWriting at 0x0007d790 [==============================] 100.0% 256701/256701 bytes... 
+[1A[2K[1A[2KWrote 448400 bytes (256701 compressed) at 0x00010000 in 2.4 seconds (1493.7 kbit/s).
+Verifying written data...
+[1A[2KHash of data verified.
+
+Hard resetting via RTS pin...
+Done
+--- poca> 
+
+poca>  
+PROMPT-SEEN
+--- poca> poca sched fair
+poca sched fair
+[sched] === vector fair ===
+[sched-fair] order=ABABABAB seq_faults=0 drained=1
+[PASS-fair]
+[sched] === vector fair done in 101 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+SMOKE fair: PASS
+--- poca> poca sched qfull
+poca sched qfull
+[sched] === vector qfull ===
+[sched-qfull] reject_err=-13 reject_destroyed=0 invoked=8 flags=1
+[PASS-qfull]
+[sched] === vector qfull done in 101 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+SMOKE qfull: PASS
+--- poca> poca sched stalegen
+poca sched stalegen
+[sched] === vector stalegen ===
+[sched-stalegen] invoked=0 stale=5 comp_delivered=0 comp_destroyed=1
+[PASS-stalegen]
+[sched] === vector stalegen done in 101 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+SMOKE stalegen: PASS
+--- poca> poca sched fifo
+poca sched fifo
+[sched] === vector fifo ===
+[sched-fifo] producers=3 per=5000 invoked=15000 destroyed=15000 order_faults=0 dup=0 qfault=0
+[PASS-fifo]
+[sched] === vector fifo done in 518 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+SMOKE fifo: PASS
+--- poca> poca sched noconc
+poca sched noconc
+[sched] === vector noconc ===
+[sched-noconc] invoked=800/800 destroyed=800/800 guard_fault=0 id_fault=0 identity=1
+[PASS-noconc]
+[sched] === vector noconc done in 148 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+SMOKE noconc: PASS
+--- poca> poca sched dupclear
+poca sched dupclear
+[sched] === vector dupclear ===
+[sched-dupclear] producers=8 per=1000 invoked=8000 destroyed=8000 dup=0 qfault=0
+[PASS-dupclear]
+[sched] === vector dupclear done in 237 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+SMOKE dupclear: PASS
+--- poca> poca sched storm
+poca sched storm
+[sched] === vector storm ===
+[sched-storm] total=20000 invoked=20000 destroyed=20000 stale=0 stopped=1 dup=0
+[PASS-storm]
+[sched] === vector storm done in 508 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+SMOKE storm: PASS
+--- poca> poca sched quiesce
+poca sched quiesce
+[sched] === vector quiesce ===
+[sched-quiesce] late_err=-14 invoked=0 destroyed=16 flags=1 identity=1
+[PASS-quiesce]
+[sched] === vector quiesce done in 100 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+SMOKE quiesce: PASS
+--- poca> poca sched completion
+poca sched completion
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=20000 cancel=0 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+SMOKE completion: PASS wall=20.4s
+--- poca> poca sched loader
+poca sched loader
+[sched] === vector loader ===
+[poca-load] begin baseline (entry_queries=0)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca-load] identity name=baseline version=1.0.0 MATCH
+[poca] admission max_mem=262144 default_arena=262144 hard_max=524288 OK
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (52642) ELF: ELF loader version: 1.3.3
+I (52642) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[sched-loader] fn=0x420612f0 returned=0x1501e22e expected=0x1501e22e on_worker=1
+[PASS-loader]
+[sched] === vector loader done in 413 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+SMOKE loader: PASS
+ninja: Entering directory `poc/apps/poc_a/build/default'
+ninja: fatal: chdir to 'poc/apps/poc_a/build/default' - No such file or directory
+--- poca> poca sched completion
+poca sched completion
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=10001 cancel=9999 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+SCHED SUITE PASS vectors=1 pass=1 fail=0
+poca>  
+RERUN completion: PASS
+--- poca> 
+
+poca>  
+===== SCHED RUN 1/3 =====
+--- poca> poca sched all
+poca sched all
+[sched] === vector fifo ===
+[sched-fifo] producers=3 per=5000 invoked=15000 destroyed=15000 order_faults=0 dup=0 qfault=0
+[PASS-fifo]
+[sched] === vector fifo done in 519 ms ===
+[sched] === vector fair ===
+[sched-fair] order=ABABABAB seq_faults=0 drained=1
+[PASS-fair]
+[sched] === vector fair done in 101 ms ===
+[sched] === vector noconc ===
+[sched-noconc] invoked=800/800 destroyed=800/800 guard_fault=0 id_fault=0 identity=1
+[PASS-noconc]
+[sched] === vector noconc done in 147 ms ===
+[sched] === vector dupclear ===
+[sched-dupclear] producers=8 per=1000 invoked=8000 destroyed=8000 dup=0 qfault=0
+[PASS-dupclear]
+[sched] === vector dupclear done in 240 ms ===
+[sched] === vector storm ===
+[sched-storm] total=20000 invoked=20000 destroyed=20000 stale=0 stopped=1 dup=0
+[PASS-storm]
+[sched] === vector storm done in 519 ms ===
+[sched] === vector qfull ===
+[sched-qfull] reject_err=-13 reject_destroyed=0 invoked=8 flags=1
+[PASS-qfull]
+[sched] === vector qfull done in 101 ms ===
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=10002 cancel=9998 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+[sched] === vector quiesce ===
+[sched-quiesce] late_err=-14 invoked=0 destroyed=16 flags=1 identity=1
+[PASS-quiesce]
+[sched] === vector quiesce done in 100 ms ===
+[sched] === vector stalegen ===
+[sched-stalegen] invoked=0 stale=5 comp_delivered=0 comp_destroyed=1
+[PASS-stalegen]
+[sched] === vector stalegen done in 102 ms ===
+[sched] === vector loader ===
+[poca-load] begin baseline (entry_queries=0)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca-load] identity name=baseline version=1.0.0 MATCH
+[poca] admission max_mem=262144 default_arena=262144 hard_max=524288 OK
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (56221) ELF: ELF loader version: 1.3.3
+I (56221) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[sched-loader] fn=0x420612f0 returned=0x1501e22e expected=0x1501e22e on_worker=1
+[PASS-loader]
+[sched] === vector loader done in 413 ms ===
+SCHED SUITE PASS vectors=10 pass=10 fail=0
+poca>  
+===== SCHED RUN 2/3 =====
+--- poca> poca sched all
+poca sched all
+[sched] === vector fifo ===
+[sched-fifo] producers=3 per=5000 invoked=15000 destroyed=15000 order_faults=0 dup=0 qfault=0
+[PASS-fifo]
+[sched] === vector fifo done in 519 ms ===
+[sched] === vector fair ===
+[sched-fair] order=ABABABAB seq_faults=0 drained=1
+[PASS-fair]
+[sched] === vector fair done in 101 ms ===
+[sched] === vector noconc ===
+[sched-noconc] invoked=800/800 destroyed=800/800 guard_fault=0 id_fault=0 identity=1
+[PASS-noconc]
+[sched] === vector noconc done in 147 ms ===
+[sched] === vector dupclear ===
+[sched-dupclear] producers=8 per=1000 invoked=8000 destroyed=8000 dup=0 qfault=0
+[PASS-dupclear]
+[sched] === vector dupclear done in 235 ms ===
+[sched] === vector storm ===
+[sched-storm] total=20000 invoked=20000 destroyed=20000 stale=0 stopped=1 dup=0
+[PASS-storm]
+[sched] === vector storm done in 517 ms ===
+[sched] === vector qfull ===
+[sched-qfull] reject_err=-13 reject_destroyed=0 invoked=8 flags=1
+[PASS-qfull]
+[sched] === vector qfull done in 101 ms ===
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=10001 cancel=9999 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+[sched] === vector quiesce ===
+[sched-quiesce] late_err=-14 invoked=0 destroyed=16 flags=1 identity=1
+[PASS-quiesce]
+[sched] === vector quiesce done in 100 ms ===
+[sched] === vector stalegen ===
+[sched-stalegen] invoked=0 stale=5 comp_delivered=0 comp_destroyed=1
+[PASS-stalegen]
+[sched] === vector stalegen done in 102 ms ===
+[sched] === vector loader ===
+[poca-load] begin baseline (entry_queries=1)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca-load] identity name=baseline version=1.0.0 MATCH
+[poca] admission max_mem=262144 default_arena=262144 hard_max=524288 OK
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (78732) ELF: ELF loader version: 1.3.3
+I (78732) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[sched-loader] fn=0x420612f0 returned=0x1501e22e expected=0x1501e22e on_worker=1
+[PASS-loader]
+[sched] === vector loader done in 412 ms ===
+SCHED SUITE PASS vectors=10 pass=10 fail=0
+poca>  
+===== SCHED RUN 3/3 =====
+--- poca> poca sched all
+poca sched all
+[sched] === vector fifo ===
+[sched-fifo] producers=3 per=5000 invoked=15000 destroyed=15000 order_faults=0 dup=0 qfault=0
+[PASS-fifo]
+[sched] === vector fifo done in 519 ms ===
+[sched] === vector fair ===
+[sched-fair] order=ABABABAB seq_faults=0 drained=1
+[PASS-fair]
+[sched] === vector fair done in 101 ms ===
+[sched] === vector noconc ===
+[sched-noconc] invoked=800/800 destroyed=800/800 guard_fault=0 id_fault=0 identity=1
+[PASS-noconc]
+[sched] === vector noconc done in 147 ms ===
+[sched] === vector dupclear ===
+[sched-dupclear] producers=8 per=1000 invoked=8000 destroyed=8000 dup=0 qfault=0
+[PASS-dupclear]
+[sched] === vector dupclear done in 233 ms ===
+[sched] === vector storm ===
+[sched-storm] total=20000 invoked=20000 destroyed=20000 stale=0 stopped=1 dup=0
+[PASS-storm]
+[sched] === vector storm done in 520 ms ===
+[sched] === vector qfull ===
+[sched-qfull] reject_err=-13 reject_destroyed=0 invoked=8 flags=1
+[PASS-qfull]
+[sched] === vector qfull done in 101 ms ===
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=10001 cancel=9999 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+[sched] === vector quiesce ===
+[sched-quiesce] late_err=-14 invoked=0 destroyed=16 flags=1 identity=1
+[PASS-quiesce]
+[sched] === vector quiesce done in 100 ms ===
+[sched] === vector stalegen ===
+[sched-stalegen] invoked=0 stale=5 comp_delivered=0 comp_destroyed=1
+[PASS-stalegen]
+[sched] === vector stalegen done in 102 ms ===
+[sched] === vector loader ===
+[poca-load] begin baseline (entry_queries=2)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca-load] identity name=baseline version=1.0.0 MATCH
+[poca] admission max_mem=262144 default_arena=262144 hard_max=524288 OK
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (101252) ELF: ELF loader version: 1.3.3
+I (101252) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[sched-loader] fn=0x420612f0 returned=0x1501e22e expected=0x1501e22e on_worker=1
+[PASS-loader]
+[sched] === vector loader done in 412 ms ===
+SCHED SUITE PASS vectors=10 pass=10 fail=0
+poca>  
+===== STABILITY SUMMARY =====
+run 1: 10/10 vectors GREEN
+run 2: 10/10 vectors GREEN
+run 3: 10/10 vectors GREEN
+SCHED STABILITY 3x10 : ALL GREEN
+Test project /tmp/opencode/poc-host-t13
+      Start  1: FrameAbi.AcceptsCompatibleExtension
+ 1/52 Test  #1: FrameAbi.AcceptsCompatibleExtension .......................   Passed    0.01 sec
+      Start  2: FrameAbi.RejectsIncompatibleOffer
+ 2/52 Test  #2: FrameAbi.RejectsIncompatibleOffer .........................   Passed    0.01 sec
+      Start  3: FrameAbi.PinsStableErrorValues
+ 3/52 Test  #3: FrameAbi.PinsStableErrorValues ............................   Passed    0.01 sec
+      Start  4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType
+ 4/52 Test  #4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType ....   Passed    0.01 sec
+      Start  5: FrameHandle.ReuseInvalidatesStaleHandle
+ 5/52 Test  #5: FrameHandle.ReuseInvalidatesStaleHandle ...................   Passed    0.01 sec
+      Start  6: FrameHandle.RejectsInvalidArguments
+ 6/52 Test  #6: FrameHandle.RejectsInvalidArguments .......................   Passed    0.01 sec
+      Start  7: LifecycleState.FollowsColdStartAndUnload
+ 7/52 Test  #7: LifecycleState.FollowsColdStartAndUnload ..................   Passed    0.01 sec
+      Start  8: LifecycleState.SupportsPauseResumeAndCommittedUpdate
+ 8/52 Test  #8: LifecycleState.SupportsPauseResumeAndCommittedUpdate ......   Passed    0.01 sec
+      Start  9: LifecycleState.RejectsEveryUnspecifiedTransition
+ 9/52 Test  #9: LifecycleState.RejectsEveryUnspecifiedTransition ..........   Passed    0.01 sec
+      Start 10: LifecycleState.RestartRequiredIsTerminal
+10/52 Test #10: LifecycleState.RestartRequiredIsTerminal ..................   Passed    0.01 sec
+      Start 11: MpbParser.EveryFixtureMatchesItsExpectedErrorCode
+11/52 Test #11: MpbParser.EveryFixtureMatchesItsExpectedErrorCode .........   Passed    0.02 sec
+      Start 12: MpbParser.CodePositiveVerifiesAndExposesView
+12/52 Test #12: MpbParser.CodePositiveVerifiesAndExposesView ..............   Passed    0.01 sec
+      Start 13: MpbParser.ResourceOnlyPositiveVerifiesWithWindowPadding
+13/52 Test #13: MpbParser.ResourceOnlyPositiveVerifiesWithWindowPadding ...   Passed    0.02 sec
+      Start 14: MpbParser.ManifestFieldAccessorRoundTrip
+14/52 Test #14: MpbParser.ManifestFieldAccessorRoundTrip ..................   Passed    0.01 sec
+      Start 15: MpbParser.NullArgumentsAreRejected
+15/52 Test #15: MpbParser.NullArgumentsAreRejected ........................   Passed    0.02 sec
+      Start 16: MpbParser.CorpusMagic
+16/52 Test #16: MpbParser.CorpusMagic .....................................   Passed    0.02 sec
+      Start 17: MpbParser.CorpusTotalSize
+17/52 Test #17: MpbParser.CorpusTotalSize .................................   Passed    0.02 sec
+      Start 18: MpbParser.CorpusOffsetOutOfBounds
+18/52 Test #18: MpbParser.CorpusOffsetOutOfBounds .........................   Passed    0.02 sec
+      Start 19: MpbParser.CorpusRegionOverlap
+19/52 Test #19: MpbParser.CorpusRegionOverlap .............................   Passed    0.02 sec
+      Start 20: MpbParser.CorpusDuplicateRequiredTlv
+20/52 Test #20: MpbParser.CorpusDuplicateRequiredTlv ......................   Passed    0.02 sec
+      Start 21: MpbParser.CorpusUnknownRequiredTlv
+21/52 Test #21: MpbParser.CorpusUnknownRequiredTlv ........................   Passed    0.02 sec
+      Start 22: MpbParser.CorpusMixedElfInResourceOnly
+22/52 Test #22: MpbParser.CorpusMixedElfInResourceOnly ....................   Passed    0.02 sec
+      Start 23: MpbParser.CorpusMixedResourceInCode
+23/52 Test #23: MpbParser.CorpusMixedResourceInCode .......................   Passed    0.02 sec
+      Start 24: MpbParser.CorpusPayloadHash
+24/52 Test #24: MpbParser.CorpusPayloadHash ...............................   Passed    0.02 sec
+      Start 25: MpbParser.CorpusSignatureTamper
+25/52 Test #25: MpbParser.CorpusSignatureTamper ...........................   Passed    0.02 sec
+      Start 26: MpbParser.CorpusWrongKeyId
+26/52 Test #26: MpbParser.CorpusWrongKeyId ................................   Passed    0.02 sec
+      Start 27: MpbParser.CorpusTargetMismatch
+27/52 Test #27: MpbParser.CorpusTargetMismatch ............................   Passed    0.02 sec
+      Start 28: MpbParser.CorpusAbiMismatch
+28/52 Test #28: MpbParser.CorpusAbiMismatch ...............................   Passed    0.02 sec
+      Start 29: MpbParser.CorpusFeaturesExceedDevice
+29/52 Test #29: MpbParser.CorpusFeaturesExceedDevice ......................   Passed    0.02 sec
+      Start 30: MpbParser.CorpusEpochRollback
+30/52 Test #30: MpbParser.CorpusEpochRollback .............................   Passed    0.02 sec
+      Start 31: MpbParser.DoubleFaultReportsSignatureBeforeHash
+31/52 Test #31: MpbParser.DoubleFaultReportsSignatureBeforeHash ...........   Passed    0.02 sec
+      Start 32: MpbParser.MaxPackageBytesPolicyRejectsOversize
+32/52 Test #32: MpbParser.MaxPackageBytesPolicyRejectsOversize ............   Passed    0.02 sec
+      Start 33: MpbParser.EpochFloorEqualStillVerifies
+33/52 Test #33: MpbParser.EpochFloorEqualStillVerifies ....................   Passed    0.02 sec
+      Start 34: MpbParser.SignatureRecordFieldsAreStructural
+34/52 Test #34: MpbParser.SignatureRecordFieldsAreStructural ..............   Passed    0.02 sec
+      Start 35: MpbParser.TamperedElfPayloadByteRejectedAsHashMismatch
+35/52 Test #35: MpbParser.TamperedElfPayloadByteRejectedAsHashMismatch ....   Passed    0.02 sec
+      Start 36: MpbParser.TruncationFuzzAlwaysFailsClosed
+36/52 Test #36: MpbParser.TruncationFuzzAlwaysFailsClosed .................   Passed    0.05 sec
+      Start 37: MpbParser.RandomTruncationsFailClosed
+37/52 Test #37: MpbParser.RandomTruncationsFailClosed .....................   Passed    0.06 sec
+      Start 38: MpbParser.ByteFlipFuzzNeverCrashes
+38/52 Test #38: MpbParser.ByteFlipFuzzNeverCrashes ........................   Passed    0.12 sec
+      Start 39: FrameStrand.StrictFifoOrderAcrossProducers
+39/52 Test #39: FrameStrand.StrictFifoOrderAcrossProducers ................   Passed    0.07 sec
+      Start 40: FrameStrand.SameStrandHandlersNeverConcurrent
+40/52 Test #40: FrameStrand.SameStrandHandlersNeverConcurrent .............   Passed    0.14 sec
+      Start 41: FrameStrand.ReadyQueueNeverDuplicatesStrand
+41/52 Test #41: FrameStrand.ReadyQueueNeverDuplicatesStrand ...............   Passed    0.22 sec
+      Start 42: FrameStrand.NoLostWakeupUnderProducerStorm
+42/52 Test #42: FrameStrand.NoLostWakeupUnderProducerStorm ................   Passed    0.26 sec
+      Start 43: FrameStrand.QueueFullRejectKeepsCallerOwnership
+43/52 Test #43: FrameStrand.QueueFullRejectKeepsCallerOwnership ...........   Passed    0.02 sec
+      Start 44: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+44/52 Test #44: FrameStrand.OverrunCounterIncrementsOnSlowHandler .........   Passed    0.03 sec
+      Start 45: FrameStrand.ClosingRejectsPostsAndCleansUp
+45/52 Test #45: FrameStrand.ClosingRejectsPostsAndCleansUp ................   Passed    0.02 sec
+      Start 46: FrameCompletion.CompleteVsCancelRaceExactlyOnce
+46/52 Test #46: FrameCompletion.CompleteVsCancelRaceExactlyOnce ...........   Passed   10.60 sec
+      Start 47: FrameCompletion.CancelAfterCompleteKeepsOriginalErr
+47/52 Test #47: FrameCompletion.CancelAfterCompleteKeepsOriginalErr .......   Passed    0.02 sec
+      Start 48: FrameCompletion.ReserveFailureStartsNothing
+48/52 Test #48: FrameCompletion.ReserveFailureStartsNothing ...............   Passed    0.02 sec
+      Start 49: FrameCompletion.QuiescingCleanupRunsOnWorkerThread
+49/52 Test #49: FrameCompletion.QuiescingCleanupRunsOnWorkerThread ........   Passed    0.02 sec
+      Start 50: FrameCompletion.StaleGenerationDroppedButDestroyed
+50/52 Test #50: FrameCompletion.StaleGenerationDroppedButDestroyed ........   Passed    0.02 sec
+      Start 51: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+51/52 Test #51: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce .........   Passed    2.29 sec
+      Start 52: frame_abi_c_test
+52/52 Test #52: frame_abi_c_test ..........................................   Passed    0.01 sec
+
+100% tests passed out of 52
+
+Total Test time (real) =  14.50 sec
+============================= test session starts ==============================
+platform linux -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/lain/Projects/esp_study/poc-a-wt
+configfile: pyproject.toml
+testpaths: tests
+collected 87 items
+
+tests/test_check_plugin_policy.py .....................................  [ 42%]
+tests/test_coverage.py ..                                                [ 44%]
+tests/test_doc_links.py ....                                             [ 49%]
+tests/test_evidence.py ......                                            [ 56%]
+tests/test_m1_capture.py ..............                                  [ 72%]
+tests/test_manifest_builder.py ..................                        [ 93%]
+tests/test_partitions.py ..                                              [ 95%]
+tests/test_pr_title.py ..                                                [ 97%]
+tests/test_sbom.py ..                                                    [100%]
+
+============================== 87 passed in 0.41s ==============================
+Test project /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host-tsan
+      Start 39: FrameStrand.StrictFifoOrderAcrossProducers
+ 1/13 Test #39: FrameStrand.StrictFifoOrderAcrossProducers ............   Passed    0.14 sec
+      Start 40: FrameStrand.SameStrandHandlersNeverConcurrent
+ 2/13 Test #40: FrameStrand.SameStrandHandlersNeverConcurrent .........   Passed    0.14 sec
+      Start 41: FrameStrand.ReadyQueueNeverDuplicatesStrand
+ 3/13 Test #41: FrameStrand.ReadyQueueNeverDuplicatesStrand ...........   Passed    0.68 sec
+      Start 42: FrameStrand.NoLostWakeupUnderProducerStorm
+ 4/13 Test #42: FrameStrand.NoLostWakeupUnderProducerStorm ............   Passed    0.90 sec
+      Start 43: FrameStrand.QueueFullRejectKeepsCallerOwnership
+ 5/13 Test #43: FrameStrand.QueueFullRejectKeepsCallerOwnership .......   Passed    0.02 sec
+      Start 44: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+ 6/13 Test #44: FrameStrand.OverrunCounterIncrementsOnSlowHandler .....   Passed    0.03 sec
+      Start 45: FrameStrand.ClosingRejectsPostsAndCleansUp
+ 7/13 Test #45: FrameStrand.ClosingRejectsPostsAndCleansUp ............   Passed    0.02 sec
+      Start 46: FrameCompletion.CompleteVsCancelRaceExactlyOnce
+ 8/13 Test #46: FrameCompletion.CompleteVsCancelRaceExactlyOnce .......   Passed   10.98 sec
+      Start 47: FrameCompletion.CancelAfterCompleteKeepsOriginalErr
+ 9/13 Test #47: FrameCompletion.CancelAfterCompleteKeepsOriginalErr ...   Passed    0.02 sec
+      Start 48: FrameCompletion.ReserveFailureStartsNothing
+10/13 Test #48: FrameCompletion.ReserveFailureStartsNothing ...........   Passed    0.01 sec
+      Start 49: FrameCompletion.QuiescingCleanupRunsOnWorkerThread
+11/13 Test #49: FrameCompletion.QuiescingCleanupRunsOnWorkerThread ....   Passed    0.01 sec
+      Start 50: FrameCompletion.StaleGenerationDroppedButDestroyed
+12/13 Test #50: FrameCompletion.StaleGenerationDroppedButDestroyed ....   Passed    0.02 sec
+      Start 51: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+13/13 Test #51: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce .....   Passed    2.40 sec
+
+100% tests passed out of 13
+
+Total Test time (real) =  15.37 sec
+--- poca> 
+
+poca>  
+===== SCHED RUN 1/3 =====
+--- poca> poca sched all
+poca sched all
+[sched] === vector fifo ===
+[sched-fifo] producers=3 per=5000 invoked=15000 destroyed=15000 order_faults=0 dup=0 qfault=0
+[PASS-fifo]
+[sched] === vector fifo done in 519 ms ===
+[sched] === vector fair ===
+[sched-fair] order=ABABABAB seq_faults=0 drained=1
+[PASS-fair]
+[sched] === vector fair done in 101 ms ===
+[sched] === vector noconc ===
+[sched-noconc] invoked=800/800 destroyed=800/800 guard_fault=0 id_fault=0 identity=1
+[PASS-noconc]
+[sched] === vector noconc done in 147 ms ===
+[sched] === vector dupclear ===
+[sched-dupclear] producers=8 per=1000 invoked=8000 destroyed=8000 dup=0 qfault=0
+[PASS-dupclear]
+[sched] === vector dupclear done in 234 ms ===
+[sched] === vector storm ===
+[sched-storm] total=20000 invoked=20000 destroyed=20000 stale=0 stopped=1 dup=0
+[PASS-storm]
+[sched] === vector storm done in 519 ms ===
+[sched] === vector qfull ===
+[sched-qfull] reject_err=-13 reject_destroyed=0 invoked=8 flags=1
+[PASS-qfull]
+[sched] === vector qfull done in 101 ms ===
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=10000 cancel=10000 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+[sched] === vector quiesce ===
+[sched-quiesce] late_err=-14 invoked=0 destroyed=17 flags=1 identity=1 revived=1
+[PASS-quiesce]
+[sched] === vector quiesce done in 101 ms ===
+[sched] === vector stalegen ===
+[sched-stalegen] invoked=0 stale=5 comp_delivered=0 comp_destroyed=1
+[PASS-stalegen]
+[sched] === vector stalegen done in 102 ms ===
+[sched] === vector loader ===
+[poca-load] begin baseline (entry_queries=0)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca-load] identity name=baseline version=1.0.0 MATCH
+[poca] admission max_mem=262144 default_arena=262144 hard_max=524288 OK
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (26497) ELF: ELF loader version: 1.3.3
+I (26498) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[sched-loader] fn=0x420612f0 returned=0x1501e22e expected=0x1501e22e on_worker=1
+[PASS-loader]
+[sched] === vector loader done in 413 ms ===
+SCHED SUITE PASS vectors=10 pass=10 fail=0
+poca>  
+===== SCHED RUN 2/3 =====
+--- poca> poca sched all
+poca sched all
+[sched] === vector fifo ===
+[sched-fifo] producers=3 per=5000 invoked=15000 destroyed=15000 order_faults=0 dup=0 qfault=0
+[PASS-fifo]
+[sched] === vector fifo done in 519 ms ===
+[sched] === vector fair ===
+[sched-fair] order=ABABABAB seq_faults=0 drained=1
+[PASS-fair]
+[sched] === vector fair done in 101 ms ===
+[sched] === vector noconc ===
+[sched-noconc] invoked=800/800 destroyed=800/800 guard_fault=0 id_fault=0 identity=1
+[PASS-noconc]
+[sched] === vector noconc done in 147 ms ===
+[sched] === vector dupclear ===
+[sched-dupclear] producers=8 per=1000 invoked=8000 destroyed=8000 dup=0 qfault=0
+[PASS-dupclear]
+[sched] === vector dupclear done in 241 ms ===
+[sched] === vector storm ===
+[sched-storm] total=20000 invoked=20000 destroyed=20000 stale=0 stopped=1 dup=0
+[PASS-storm]
+[sched] === vector storm done in 513 ms ===
+[sched] === vector qfull ===
+[sched-qfull] reject_err=-13 reject_destroyed=0 invoked=8 flags=1
+[PASS-qfull]
+[sched] === vector qfull done in 101 ms ===
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=10001 cancel=9999 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+[sched] === vector quiesce ===
+[sched-quiesce] late_err=-14 invoked=0 destroyed=17 flags=1 identity=1 revived=1
+[PASS-quiesce]
+[sched] === vector quiesce done in 101 ms ===
+[sched] === vector stalegen ===
+[sched-stalegen] invoked=0 stale=5 comp_delivered=0 comp_destroyed=1
+[PASS-stalegen]
+[sched] === vector stalegen done in 102 ms ===
+[sched] === vector loader ===
+[poca-load] begin baseline (entry_queries=1)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca-load] identity name=baseline version=1.0.0 MATCH
+[poca] admission max_mem=262144 default_arena=262144 hard_max=524288 OK
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (49018) ELF: ELF loader version: 1.3.3
+I (49019) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[sched-loader] fn=0x420612f0 returned=0x1501e22e expected=0x1501e22e on_worker=1
+[PASS-loader]
+[sched] === vector loader done in 412 ms ===
+SCHED SUITE PASS vectors=10 pass=10 fail=0
+poca>  
+===== SCHED RUN 3/3 =====
+--- poca> poca sched all
+poca sched all
+[sched] === vector fifo ===
+[sched-fifo] producers=3 per=5000 invoked=15000 destroyed=15000 order_faults=0 dup=0 qfault=0
+[PASS-fifo]
+[sched] === vector fifo done in 519 ms ===
+[sched] === vector fair ===
+[sched-fair] order=ABABABAB seq_faults=0 drained=1
+[PASS-fair]
+[sched] === vector fair done in 101 ms ===
+[sched] === vector noconc ===
+[sched-noconc] invoked=800/800 destroyed=800/800 guard_fault=0 id_fault=0 identity=1
+[PASS-noconc]
+[sched] === vector noconc done in 146 ms ===
+[sched] === vector dupclear ===
+[sched-dupclear] producers=8 per=1000 invoked=8000 destroyed=8000 dup=0 qfault=0
+[PASS-dupclear]
+[sched] === vector dupclear done in 235 ms ===
+[sched] === vector storm ===
+[sched-storm] total=20000 invoked=20000 destroyed=20000 stale=0 stopped=1 dup=0
+[PASS-storm]
+[sched] === vector storm done in 515 ms ===
+[sched] === vector qfull ===
+[sched-qfull] reject_err=-13 reject_destroyed=0 invoked=8 flags=1
+[PASS-qfull]
+[sched] === vector qfull done in 101 ms ===
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=10001 cancel=9999 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+[sched] === vector quiesce ===
+[sched-quiesce] late_err=-14 invoked=0 destroyed=17 flags=1 identity=1 revived=1
+[PASS-quiesce]
+[sched] === vector quiesce done in 101 ms ===
+[sched] === vector stalegen ===
+[sched-stalegen] invoked=0 stale=5 comp_delivered=0 comp_destroyed=1
+[PASS-stalegen]
+[sched] === vector stalegen done in 102 ms ===
+[sched] === vector loader ===
+[poca-load] begin baseline (entry_queries=2)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca-load] identity name=baseline version=1.0.0 MATCH
+[poca] admission max_mem=262144 default_arena=262144 hard_max=524288 OK
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (71532) ELF: ELF loader version: 1.3.3
+I (71533) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[sched-loader] fn=0x420612f0 returned=0x1501e22e expected=0x1501e22e on_worker=1
+[PASS-loader]
+[sched] === vector loader done in 412 ms ===
+SCHED SUITE PASS vectors=10 pass=10 fail=0
+poca>  
+===== STABILITY SUMMARY =====
+run 1: 10/10 vectors GREEN
+run 2: 10/10 vectors GREEN
+run 3: 10/10 vectors GREEN
+SCHED STABILITY 3x10 : ALL GREEN
+
+=== PHASE 2: host/target consistency ===
+
+Port: poc/apps/poc_a/main/poca_sched.{hh,cc} — FreeRTOS realization derived
+from poc/host/include/frame_poc/frame_strand.hh + frame_completion.hh
+@2a37556, protocol-identical (derivation comment + full delta list in
+poca_sched.hh; drift checked by the vector suite re-running the host
+assertions on-target). Thread mapping per the T11/T12 notepad note:
+worker std::thread -> pinned FreeRTOS task prio 4 / 8192 B; strand
+std::mutex -> portENTER_CRITICAL(&portMUX_TYPE) cross-core spinlock
+(SMP-general superset of the single-core critical-section note, since
+posters and workers are pinned across both cores); ring+condvar -> bounded
+queue (capacity = max strands) + in-ring shadow bitmap (duplicate
+detector; queue internals are not public API); steady_clock ->
+esp_timer_get_time(); std::thread::id -> TaskHandle_t; vector pool ->
+caller static arena (zero hot-path allocation). completion_node is the
+host header verbatim (std::atomic only).
+
+Host authorities (this session, worktree poc-a-wt):
+- ctest default+ASan 52/52 (incl. 13 FrameStrand/FrameCompletion, all Passed)
+- ctest TSan build: FrameStrand|FrameCompletion 13/13 Passed
+- pytest 87/87; ruff clean; clang-format 18.1.8 clean on all changed files
+- firmware build 0 warnings; final binary 3x full suite ALL GREEN
+
+| target vector (poca sched) | host suite counterpart | host | target (3x final binary) | documented delta (assertion-equivalent) |
+|---|---|---|---|---|
+| fifo | FrameStrand.StrictFifoOrderAcrossProducers | PASS | PASS 3/3 | 3x5000 posts (host 3x10k); pool credit 256 + QUEUE_FULL retry (host 31000 never-full); ticket continuity checked incrementally by the single writer == host post-hoc vector check |
+| fair | (host implicit: requeue path drained by ReadyQueue/Storm vectors) | PASS | PASS 3/3 | target-only explicit alternation assert (plan T13 round-robin item); order ABABABAB |
+| noconc | FrameStrand.SameStrandHandlersNeverConcurrent | PASS | PASS 3/3 | 4.1.1 dual-core topology (worker per core); per-strand task identity == host single-worker identity (superset on host only because host has one worker); producers pinned opposite each strand's worker (cross-core posting) |
+| dupclear | FrameStrand.ReadyQueueNeverDuplicatesStrand | PASS | PASS 3/3 | 8x1000=8e3 accepted (host 8x5000=4e4) — same 8-way class, board wall-clock; host remains long-haul authority |
+| storm | FrameStrand.NoLostWakeupUnderProducerStorm | PASS | PASS 3/3 | 2e4 (host 1e5) — race driver is the credit-64 window (~312 refills); fixed producer counts -> exactly 20000 accepted (host allows <=N-1 check-then-post overshoot) |
+| qfull | FrameStrand.QueueFullRejectKeepsCallerOwnership | PASS | PASS 3/3 | none (pre-start posts, reject err -13, ownership kept) |
+| completion | FrameCompletion.CompleteVsCancelRaceExactlyOnce | PASS | PASS 3/3 | 2e4 rounds (host 1e5), ~20 s/run; spin-gate -> task-notification round gate (same release semantics, shutdown-flag release only); release order alternates per round so BOTH CAS outcomes fire at full count (10000/10000 observed) — host split is scheduler luck; every round's reserve crosses cores |
+| quiesce | FrameStrand.ClosingRejectsPostsAndCleansUp + FrameCompletion.QuiescingCleanupRunsOnWorkerThread | PASS | PASS 3/3 | TaskHandle identity; + 4.1.4 revival assert (completion delivered on a STOPPED strand, destroyed=17, revived=1) carrying the host ThreeWay property |
+| stalegen | FrameCompletion.StaleGenerationDroppedButDestroyed | PASS | PASS 3/3 | none (stale=5, completion stale-dropped but destroyed) |
+| loader | (host n/a — target-only section-2 topology smoke) | n/a | PASS 3/3 | baseline loaded via T4 pipeline; activate() called from strand handler ON the worker task; fn 0x420612f0 in PSRAM exec window; returned==expected (0x1501e22e) |
+
+Host-only subset not re-run on target (documented): OverrunCounterIncrementsOnSlowHandler (budget-timer mapping, LIFE-002 metric only), CancelAfterCompleteKeepsOriginalErr / ReserveFailureStartsNothing (sequential CAS semantics subsumed by the completion vector's both-outcome + reserve-failure accounting), ThreeWayRaceCompleteCancelQuiesce (its quiesce-vs-completion property asserted deterministically in the quiesce vector's revival check).
+
+Adversarial: flake check = full 10-vector suite x3 on the final binary, ALL GREEN (runner: poc/apps/poc_a/plugins/sched_runner.py; per-run firmware verdicts 'SCHED SUITE PASS vectors=10 pass=10 fail=0'); misleading_success guard = every verdict is a programmatic counter/continuity check inside the firmware (order_faults/dup/qfault/stale/identity/revived counters printed per vector), [PASS-<vector>] markers emitted only after the asserts hold, runner independently re-verifies markers and fails on any [FAIL-.
+
+SCHED CONSISTENCY host==target : PASS
+python: can't open file '/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/poc/apps/poc_a/plugins/sched_runner.py': [Errno 2] No such file or directory
+--- poca> 
+
+poca>  
+===== SCHED RUN 1/3 =====
+--- poca> poca sched all
+poca sched all
+[sched] === vector fifo ===
+[sched-fifo] producers=3 per=5000 invoked=15000 destroyed=15000 order_faults=0 dup=0 qfault=0
+[PASS-fifo]
+[sched] === vector fifo done in 515 ms ===
+[sched] === vector fair ===
+[sched-fair] order=ABABABAB seq_faults=0 drained=1
+[PASS-fair]
+[sched] === vector fair done in 101 ms ===
+[sched] === vector noconc ===
+[sched-noconc] invoked=800/800 destroyed=800/800 guard_fault=0 id_fault=0 identity=1
+[PASS-noconc]
+[sched] === vector noconc done in 147 ms ===
+[sched] === vector dupclear ===
+[sched-dupclear] producers=8 per=1000 invoked=8000 destroyed=8000 dup=0 qfault=0
+[PASS-dupclear]
+[sched] === vector dupclear done in 234 ms ===
+[sched] === vector storm ===
+[sched-storm] total=20000 invoked=20000 destroyed=20000 stale=0 stopped=1 dup=0
+[PASS-storm]
+[sched] === vector storm done in 524 ms ===
+[sched] === vector qfull ===
+[sched-qfull] reject_err=-13 reject_destroyed=0 invoked=8 flags=1
+[PASS-qfull]
+[sched] === vector qfull done in 101 ms ===
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=10001 cancel=9999 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+[sched] === vector quiesce ===
+[sched-quiesce] late_err=-14 invoked=0 destroyed=17 flags=1 identity=1 revived=1
+[PASS-quiesce]
+[sched] === vector quiesce done in 101 ms ===
+[sched] === vector stalegen ===
+[sched-stalegen] invoked=0 stale=5 comp_delivered=0 comp_destroyed=1
+[PASS-stalegen]
+[sched] === vector stalegen done in 102 ms ===
+[sched] === vector loader ===
+[poca-load] begin baseline (entry_queries=0)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca-load] identity name=baseline version=1.0.0 MATCH
+[poca] admission max_mem=262144 default_arena=262144 hard_max=524288 OK
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (27675) ELF: ELF loader version: 1.3.3
+I (27676) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[sched-loader] fn=0x420612f0 returned=0x1501e22e expected=0x1501e22e on_worker=1
+[PASS-loader]
+[sched] === vector loader done in 413 ms ===
+SCHED SUITE PASS vectors=10 pass=10 fail=0
+poca>  
+===== SCHED RUN 2/3 =====
+--- poca> poca sched all
+poca sched all
+[sched] === vector fifo ===
+[sched-fifo] producers=3 per=5000 invoked=15000 destroyed=15000 order_faults=0 dup=0 qfault=0
+[PASS-fifo]
+[sched] === vector fifo done in 518 ms ===
+[sched] === vector fair ===
+[sched-fair] order=ABABABAB seq_faults=0 drained=1
+[PASS-fair]
+[sched] === vector fair done in 101 ms ===
+[sched] === vector noconc ===
+[sched-noconc] invoked=800/800 destroyed=800/800 guard_fault=0 id_fault=0 identity=1
+[PASS-noconc]
+[sched] === vector noconc done in 147 ms ===
+[sched] === vector dupclear ===
+[sched-dupclear] producers=8 per=1000 invoked=8000 destroyed=8000 dup=0 qfault=0
+[PASS-dupclear]
+[sched] === vector dupclear done in 237 ms ===
+[sched] === vector storm ===
+[sched-storm] total=20000 invoked=20000 destroyed=20000 stale=0 stopped=1 dup=0
+[PASS-storm]
+[sched] === vector storm done in 516 ms ===
+[sched] === vector qfull ===
+[sched-qfull] reject_err=-13 reject_destroyed=0 invoked=8 flags=1
+[PASS-qfull]
+[sched] === vector qfull done in 101 ms ===
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=10002 cancel=9998 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+[sched] === vector quiesce ===
+[sched-quiesce] late_err=-14 invoked=0 destroyed=17 flags=1 identity=1 revived=1
+[PASS-quiesce]
+[sched] === vector quiesce done in 101 ms ===
+[sched] === vector stalegen ===
+[sched-stalegen] invoked=0 stale=5 comp_delivered=0 comp_destroyed=1
+[PASS-stalegen]
+[sched] === vector stalegen done in 102 ms ===
+[sched] === vector loader ===
+[poca-load] begin baseline (entry_queries=1)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca-load] identity name=baseline version=1.0.0 MATCH
+[poca] admission max_mem=262144 default_arena=262144 hard_max=524288 OK
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (50192) ELF: ELF loader version: 1.3.3
+I (50193) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[sched-loader] fn=0x420612f0 returned=0x1501e22e expected=0x1501e22e on_worker=1
+[PASS-loader]
+[sched] === vector loader done in 412 ms ===
+SCHED SUITE PASS vectors=10 pass=10 fail=0
+poca>  
+===== SCHED RUN 3/3 =====
+--- poca> poca sched all
+poca sched all
+[sched] === vector fifo ===
+[sched-fifo] producers=3 per=5000 invoked=15000 destroyed=15000 order_faults=0 dup=0 qfault=0
+[PASS-fifo]
+[sched] === vector fifo done in 519 ms ===
+[sched] === vector fair ===
+[sched-fair] order=ABABABAB seq_faults=0 drained=1
+[PASS-fair]
+[sched] === vector fair done in 101 ms ===
+[sched] === vector noconc ===
+[sched-noconc] invoked=800/800 destroyed=800/800 guard_fault=0 id_fault=0 identity=1
+[PASS-noconc]
+[sched] === vector noconc done in 147 ms ===
+[sched] === vector dupclear ===
+[sched-dupclear] producers=8 per=1000 invoked=8000 destroyed=8000 dup=0 qfault=0
+[PASS-dupclear]
+[sched] === vector dupclear done in 232 ms ===
+[sched] === vector storm ===
+[sched-storm] total=20000 invoked=20000 destroyed=20000 stale=0 stopped=1 dup=0
+[PASS-storm]
+[sched] === vector storm done in 515 ms ===
+[sched] === vector qfull ===
+[sched-qfull] reject_err=-13 reject_destroyed=0 invoked=8 flags=1
+[PASS-qfull]
+[sched] === vector qfull done in 101 ms ===
+[sched] === vector completion ===
+[sched-completion] progress 5000/20000
+[sched-completion] progress 10000/20000
+[sched-completion] progress 15000/20000
+[sched-completion] progress 20000/20000
+[sched-completion] rounds=20000 reserve_failures=0 complete=10002 cancel=9998 invalid=0 rec_destroyed=20000 strand_destroyed=20000
+[PASS-completion]
+[sched] === vector completion done in 20100 ms ===
+[sched] === vector quiesce ===
+[sched-quiesce] late_err=-14 invoked=0 destroyed=17 flags=1 identity=1 revived=1
+[PASS-quiesce]
+[sched] === vector quiesce done in 101 ms ===
+[sched] === vector stalegen ===
+[sched-stalegen] invoked=0 stale=5 comp_delivered=0 comp_destroyed=1
+[PASS-stalegen]
+[sched] === vector stalegen done in 102 ms ===
+[sched] === vector loader ===
+[poca-load] begin baseline (entry_queries=2)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca-load] identity name=baseline version=1.0.0 MATCH
+[poca] admission max_mem=262144 default_arena=262144 hard_max=524288 OK
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (72706) ELF: ELF loader version: 1.3.3
+I (72707) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[sched-loader] fn=0x420612f0 returned=0x1501e22e expected=0x1501e22e on_worker=1
+[PASS-loader]
+[sched] === vector loader done in 412 ms ===
+SCHED SUITE PASS vectors=10 pass=10 fail=0
+poca>  
+===== STABILITY SUMMARY =====
+run 1: 10/10 vectors GREEN
+run 2: 10/10 vectors GREEN
+run 3: 10/10 vectors GREEN
+SCHED STABILITY 3x10 : ALL GREEN
+NOTE: post-format rebuild (whitespace-only source delta, bin sha d7956eb9...) reflashed; 3x stability rerun on THIS exact artifact above.
