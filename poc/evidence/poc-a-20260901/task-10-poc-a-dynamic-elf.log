@@ -1,0 +1,522 @@
+===== T10 capacity ladder 8->5 — 2026-09-01T01:28:27+08:00 worktree=eea38764f8f42e340d58587c9218fc2c1fe32d4c =====
+FMT18 OK
+ poc/apps/poc_a/main/CMakeLists.txt  |  24 ++++
+ poc/apps/poc_a/main/poca_console.cc |  12 +-
+ poc/apps/poc_a/main/poca_plugin.cc  | 250 ++++++++++++++++++++++++++++++++++++
+ poc/apps/poc_a/main/poca_plugin.hh  |  13 +-
+ 4 files changed, 296 insertions(+), 3 deletions(-)
+[152/153] Generating binary image from built executable
+esptool v5.3.1
+Creating ESP32-S3 image...
+Merged 2 ELF sections.
+Successfully created ESP32-S3 image.
+Generated /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/bootloader/bootloader.bin
+[153/153] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/bootloader && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/bootloader/bootloader.bin
+Bootloader binary size 0x5800 bytes. 0x2800 bytes (31%) free.
+[1219/1225] No install step for 'bootloader'
+[1220/1225] Completed 'bootloader'
+[1221/1225] Generating esp-idf/esp_system/ld/sections.ld
+NOTE: 
+/home/lain/.espressif/v6.0.2/esp-idf/components/bt/host/nimble/Kconfig.in:1421: 
+BT_NIMBLE_MESH_PROVISIONER: 'default 0' is not a valid bool value (only 'y' and 
+'n' are allowed). Value is treated as 'n'.
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs/Kconfig:230: 
+FATFS_PRINT_LLI: 'default 0' is not a valid bool value (only 'y' and 'n' are 
+allowed). Value is treated as 'n'.
+NOTE: /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs/Kconfig:235: 
+FATFS_PRINT_FLOAT: 'default 0' is not a valid bool value (only 'y' and 'n' are 
+allowed). Value is treated as 'n'.
+[1222/1225] Building C object CMakeFiles/frame_poc_a.elf.dir/project_elf_src_esp32s3.c.obj
+[1223/1225] Linking CXX executable frame_poc_a.elf
+[1224/1225] Generating binary image from built executable
+esptool v5.3.1
+Creating ESP32-S3 image...
+Merged 3 ELF sections.
+Successfully created ESP32-S3 image.
+Generated /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/frame_poc_a.bin
+[1225/1225] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build && /home/lain/.espressif/tools/python/v6.0.2/venv/bin/python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/partition_table/partition-table.bin /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/frame_poc_a.bin
+frame_poc_a.bin binary size 0x72850 bytes. Smallest app partition is 0x100000 bytes. 0x8d7b0 bytes (55%) free.
+
+Project build complete. To flash, run:
+ idf.py flash
+or
+ idf.py -p PORT flash
+or
+ python -m esptool --chip esp32s3 -b 460800 --before default-reset --after hard-reset write-flash --flash-mode dio --flash-size 16MB --flash-freq 80m 0x0 build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000 build/frame_poc_a.bin
+or from the "/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build" directory
+ python -m esptool --chip esp32s3 -b 460800 --before default-reset --after hard-reset write-flash "@flash_args"
+--- warn grep done (empty above = 0 warnings)
+1984 build/plugins/cap01.mpb
+1984 build/plugins/cap02.mpb
+1984 build/plugins/cap03.mpb
+1984 build/plugins/cap04.mpb
+1984 build/plugins/cap05.mpb
+1984 build/plugins/cap06.mpb
+1984 build/plugins/cap07.mpb
+1984 build/plugins/cap08.mpb
+--- elf sizes:
+1708 build/plugins/cap01/cap01.elf
+2980 build/plugins/cap01/cap01.raw.elf
+1708 build/plugins/cap02/cap02.elf
+2980 build/plugins/cap02/cap02.raw.elf
+1708 build/plugins/cap03/cap03.elf
+2980 build/plugins/cap03/cap03.raw.elf
+1708 build/plugins/cap04/cap04.elf
+2980 build/plugins/cap04/cap04.raw.elf
+1708 build/plugins/cap05/cap05.elf
+2980 build/plugins/cap05/cap05.raw.elf
+1708 build/plugins/cap06/cap06.elf
+2980 build/plugins/cap06/cap06.raw.elf
+1708 build/plugins/cap07/cap07.elf
+2980 build/plugins/cap07/cap07.raw.elf
+1708 build/plugins/cap08/cap08.elf
+2980 build/plugins/cap08/cap08.raw.elf
+--- meta headers magics:
+#define POCA_CAP01_MAGIC 0x43415031u
+#define POCA_CAP02_MAGIC 0x43415032u
+#define POCA_CAP03_MAGIC 0x43415033u
+#define POCA_CAP04_MAGIC 0x43415034u
+#define POCA_CAP05_MAGIC 0x43415035u
+#define POCA_CAP06_MAGIC 0x43415036u
+#define POCA_CAP07_MAGIC 0x43415037u
+#define POCA_CAP08_MAGIC 0x43415038u
+--- names/versions:
+#define POCA_CAP01_NAME "cap01"
+#define POCA_CAP01_VERSION "1.0.1"
+#define POCA_CAP02_NAME "cap02"
+#define POCA_CAP02_VERSION "1.0.2"
+#define POCA_CAP03_NAME "cap03"
+#define POCA_CAP03_VERSION "1.0.3"
+#define POCA_CAP04_NAME "cap04"
+#define POCA_CAP04_VERSION "1.0.4"
+#define POCA_CAP05_NAME "cap05"
+#define POCA_CAP05_VERSION "1.0.5"
+#define POCA_CAP06_NAME "cap06"
+#define POCA_CAP06_VERSION "1.0.6"
+#define POCA_CAP07_NAME "cap07"
+#define POCA_CAP07_VERSION "1.0.7"
+#define POCA_CAP08_NAME "cap08"
+#define POCA_CAP08_VERSION "1.0.8"
+17bd11813794c672fa876b11293277fe70166442141961e2eeac7beb3591c5eb  build/plugins/cap01.mpb
+c7648f72b9fa5d7a43a74cdf5a83c5156b23d269d971153586c1eb98edb9f7ed  build/plugins/cap02.mpb
+61cfa25867cb34a19819131be9931400b34fccff09cdee1e3ea871966075f970  build/plugins/cap03.mpb
+9629cf696b87836b2123ac7845021887a9bf62e7a899c1d9269f080b14e0c3a3  build/plugins/cap04.mpb
+55c4c10db59773d59101ee52e482d942a834544d4470d035fd411b7311e5a543  build/plugins/cap05.mpb
+f6822a59278151b65cac83809f1da3259d6b2717ef02710dcea722f4fa8f9689  build/plugins/cap06.mpb
+bdda99c79f7e410fd2bc36ded7e45671e563726ba97a8a7654493772d77eac54  build/plugins/cap07.mpb
+573d19e1d360730c42f97ff63db74bfe181633c4ed59fc0ba1f007f3ccd10492  build/plugins/cap08.mpb
+distinct shas: 8/8
+python re-verify distinct: 8
+[1A[2KHash of data verified.
+
+Hard resetting via RTS pin...
+Done
+Traceback (most recent call last):
+  File "<stdin>", line 8, in <module>
+  File "<frozen importlib._bootstrap_external>", line 759, in exec_module
+  File "<frozen importlib._bootstrap>", line 491, in _call_with_frames_removed
+  File "/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/plugins/capacity_ladder.py", line 36, in <module>
+    import serial
+ModuleNotFoundError: No module named 'serial'
+===== T10 RESUME 2026-09-01T09:02:55+08:00 — fixing runner interpreter, board already flashed with capacity firmware =====
+repo venv pyserial OK 3.5
+ M poc/apps/poc_a/main/CMakeLists.txt
+ M poc/apps/poc_a/main/poca_console.cc
+ M poc/apps/poc_a/main/poca_plugin.cc
+ M poc/apps/poc_a/main/poca_plugin.hh
+?? poc/apps/poc_a/plugins/cap/
+?? poc/apps/poc_a/plugins/capacity_ladder.py
+py_compile OK
+--- smoke: capacity 1 then capacity 8 ---
+--- poca> 
+
+poca>  
+--- poca> poca capacity 1
+poca capacity 1
+[poca-cap] ladder step N=1: 1 plugin(s) cap01..cap01, all DISTINCT names (PLUG-004: one ACTIVE generation per name)
+[T8-heap] phase=cap-baseline     psram free=8385920 largest=8257536 min_ever=8385920 | iram-exec free=236088 largest=204800 min_ever=231876 | internal free=300151 largest=204800 min_ever=295939
+[cap-load] idx=1 name=cap01 magic=0x43415031 text=0x3c071248 staging=1984B sha256=17bd11813794c672fa876b11293277fe70166442141961e2eeac7beb3591c5eb psram_free=8382564
+[PASS-cap-1-load] 1/1 instances resident
+[T8-heap] phase=cap-peak         psram free=8382564 largest=8257536 min_ever=8382564 | iram-exec free=234792 largest=204800 min_ever=226972 | internal free=298855 largest=204800 min_ever=291035
+[T8-stack] phase=cap-peak tasks=5
+[T8-stack]   console_repl     prio=5 stack_hwm=2232B
+[T8-stack]   IDLE0            prio=0 stack_hwm=756B
+[T8-stack]   IDLE1            prio=0 stack_hwm=864B
+[T8-stack]   ipc0             prio=24 stack_hwm=600B
+[T8-stack]   ipc1             prio=24 stack_hwm=596B
+[cap-respond] idx=1 name=cap01 fn=0x420712d0 text=0x3c071248 returned=0x060ff15e expected=0x060ff15e MATCH
+[cap-distinct] text_bases_all_distinct=yes expected_magics_all_distinct=yes
+[PASS-cap-1-respond] 1/1 magics match, all distinct
+[T10-budget] psram base_free=8385920 peak_free=8382564 consumed=3356 per_instance=3356 (staging 1984B + loader arena 1352B) iram_delta=-1296 internal_delta=-1296
+CAPBUD,count=1,psram_base_free=8385920,psram_peak_free=8382564,consumed=3356,per_instance=3356,mpb_size=1984,arena_size=1352,iram_delta=-1296,internal_delta=-1296
+[cap-unload] idx=1 name=cap01 unload_err=0 psram_free=8385920
+[PASS-cap-1-unload] 1/1 released in reverse order
+[T8-heap] phase=cap-final        psram free=8385920 largest=8257536 min_ever=8382564 | iram-exec free=234792 largest=204800 min_ever=226972 | internal free=298855 largest=204800 min_ever=291035
+[poca-cap] restored=yes (final_free=8385920 base_free=8385920 peak min_ever floor=8382564)
+[PASS-capacity-1] 1 concurrent ACTIVE generations verified (distinct names/magics/text bases)
+poca>  
+Traceback (most recent call last):
+  File "<stdin>", line 13, in <module>
+  File "/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/plugins/capacity_ladder.py", line 140, in judge_step
+    if any(row[7] != "MATCH" for row in responds):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/plugins/capacity_ladder.py", line 140, in <genexpr>
+    if any(row[7] != "MATCH" for row in responds):
+           ~~~^^^
+IndexError: tuple index out of range
+--- poca> 
+
+poca>  
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x42014938 esp_elf_relocate=0x42014978
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 1 (execution canary)
+  iram cache syncs so far: 0 (p5 counter)
+heap internal  size=    349547 free=    298823 largest=    204800 min_ever=    291035
+heap iram-exec size=    285484 free=    234760 largest=    204800 min_ever=    226972
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8382564
+poca>  
+--- poca> poca capacity 8
+poca capacity 8
+[poca-cap] ladder step N=8: 8 plugin(s) cap01..cap08, all DISTINCT names (PLUG-004: one ACTIVE generation per name)
+[T8-heap] phase=cap-baseline     psram free=8385920 largest=8257536 min_ever=8382564 | iram-exec free=234740 largest=204800 min_ever=226972 | internal free=298803 largest=204800 min_ever=291035
+[cap-load] idx=1 name=cap01 magic=0x43415031 text=0x3c071248 staging=1984B sha256=17bd11813794c672fa876b11293277fe70166442141961e2eeac7beb3591c5eb psram_free=8382564
+[cap-load] idx=2 name=cap02 magic=0x43415032 text=0x3c071f64 staging=1984B sha256=c7648f72b9fa5d7a43a74cdf5a83c5156b23d269d971153586c1eb98edb9f7ed psram_free=8379208
+[cap-load] idx=3 name=cap03 magic=0x43415033 text=0x3c072c80 staging=1984B sha256=61cfa25867cb34a19819131be9931400b34fccff09cdee1e3ea871966075f970 psram_free=8375852
+[cap-load] idx=4 name=cap04 magic=0x43415034 text=0x3c07399c staging=1984B sha256=9629cf696b87836b2123ac7845021887a9bf62e7a899c1d9269f080b14e0c3a3 psram_free=8372496
+[cap-load] idx=5 name=cap05 magic=0x43415035 text=0x3c0746b8 staging=1984B sha256=55c4c10db59773d59101ee52e482d942a834544d4470d035fd411b7311e5a543 psram_free=8369140
+[cap-load] idx=6 name=cap06 magic=0x43415036 text=0x3c0753d4 staging=1984B sha256=f6822a59278151b65cac83809f1da3259d6b2717ef02710dcea722f4fa8f9689 psram_free=8365784
+[cap-load] idx=7 name=cap07 magic=0x43415037 text=0x3c0760f0 staging=1984B sha256=bdda99c79f7e410fd2bc36ded7e45671e563726ba97a8a7654493772d77eac54 psram_free=8362428
+[cap-load] idx=8 name=cap08 magic=0x43415038 text=0x3c076e0c staging=1984B sha256=573d19e1d360730c42f97ff63db74bfe181633c4ed59fc0ba1f007f3ccd10492 psram_free=8359072
+[PASS-cap-8-load] 8/8 instances resident
+[T8-heap] phase=cap-peak         psram free=8359072 largest=8257536 min_ever=8359072 | iram-exec free=234740 largest=204800 min_ever=226912 | internal free=298803 largest=204800 min_ever=290975
+[T8-stack] phase=cap-peak tasks=5
+[T8-stack]   console_repl     prio=5 stack_hwm=2040B
+[T8-stack]   IDLE0            prio=0 stack_hwm=756B
+[T8-stack]   IDLE1            prio=0 stack_hwm=864B
+[T8-stack]   ipc1             prio=24 stack_hwm=596B
+[T8-stack]   ipc0             prio=24 stack_hwm=568B
+[cap-respond] idx=1 name=cap01 fn=0x420712d0 text=0x3c071248 returned=0x060ff15e expected=0x060ff15e MATCH
+[cap-respond] idx=2 name=cap02 fn=0x42071fec text=0x3c071f64 returned=0x060ff15d expected=0x060ff15d MATCH
+[cap-respond] idx=3 name=cap03 fn=0x42072d08 text=0x3c072c80 returned=0x060ff15c expected=0x060ff15c MATCH
+[cap-respond] idx=4 name=cap04 fn=0x42073a24 text=0x3c07399c returned=0x060ff15b expected=0x060ff15b MATCH
+[cap-respond] idx=5 name=cap05 fn=0x42074740 text=0x3c0746b8 returned=0x060ff15a expected=0x060ff15a MATCH
+[cap-respond] idx=6 name=cap06 fn=0x4207545c text=0x3c0753d4 returned=0x060ff159 expected=0x060ff159 MATCH
+[cap-respond] idx=7 name=cap07 fn=0x42076178 text=0x3c0760f0 returned=0x060ff158 expected=0x060ff158 MATCH
+[cap-respond] idx=8 name=cap08 fn=0x42076e94 text=0x3c076e0c returned=0x060ff157 expected=0x060ff157 MATCH
+[cap-distinct] text_bases_all_distinct=yes expected_magics_all_distinct=yes
+[PASS-cap-8-respond] 8/8 magics match, all distinct
+[T10-budget] psram base_free=8385920 peak_free=8359072 consumed=26848 per_instance=3356 (staging 1984B + loader arena 1352B) iram_delta=0 internal_delta=0
+CAPBUD,count=8,psram_base_free=8385920,psram_peak_free=8359072,consumed=26848,per_instance=3356,mpb_size=1984,arena_size=1352,iram_delta=0,internal_delta=0
+[cap-unload] idx=8 name=cap08 unload_err=0 psram_free=8362428
+[cap-unload] idx=7 name=cap07 unload_err=0 psram_free=8365784
+[cap-unload] idx=6 name=cap06 unload_err=0 psram_free=8369140
+[cap-unload] idx=5 name=cap05 unload_err=0 psram_free=8372496
+[cap-unload] idx=4 name=cap04 unload_err=0 psram_free=8375852
+[cap-unload] idx=3 name=cap03 unload_err=0 psram_free=8379208
+[cap-unload] idx=2 name=cap02 unload_err=0 psram_free=8382564
+[cap-unload] idx=1 name=cap01 unload_err=0 psram_free=8385920
+[PASS-cap-8-unload] 8/8 released in reverse order
+[T8-heap] phase=cap-final        psram free=8385920 largest=8257536 min_ever=8359072 | iram-exec free=234740 largest=204800 min_ever=226912 | internal free=298803 largest=204800 min_ever=290975
+[poca-cap] restored=yes (final_free=8385920 base_free=8385920 peak min_ever floor=8359072)
+[PASS-capacity-8] 8 concurrent ACTIVE generations verified (distinct names/magics/text bases)
+poca>  
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x42014938 esp_elf_relocate=0x42014978
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 9 (execution canary)
+  iram cache syncs so far: 0 (p5 counter)
+heap internal  size=    349539 free=    298787 largest=    204800 min_ever=    290975
+heap iram-exec size=    285476 free=    234724 largest=    204800 min_ever=    226912
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8359072
+poca>  
+===== LADDER STEPS =====
+rung 8 attempt 1: PASS
+===== PER-INSTANCE COST TABLE (CAPBUD, measured per executed rung) =====
+rung   psram_base   psram_peak   consumed   per_instance   mpb(B)  arena(B)  iram_delta  internal_delta
+   8       8385920     8359072     26848          3356   1984     1352          0               0
+canary: before=1 after=9 delta=8 (expected=8) OK
+===== LADDER VERDICT =====
+achieved=8 (attempted rungs: 8)
+per-instance cost: 3356 B (3.28 KiB) PSRAM (staging 1984 B + loader arena 1352 B)
+8-instance peak: 26848 B = 0.32% of the 8 MiB pool
+SIGNED BUDGET LINE:
+Capacity: 8 ACTIVE verified (8 attempted), per-instance cost 3356 B (3.28 KiB) PSRAM, 8-instance peak 26848 B = 0.32% of the 8 MiB pool (IRAM delta 0 B, internal delta 0 B, largest_free_block unchanged), headroom to MEM-007 floor 5: 8/5, MEM-007 -> ADR-0002 proposal value: 8 ACTIVE generations per distinct plugin name (PSRAM class; re-measure with Wi-Fi at the next gate)
+CAPACITY LADDER: PASS at 8
+RUNNER EXIT: 0
+poca>  
+===== LADDER STEPS =====
+rung 8 attempt 1: PASS
+===== PER-INSTANCE COST TABLE (CAPBUD, measured per executed rung) =====
+rung   psram_base   psram_peak   consumed   per_instance   mpb(B)  arena(B)  iram_delta  internal_delta
+   8       8385920     8359072     26848          3356   1984     1352          0               0
+canary: before=9 after=17 delta=8 (expected=8) OK
+===== LADDER VERDICT =====
+achieved=8 (attempted rungs: 8)
+per-instance cost: 3356 B (3.28 KiB) PSRAM (staging 1984 B + loader arena 1352 B)
+8-instance peak: 26848 B = 0.32% of the 8 MiB pool
+SIGNED BUDGET LINE:
+Capacity: 8 ACTIVE verified (8 attempted), per-instance cost 3356 B (3.28 KiB) PSRAM, 8-instance peak 26848 B = 0.32% of the 8 MiB pool (IRAM delta 0 B, internal delta 0 B, largest_free_block unchanged), headroom to MEM-007 floor 5: 8/5, MEM-007 -> ADR-0002 proposal value: 8 ACTIVE generations per distinct plugin name (PSRAM class; re-measure with Wi-Fi at the next gate)
+CAPACITY LADDER: PASS at 8
+RUNNER2 EXIT: 0
+poca>  
+--- poca> poca unload
+poca unload
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+poca>  
+
+MATRIX PASS (positives=3, negatives=10, canary=20 unchanged across all negatives, canary_start=17)
+MATRIX EXIT: 0
+[100%] Built target frame_strand_test
+[100%] Built target frame_completion_test
+
+100% tests passed out of 52
+
+Total Test time (real) =  14.81 sec
+
+============================== 87 passed in 0.44s ==============================
+FMT18 FINAL OK
+unformatted: File would be reformatted
+   --> poc/apps/poc_a/plugins/capacity_ladder.py:120:20
+    |
+119 |         verdict["reasons"].append(f"device [FAIL-cap-{fail.group(1)}-{fail.group(2)}] marker")
+    -     for marker in (f"[PASS-cap-{count}-load]", f"[PASS-cap-{count}-respond]",
+    -                    f"[PASS-cap-{count}-unload]", f"[PASS-capacity-{count}]"):
+120 +     for marker in (
+121 +         f"[PASS-cap-{count}-load]",
+122 +         f"[PASS-cap-{count}-respond]",
+123 +         f"[PASS-cap-{count}-unload]",
+124 +         f"[PASS-capacity-{count}]",
+125 +     ):
+126 |         if marker not in text and not verdict["fail_stage"]:
+--------------------------------------------------------------------------------
+201 |                     break
+    -                 provisional = (verdict["fail_step"] or (rung + 1)) - 1 if verdict["fail_stage"] == "load" else rung
+    -                 print(f"--- rung {rung} attempt {attempt} FAILED "
+    -                       f"(stage={verdict['fail_stage']} step={verdict['fail_step']} "
+    -                       f"provisional_achieved={provisional})")
+202 +                 provisional = (
+203 +                     (verdict["fail_step"] or (rung + 1)) - 1
+204 +                     if verdict["fail_stage"] == "load"
+205 +                     else rung
+206 +                 )
+207 +                 print(
+208 +                     f"--- rung {rung} attempt {attempt} FAILED "
+209 +                     f"(stage={verdict['fail_stage']} step={verdict['fail_step']} "
+210 +                     f"provisional_achieved={provisional})"
+211 +                 )
+212 |             if achieved is not None:
+--------------------------------------------------------------------------------
+220 |     for step in steps:
+    -         head = (f"rung {step['rung']} attempt {step['attempt']}: "
+    -                 f"{'PASS' if step['ok'] else 'FAIL'}")
+221 +         head = f"rung {step['rung']} attempt {step['attempt']}: {'PASS' if step['ok'] else 'FAIL'}"
+222 |         if step["fail_stage"]:
+--------------------------------------------------------------------------------
+228 |     print("===== PER-INSTANCE COST TABLE (CAPBUD, measured per executed rung) =====")
+    -     print("rung   psram_base   psram_peak   consumed   per_instance   mpb(B)  arena(B)  "
+    -           "iram_delta  internal_delta")
+229 +     print(
+230 +         "rung   psram_base   psram_peak   consumed   per_instance   mpb(B)  arena(B)  "
+231 +         "iram_delta  internal_delta"
+232 +     )
+233 |     for step in steps:
+234 |         budget = step["capbud"]
+235 |         if not budget:
+236 |             continue
+    -         print(f"{step['rung']:>4}   {budget['psram_base_free']:>11} "
+    -               f"{budget['psram_peak_free']:>11} {budget['consumed']:>9} "
+    -               f"{budget['per_instance']:>13} {budget['mpb_size']:>6} "
+    -               f"{budget['arena_size']:>8} {budget['iram_delta']:>10} "
+    -               f"{budget['internal_delta']:>15}")
+237 +         print(
+238 +             f"{step['rung']:>4}   {budget['psram_base_free']:>11} "
+239 +             f"{budget['psram_peak_free']:>11} {budget['consumed']:>9} "
+240 +             f"{budget['per_instance']:>13} {budget['mpb_size']:>6} "
+241 +             f"{budget['arena_size']:>8} {budget['iram_delta']:>10} "
+242 +             f"{budget['internal_delta']:>15}"
+243 +         )
+244 |     canary_before = re.search(r"entry queries so far: (\d+)", status_before)
+--------------------------------------------------------------------------------
+248 |         queries_expected = sum(
+    -             step["rung"] if step["ok"] or step["fail_stage"] != "load"
+249 +             step["rung"]
+250 +             if step["ok"] or step["fail_stage"] != "load"
+251 |             else max(step["fail_step"] - 1, 0)
+--------------------------------------------------------------------------------
+255 |         )
+    -         print(f"canary: before={canary_before.group(1)} after={canary_after.group(1)} "
+    -               f"delta={delta} (expected={queries_expected}) "
+    -               f"{'OK' if delta == queries_expected else 'MISMATCH'}")
+256 +         print(
+257 +             f"canary: before={canary_before.group(1)} after={canary_after.group(1)} "
+258 +             f"delta={delta} (expected={queries_expected}) "
+259 +             f"{'OK' if delta == queries_expected else 'MISMATCH'}"
+260 +         )
+261 |
+--------------------------------------------------------------------------------
+270 |     print(f"achieved={achieved} (attempted rungs: {', '.join(str(s['rung']) for s in steps)})")
+    -     print(f"per-instance cost: {format_kib(budget)} PSRAM "
+    -           f"(staging {budget['mpb_size']} B + loader arena {budget['arena_size']} B)")
+271 +     print(
+272 +         f"per-instance cost: {format_kib(budget)} PSRAM "
+273 +         f"(staging {budget['mpb_size']} B + loader arena {budget['arena_size']} B)"
+274 +     )
+275 |     print(f"{achieved}-instance peak: {budget['consumed']} B = {pool_pct:.2f}% of the 8 MiB pool")
+276 |     print("SIGNED BUDGET LINE:")
+    -     print(f"Capacity: {achieved} ACTIVE verified (8 attempted), per-instance cost "
+    -           f"{budget['per_instance']} B ({per_kib:.2f} KiB) PSRAM, {achieved}-instance peak "
+    -           f"{budget['consumed']} B = {pool_pct:.2f}% of the 8 MiB pool "
+    -           f"(IRAM delta {budget['iram_delta']} B, internal delta {budget['internal_delta']} B, "
+    -           f"largest_free_block unchanged), headroom to MEM-007 floor 5: "
+    -           f"{achieved}/5, MEM-007 -> ADR-0002 proposal value: {achieved} ACTIVE generations "
+    -           f"per distinct plugin name (PSRAM class; re-measure with Wi-Fi at the next gate)")
+277 +     print(
+278 +         f"Capacity: {achieved} ACTIVE verified (8 attempted), per-instance cost "
+279 +         f"{budget['per_instance']} B ({per_kib:.2f} KiB) PSRAM, {achieved}-instance peak "
+280 +         f"{budget['consumed']} B = {pool_pct:.2f}% of the 8 MiB pool "
+281 +         f"(IRAM delta {budget['iram_delta']} B, internal delta {budget['internal_delta']} B, "
+282 +         f"largest_free_block unchanged), headroom to MEM-007 floor 5: "
+283 +         f"{achieved}/5, MEM-007 -> ADR-0002 proposal value: {achieved} ACTIVE generations "
+284 +         f"per distinct plugin name (PSRAM class; re-measure with Wi-Fi at the next gate)"
+285 +     )
+286 |     print(f"CAPACITY LADDER: PASS at {achieved}")
+    |
+
+1 file would be reformatted
+E501 Line too long (115 > 100)
+   --> poc/apps/poc_a/plugins/capacity_ladder.py:198:101
+    |
+196 |                     achieved = rung
+197 |                     break
+198 |                 provisional = (verdict["fail_step"] or (rung + 1)) - 1 if verdict["fail_stage"] == "load" else rung
+    |                                                                                                     ^^^^^^^^^^^^^^^
+199 |                 print(f"--- rung {rung} attempt {attempt} FAILED "
+200 |                       f"(stage={verdict['fail_stage']} step={verdict['fail_step']} "
+    |
+
+Found 1 error.
+(plugins py not repo-gated; lint advisory)
+1 file reformatted
+All checks passed!
+ruff advisory clean
+py_compile OK
+--- post-format confirmation run (capacity 8) ---
+--- poca> 
+
+poca>  
+--- poca> poca capacity 8
+poca capacity 8
+[poca-cap] ladder step N=8: 8 plugin(s) cap01..cap08, all DISTINCT names (PLUG-004: one ACTIVE generation per name)
+[T8-heap] phase=cap-baseline     psram free=8385920 largest=8257536 min_ever=8359072 | iram-exec free=234128 largest=204800 min_ever=226300 | internal free=298191 largest=204800 min_ever=290363
+[cap-load] idx=1 name=cap01 magic=0x43415031 text=0x3c071248 staging=1984B sha256=17bd11813794c672fa876b11293277fe70166442141961e2eeac7beb3591c5eb psram_free=8382564
+[cap-load] idx=2 name=cap02 magic=0x43415032 text=0x3c071f64 staging=1984B sha256=c7648f72b9fa5d7a43a74cdf5a83c5156b23d269d971153586c1eb98edb9f7ed psram_free=8379208
+[cap-load] idx=3 name=cap03 magic=0x43415033 text=0x3c072c80 staging=1984B sha256=61cfa25867cb34a19819131be9931400b34fccff09cdee1e3ea871966075f970 psram_free=8375852
+[cap-load] idx=4 name=cap04 magic=0x43415034 text=0x3c07399c staging=1984B sha256=9629cf696b87836b2123ac7845021887a9bf62e7a899c1d9269f080b14e0c3a3 psram_free=8372496
+[cap-load] idx=5 name=cap05 magic=0x43415035 text=0x3c0746b8 staging=1984B sha256=55c4c10db59773d59101ee52e482d942a834544d4470d035fd411b7311e5a543 psram_free=8369140
+[cap-load] idx=6 name=cap06 magic=0x43415036 text=0x3c0753d4 staging=1984B sha256=f6822a59278151b65cac83809f1da3259d6b2717ef02710dcea722f4fa8f9689 psram_free=8365784
+[cap-load] idx=7 name=cap07 magic=0x43415037 text=0x3c0760f0 staging=1984B sha256=bdda99c79f7e410fd2bc36ded7e45671e563726ba97a8a7654493772d77eac54 psram_free=8362428
+[cap-load] idx=8 name=cap08 magic=0x43415038 text=0x3c076e0c staging=1984B sha256=573d19e1d360730c42f97ff63db74bfe181633c4ed59fc0ba1f007f3ccd10492 psram_free=8359072
+[PASS-cap-8-load] 8/8 instances resident
+[T8-heap] phase=cap-peak         psram free=8359072 largest=8257536 min_ever=8359072 | iram-exec free=234128 largest=204800 min_ever=226300 | internal free=298191 largest=204800 min_ever=290363
+[T8-stack] phase=cap-peak tasks=5
+[T8-stack]   console_repl     prio=5 stack_hwm=2040B
+[T8-stack]   IDLE0            prio=0 stack_hwm=756B
+[T8-stack]   IDLE1            prio=0 stack_hwm=864B
+[T8-stack]   ipc1             prio=24 stack_hwm=596B
+[T8-stack]   ipc0             prio=24 stack_hwm=568B
+[cap-respond] idx=1 name=cap01 fn=0x420712d0 text=0x3c071248 returned=0x060ff15e expected=0x060ff15e MATCH
+[cap-respond] idx=2 name=cap02 fn=0x42071fec text=0x3c071f64 returned=0x060ff15d expected=0x060ff15d MATCH
+[cap-respond] idx=3 name=cap03 fn=0x42072d08 text=0x3c072c80 returned=0x060ff15c expected=0x060ff15c MATCH
+[cap-respond] idx=4 name=cap04 fn=0x42073a24 text=0x3c07399c returned=0x060ff15b expected=0x060ff15b MATCH
+[cap-respond] idx=5 name=cap05 fn=0x42074740 text=0x3c0746b8 returned=0x060ff15a expected=0x060ff15a MATCH
+[cap-respond] idx=6 name=cap06 fn=0x4207545c text=0x3c0753d4 returned=0x060ff159 expected=0x060ff159 MATCH
+[cap-respond] idx=7 name=cap07 fn=0x42076178 text=0x3c0760f0 returned=0x060ff158 expected=0x060ff158 MATCH
+[cap-respond] idx=8 name=cap08 fn=0x42076e94 text=0x3c076e0c returned=0x060ff157 expected=0x060ff157 MATCH
+[cap-distinct] text_bases_all_distinct=yes expected_magics_all_distinct=yes
+[PASS-cap-8-respond] 8/8 magics match, all distinct
+[T10-budget] psram base_free=8385920 peak_free=8359072 consumed=26848 per_instance=3356 (staging 1984B + loader arena 1352B) iram_delta=0 internal_delta=0
+CAPBUD,count=8,psram_base_free=8385920,psram_peak_free=8359072,consumed=26848,per_instance=3356,mpb_size=1984,arena_size=1352,iram_delta=0,internal_delta=0
+[cap-unload] idx=8 name=cap08 unload_err=0 psram_free=8362428
+[cap-unload] idx=7 name=cap07 unload_err=0 psram_free=8365784
+[cap-unload] idx=6 name=cap06 unload_err=0 psram_free=8369140
+[cap-unload] idx=5 name=cap05 unload_err=0 psram_free=8372496
+[cap-unload] idx=4 name=cap04 unload_err=0 psram_free=8375852
+[cap-unload] idx=3 name=cap03 unload_err=0 psram_free=8379208
+[cap-unload] idx=2 name=cap02 unload_err=0 psram_free=8382564
+[cap-unload] idx=1 name=cap01 unload_err=0 psram_free=8385920
+[PASS-cap-8-unload] 8/8 released in reverse order
+[T8-heap] phase=cap-final        psram free=8385920 largest=8257536 min_ever=8359072 | iram-exec free=234128 largest=204800 min_ever=226300 | internal free=298191 largest=204800 min_ever=290363
+[poca-cap] restored=yes (final_free=8385920 base_free=8385920 peak min_ever floor=8359072)
+[PASS-capacity-8] 8 concurrent ACTIVE generations verified (distinct names/magics/text bases)
+poca>  
+POST-FORMAT cap-8 ok: True reasons: []
+CAPBUD: {'count': 8, 'psram_base_free': 8385920, 'psram_peak_free': 8359072, 'consumed': 26848, 'per_instance': 3356, 'mpb_size': 1984, 'arena_size': 1352, 'iram_delta': 0, 'internal_delta': 0}
+ M poc/apps/poc_a/main/CMakeLists.txt
+ M poc/apps/poc_a/main/poca_console.cc
+ M poc/apps/poc_a/main/poca_plugin.cc
+ M poc/apps/poc_a/main/poca_plugin.hh
+ M poc/apps/poc_a/plugins/ADMISSION-BUDGET.md
+?? poc/apps/poc_a/plugins/cap/
+?? poc/apps/poc_a/plugins/capacity_ladder.py
+ poc/apps/poc_a/main/CMakeLists.txt         |  24 +++
+ poc/apps/poc_a/main/poca_console.cc        |  12 +-
+ poc/apps/poc_a/main/poca_plugin.cc         | 250 +++++++++++++++++++++++++++++
+ poc/apps/poc_a/main/poca_plugin.hh         |  13 +-
+ poc/apps/poc_a/plugins/ADMISSION-BUDGET.md |  65 +++++++-
+ 5 files changed, 355 insertions(+), 9 deletions(-)
+--- scope check (only poc/apps/poc_a/**):
+OK: no out-of-scope paths
+[poc-a-dynamic-elf a302151] feat(poc-a): capacity ladder with signed budget
+ 7 files changed, 649 insertions(+), 9 deletions(-)
+ create mode 100644 poc/apps/poc_a/plugins/cap/manifest.json
+ create mode 100644 poc/apps/poc_a/plugins/capacity_ladder.py
+a302151 feat(poc-a): capacity ladder with signed budget
+eea3876 style(poc-a): clang-format 18 sweep on poca_sched quiesce revival block
+===== T10 FINAL GATE SUMMARY =====
+a302151 feat(poc-a): capacity ladder with signed budget
+============================== 87 passed in 0.40s ==============================
+DONECLAIM:
+{
+  "task": "T10 capacity ladder 8->5 (poc-a-dynamic-elf todo #10)",
+  "commit": "a302151 feat(poc-a): capacity ladder with signed budget",
+  "ladder_result": {
+    "verdict": "PASS at 8 (rung-8 attempt-1; ladder runner x2 + post-format confirmation = 3 identical board runs)",
+    "rungs_executed": [8],
+    "descent_exercised": false,
+    "markers": ["[PASS-cap-8-load] 8/8", "[PASS-cap-8-respond] 8/8 magics match, all distinct", "[PASS-cap-8-unload] 8/8 reverse", "[PASS-capacity-8]"],
+    "adversarial": "8 distinct staging sha256 (== build-time), 8 distinct magics at 8 distinct PSRAM text bases (0x3c071248..0x3c076e0c, stride 0xd1c == per-instance cost), canary +8/run exact"
+  },
+  "cost_table": {
+    "per_instance_psram_B": 3356,
+    "staging_mpb_B": 1984,
+    "loader_arena_B": 1352,
+    "peak_8_consumed_B": 26848,
+    "peak_pct_of_8MiB": 0.32,
+    "iram_delta_B": 0,
+    "internal_delta_B": 0,
+    "largest_free_block": "8257536 unchanged",
+    "restored": "exact (8385920)",
+    "crosscheck": "T8 baseline-class 3388B/1988B staging; delta = shorter manifest name"
+  },
+  "budget_line": "Capacity: 8 ACTIVE verified (8 attempted), per-instance cost 3356 B (3.28 KiB) PSRAM, 8-instance peak 26848 B = 0.32% of the 8 MiB pool (IRAM delta 0 B, internal delta 0 B, largest_free_block unchanged), headroom to MEM-007 floor 5: 8/5, MEM-007 -> ADR-0002 proposal value: 8 ACTIVE generations per distinct plugin name (PSRAM class; re-measure with Wi-Fi at the next gate)",
+  "gates": {
+    "build_0_warn": "PASS (touch+rebuild grep empty)",
+    "regression_matrix_1x": "PASS (positives=3 negatives=10 canary=20 unchanged)",
+    "host_ctest": "52/52 PASS (poc-host-t10, ASan)",
+    "pytest": "87 passed",
+    "fmt_18_1_8": "PASS (clang-format 18.1.8 dry-run --Werror on changed .cc/.hh)",
+    "scope": "poc/apps/poc_a/** only; not pushed"
+  },
+  "notes_for_T16": "evidence = task-10 log; budget frozen in plugins/ADMISSION-BUDGET.md capacity section; descent/retry path never hardware-exercised (8 passed first) - record honestly in GATE-A-REPORT; ADR-0002 amendment: global pool-sum admission gate needed for worst-case 8x512KiB declarations"
+}
+===== T10 COMPLETE 2026-09-01T09:08:05+08:00 =====

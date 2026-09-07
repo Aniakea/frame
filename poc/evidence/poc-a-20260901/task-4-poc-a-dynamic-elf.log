@@ -1,0 +1,45 @@
+T4 session start 2026-08-31T21:46:33+08:00 worktree 408df44
+--- build: configure ---
+[configure] pubkey key_id=e5677a1c point=0x04||X||Y(64B) -> build/default/plugins/generated/poca_pubkey.h
+[configure] [poca-plugin] registered baseline (entry frame_plugin_entry, version 1.0.0)
+--- build: plugin pipeline (zero warnings overall) ---
+[1] [poca-plugin] compile baseline.o   (-c -std=c11 -Os -fPIC -fvisibility=hidden -fdata-sections -ffunction-sections -ffreestanding -fno-builtin -Wall -Wextra -Werror)
+[2] [poca-plugin] link baseline.elf    (-shared -fPIC -static-libgcc -nostdlib -nostartfiles -fdata-sections -ffunction-sections -Wl,--gc-sections -fvisibility=hidden -Wl,--allow-shlib-undefined -Wl,--build-id=none -e frame_plugin_entry)
+[3] [poca-plugin] strip baseline.elf (keep frame_plugin_entry) (--strip-unneeded --keep-symbol=frame_plugin_entry --remove-section=.comment --remove-section=.got.loc --remove-section=.dynamic --remove-section=.note.gnu.build-id --remove-section=.xt.lit --remove-section=.xt.prop --remove-section=.xtensa.info)
+[4] gates OK relocs(R_XTENSA_NONE=0 R_XTENSA_RELATIVE=8 R_XTENSA_RTLD=0 R_XTENSA_GLOB_DAT=0 R_XTENSA_JMP_SLOT=0) undefined=0 entry=frame_plugin_entry
+[5] package+sign: baseline.mpb: signed 1964 byte mpb, key_id=e5677a1c, sha256=54153a9b8b6e284af3deb5c3dbce6d21c997fed1d3ba8250ab61d9c26de09b7e
+[6] meta: baseline.mpb size=1964 sha256=54153a9b8b6e284af3deb5c3dbce6d21c997fed1d3ba8250ab61d9c26de09b7e
+[7] firmware link: frame_poc_a.bin 0x5d600 bytes (0 warnings; build logs /tmp/opencode/poca/build5.log)
+[python-reference] verify_mpb(baseline.mpb): code baseline 1.0.0 epoch 1 iram 0 sha256=54153a9b... (matches meta)
+[reloc-fix-note] allowlist held with the mirrored project_elf/project_so flags as-is; NO extra link flag needed (R_XTENSA_32 never emitted for this closed C module); gates enforce it from now on
+--- on-device session (flash + scripted REPL, /dev/ttyACM0; script /tmp/opencode/poca/session.py; full log /tmp/opencode/poca/session-run5.log, EXIT=0) ---
+[flash] idf.py -B build/default -p /dev/ttyACM0 flash: Hash of data verified, 0x5d600 app image
+[boot] ESP32-S3 v0.2, octal PSRAM 8MB @80MHz, IDF v6.0.2, app 408df44-dirty
+[PASS-view]
+[poca-verify] mpb size=1964 sha256=54153a9b8b6e284af3deb5c3dbce6d21c997fed1d3ba8250ab61d9c26de09b7e
+[poca-verify] meta size=1964 sha256=54153a9b... (build) ; mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1684
+[PASS-load-psram-addr]
+[poca-load] psram free before=8385920
+I (4213) ELF: elf->entry=0x420612e4
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c0612e4 exec=0x420612e4 delta=0x06000000
+[poca-load] query fn ptr=0x420612e4
+[poca-load] table ptr=0x3c06135c struct_size=28 abi=1.0
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061248 .. +0xd0) data [0x3c06131c .. +0x5c) bss 0x404 rodata 0x40 drlro 0x1c
+[poca-load] psram free after=8382596 consumed=3324   (staging 1964 + text 208 + data/rodata/drlro/bss 1180 = 3352 raw, 3324 after TLSF rounding)
+[PASS-magic]
+[poca-activate] activate fn ptr=0x420612d0   (PSRAM exec mirror window)
+[poca-activate] returned=0x1501e22e expected=0x1501e22e
+[poca-activate] MAGIC MATCH   (computed by plugin code in PSRAM over plugin's own pattern bytes)
+[PASS-unload-frees]
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[PASS-10cycles] 10/10 clean cycles, 10/10 magic matches (load->activate->unload x10, addresses stable, no fault)
+[bug-fix-1] SIGNATURE_INVALID on first device run: ensure_crypto passed a stack-local mpb_trusted_key_t; mpb_mbedtls_crypto_make keeps the pointer -> dangling. Fix: static storage. (T7/T8 note: same lifetime rule applies to every future crypto make caller.)
+[bug-fix-2] session script prompt race: "Returned from app_main()" log line lands after the first prompt -> read_quiet(quiesce) boot detection + rstrip prompt compare.
+--- gates ---
+[format] clang-format -i + --dry-run --Werror clean on plugin_abi.h baseline.c poca_plugin.cc poca_plugin.hh poca_console.cc (clang-format 22.1.8 local; CI pins 18 — 22 agrees with all checked-in files per T11 learning)
+[host-ctest] cmake --build .build/poc-host + ctest: 100% tests passed out of 52 (untouched suites sanity)
+[determinism] touch baseline.c -> full pipeline rebuild -> baseline.mpb sha256=54153a9b... byte-identical (RFC6979 + deterministic compile); embedded meta unchanged, no stale embed possible across rebuilds
+[poc-a-build] full firmware build 0 warnings (grep -c warning == 0), frame_poc_a.bin 0x5d600 bytes, 64% app partition free

@@ -1,0 +1,257 @@
+=== task-1 poc-a-dynamic-elf evidence ===
+date: 2026-08-31T20:38:25+08:00
+worktree: /home/lain/Projects/esp_study/poc-a-wt branch poc-a-dynamic-elf base main@d53c56a
+git status at start:
+(end status, empty=clean)
+
+=== STEP 1: fetch upstream espressif/esp-iot-solution components/elf_loader @6526c5b1 ===
+components/elf_loader/CHANGELOG.md
+components/elf_loader/check_shared_object.cmake
+components/elf_loader/CMakeLists.txt
+components/elf_loader/elf_loader.cmake
+components/elf_loader/idf_component.yml
+components/elf_loader/include/esp_dlfcn.h
+components/elf_loader/include/esp_elf.h
+components/elf_loader/include/private/elf_platform.h
+components/elf_loader/include/private/elf_symbol.h
+components/elf_loader/include/private/elf_types.h
+components/elf_loader/include/private/esp_dlmod.h
+components/elf_loader/Kconfig
+components/elf_loader/license.txt
+components/elf_loader/linker.lf
+components/elf_loader/project_include.cmake
+components/elf_loader/README.md
+components/elf_loader/src/arch/esp_elf_riscv.c
+components/elf_loader/src/arch/esp_elf_xtensa.c
+components/elf_loader/src/dlso/dlfcn.c
+components/elf_loader/src/dlso/dlmod.c
+components/elf_loader/src/esp_all_symbol.c
+components/elf_loader/src/esp_elf_adapter.c
+components/elf_loader/src/esp_elf.c
+components/elf_loader/src/esp_elf_symbol.c
+components/elf_loader/src/soc/esp_elf_esp32s2.c
+components/elf_loader/tool/symbols.py
+
+=== STEP 2: verbatim copy verification (diff -r upstream vs vendored) ===
+DIFF_EXIT=0 (verbatim, no differences)
+vendored file count: 26
+
+=== tree.sha256 (manifest of upstream files only; excludes tree.sha256 + PATCHES.md) ===
+59231c48ad41bff1ed67690b194ff5e1780d07d3cb194f9d9674d35accd1a1a4  ./CHANGELOG.md
+f6db411fcc6bb9a02fa1f09919ddfb99374a11bc57942ac4df6f6188ef032c45  ./check_shared_object.cmake
+0b942c88ecb16950bed4f418983014f6c9a25487fdfc621476ebefb51a3765af  ./CMakeLists.txt
+4e2b74ed77903be2b107dfe2c103deb5e76db4b3259179f8e17976a587dd79fa  ./elf_loader.cmake
+259f9e135559178b85ec6710ab6a17ab9a6a88c81187966eaa3ba614a455a7a9  ./idf_component.yml
+3406d27e7ae6b1b443d27bb69ee7e862f60238a8d8b55e3e4bea76d66d328b6f  ./include/esp_dlfcn.h
+f4cef04b710e4863670a159040de4435a7fc19790a293a6223d2656ee98eb006  ./include/esp_elf.h
+2cd943876e65ba5576006c6b18ef4228bf1085e87f147556ffc390700f0926a5  ./include/private/elf_platform.h
+288b180445016fc889a1aec0ece5693c9ba99d923f7ec82bc87b0f85b72bb719  ./include/private/elf_symbol.h
+13a6aa3f2977c9da9d83ed7101a6deed9c01e96d0c614be3f84963be0c1a3eda  ./include/private/elf_types.h
+1555b1e6a6db5c07150df6492d069d925f8a362a980f70956c8d731d03efde90  ./include/private/esp_dlmod.h
+532cea3ef8cb7e9af97694c1f3bddec60a8453de6f7aabbbbcaca855168b3ca7  ./Kconfig
+cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30  ./license.txt
+26e023b07668f37c812cad1b41217ee7f31e10683acb4cb5407daf6fd8d53565  ./linker.lf
+f2fb6d2b5559ae8239a135b557aad3f147066f9a9c0afd0b72f28159ab106af5  ./project_include.cmake
+dd33bb577b32f104f3e9f8b0650737cbb885b97b13ffab79c23b6d8057900524  ./README.md
+f342b33cab7a66eb49bafc5f711f9c9ec53ccf2d81731b4719f4efa630c695a7  ./src/arch/esp_elf_riscv.c
+5bdfb954bb1a4380b82897d460de2a08f4212d81d3221064ca83a028a31dc1e7  ./src/arch/esp_elf_xtensa.c
+aa2a1d74a45726ac45cabf778a825b9328cf2c731b869de0e5dfe9523acd2ead  ./src/dlso/dlfcn.c
+02c9411d7993f7b6d13bca15094fbd58979e4fdb938a9470ef845d174a7f3bca  ./src/dlso/dlmod.c
+203376641eb31d39f5691865afbb6fab1eae2e8317e36e41f0a0192be206fb69  ./src/esp_all_symbol.c
+947bf046d3f788fb0144c989a18f0503f983794cecc1c8a261a07bd683cecfb1  ./src/esp_elf_adapter.c
+1d767240672813829ac32c3a363a1b7d55f75dbdf31d504e2bc8ac35c75b74c5  ./src/esp_elf.c
+81407e3dbbe7705cf3666c97ed23b5b4b9eefa7b1337de2059be85d08d0a0f4d  ./src/esp_elf_symbol.c
+163857a64578cf8bfbed900ea5168cd43a1db6a51b7921b7dec1b588b989e03e  ./src/soc/esp_elf_esp32s2.c
+81398e6eeb1bd381e0a8a1cb36d81452f6ea8f2d69a577e3a9599619c5e54246  ./tool/symbols.py
+41874265d531ed6d95a39daca006251f3d3fa3b6ee2af220afd846e4787a8861  tree.sha256
+job name: ESP-IDF PoC-A firmware
+image: docker.io/espressif/idf@sha256:0d8c9773d48a327233f9c1d7c654ff0bcf133ae24503ea2e97a57cfe02b8cb67
+steps: ['Check out repository', 'Configure and build PoC-A firmware', 'Upload PoC-A firmware']
+working-directory: poc/apps/poc_a
+required needs poc_a: True
+jobs: ['repository-gates', 'host-clang-sanitizers', 'host-gcc', 'host-clang-tidy', 'host-coverage', 'secrets', 'firmware-dev', 'firmware-m1', 'firmware-poc-a', 'required']
+
+=== STEP 4: build poc_a (IDF v6.0.2, preset default) ===
+CONFIGURE_EXIT=0
+--   -> Preprocessing .in script: /home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/ld/esp32s3/memory.ld.in
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/ld/esp32s3/sections.ld.in
+--   -> Preprocessing .in script: /home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/ld/esp32s3/sections.ld.in
+--   -> Applying ldgen processing: /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/esp-idf/esp_system/ld/sections.ld.in
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.api.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.bt_funcs.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.libgcc.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.version.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_master.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_50.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_smp.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_dtm.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_test.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_scan.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.libc.ld
+-- Adding linker script /home/lain/.espressif/v6.0.2/esp-idf/components/soc/esp32s3/ld/esp32s3.peripherals.ld
+-- ELF_LOADER: 1.3.3
+-- Component idf::esp_trace will be linked with -Wl,--whole-archive
+-- Components: app_trace app_update bootloader bootloader_support bt cmock console cxx driver efuse elf_loader esp-tls esp_adc esp_app_format esp_blockdev esp_blockdev_util esp_bootloader_format esp_coex esp_common esp_driver_ana_cmpr esp_driver_bitscrambler esp_driver_cam esp_driver_dac esp_driver_dma esp_driver_gpio esp_driver_gptimer esp_driver_i2c esp_driver_i2s esp_driver_i3c esp_driver_isp esp_driver_jpeg esp_driver_ledc esp_driver_mcpwm esp_driver_parlio esp_driver_pcnt esp_driver_ppa esp_driver_rmt esp_driver_sd_intf esp_driver_sdio esp_driver_sdm esp_driver_sdmmc esp_driver_sdspi esp_driver_spi esp_driver_touch_sens esp_driver_tsens esp_driver_twai esp_driver_uart esp_driver_usb_serial_jtag esp_eth esp_event esp_gdbstub esp_hal_ana_cmpr esp_hal_ana_conv esp_hal_cam esp_hal_clock esp_hal_dma esp_hal_gpio esp_hal_gpspi esp_hal_i2c esp_hal_i2s esp_hal_ieee802154 esp_hal_jpeg esp_hal_lcd esp_hal_ledc esp_hal_mcpwm esp_hal_mspi esp_hal_parlio esp_hal_pcnt esp_hal_pmu esp_hal_ppa esp_hal_rmt esp_hal_rtc_timer esp_hal_sd esp_hal_security esp_hal_timg esp_hal_touch_sens esp_hal_twai esp_hal_uart esp_hal_usb esp_hal_wdt esp_hid esp_http_client esp_http_server esp_https_ota esp_https_server esp_hw_support esp_lcd esp_libc esp_local_ctrl esp_mm esp_netif esp_netif_stack esp_partition esp_phy esp_pm esp_psram esp_ringbuf esp_rom esp_security esp_stdio esp_system esp_timer esp_trace esp_usb_cdc_rom_console esp_wifi espcoredump espressif__cmake_utilities esptool_py fatfs frame_poc_runtime freertos hal heap http_parser idf_test ieee802154 log lwip main mbedtls nvs_flash nvs_sec_provider openthread partition_table perfmon protobuf-c protocomm pthread rt sdmmc soc spi_flash spiffs tcp_transport ulp unity vfs wear_levelling wpa_supplicant xtensa
+-- Component paths: /home/lain/.espressif/v6.0.2/esp-idf/components/app_trace /home/lain/.espressif/v6.0.2/esp-idf/components/app_update /home/lain/.espressif/v6.0.2/esp-idf/components/bootloader /home/lain/.espressif/v6.0.2/esp-idf/components/bootloader_support /home/lain/.espressif/v6.0.2/esp-idf/components/bt /home/lain/.espressif/v6.0.2/esp-idf/components/cmock /home/lain/.espressif/v6.0.2/esp-idf/components/console /home/lain/.espressif/v6.0.2/esp-idf/components/cxx /home/lain/.espressif/v6.0.2/esp-idf/components/driver /home/lain/.espressif/v6.0.2/esp-idf/components/efuse /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/components/elf_loader /home/lain/.espressif/v6.0.2/esp-idf/components/esp-tls /home/lain/.espressif/v6.0.2/esp-idf/components/esp_adc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_app_format /home/lain/.espressif/v6.0.2/esp-idf/components/esp_blockdev /home/lain/.espressif/v6.0.2/esp-idf/components/esp_blockdev_util /home/lain/.espressif/v6.0.2/esp-idf/components/esp_bootloader_format /home/lain/.espressif/v6.0.2/esp-idf/components/esp_coex /home/lain/.espressif/v6.0.2/esp-idf/components/esp_common /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_ana_cmpr /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_bitscrambler /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_cam /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_dac /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_dma /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_gpio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_gptimer /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_i2c /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_i2s /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_i3c /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_isp /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_jpeg /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_ledc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_mcpwm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_parlio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_pcnt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_ppa /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_rmt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sd_intf /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdmmc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_sdspi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_spi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_touch_sens /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_tsens /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_twai /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_uart /home/lain/.espressif/v6.0.2/esp-idf/components/esp_driver_usb_serial_jtag /home/lain/.espressif/v6.0.2/esp-idf/components/esp_eth /home/lain/.espressif/v6.0.2/esp-idf/components/esp_event /home/lain/.espressif/v6.0.2/esp-idf/components/esp_gdbstub /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ana_cmpr /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ana_conv /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_cam /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_clock /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_dma /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_gpio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_gpspi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_i2c /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_i2s /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ieee802154 /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_jpeg /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_lcd /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ledc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_mcpwm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_mspi /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_parlio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_pcnt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_pmu /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ppa /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_rmt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_rtc_timer /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_sd /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_security /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_timg /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_touch_sens /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_twai /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_uart /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_usb /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_wdt /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hid /home/lain/.espressif/v6.0.2/esp-idf/components/esp_http_client /home/lain/.espressif/v6.0.2/esp-idf/components/esp_http_server /home/lain/.espressif/v6.0.2/esp-idf/components/esp_https_ota /home/lain/.espressif/v6.0.2/esp-idf/components/esp_https_server /home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support /home/lain/.espressif/v6.0.2/esp-idf/components/esp_lcd /home/lain/.espressif/v6.0.2/esp-idf/components/esp_libc /home/lain/.espressif/v6.0.2/esp-idf/components/esp_local_ctrl /home/lain/.espressif/v6.0.2/esp-idf/components/esp_mm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_netif /home/lain/.espressif/v6.0.2/esp-idf/components/esp_netif_stack /home/lain/.espressif/v6.0.2/esp-idf/components/esp_partition /home/lain/.espressif/v6.0.2/esp-idf/components/esp_phy /home/lain/.espressif/v6.0.2/esp-idf/components/esp_pm /home/lain/.espressif/v6.0.2/esp-idf/components/esp_psram /home/lain/.espressif/v6.0.2/esp-idf/components/esp_ringbuf /home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom /home/lain/.espressif/v6.0.2/esp-idf/components/esp_security /home/lain/.espressif/v6.0.2/esp-idf/components/esp_stdio /home/lain/.espressif/v6.0.2/esp-idf/components/esp_system /home/lain/.espressif/v6.0.2/esp-idf/components/esp_timer /home/lain/.espressif/v6.0.2/esp-idf/components/esp_trace /home/lain/.espressif/v6.0.2/esp-idf/components/esp_usb_cdc_rom_console /home/lain/.espressif/v6.0.2/esp-idf/components/esp_wifi /home/lain/.espressif/v6.0.2/esp-idf/components/espcoredump /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/managed_components/espressif__cmake_utilities /home/lain/.espressif/v6.0.2/esp-idf/components/esptool_py /home/lain/.espressif/v6.0.2/esp-idf/components/fatfs /home/lain/Projects/esp_study/poc-a-wt/poc/common/components/frame_poc_runtime /home/lain/.espressif/v6.0.2/esp-idf/components/freertos /home/lain/.espressif/v6.0.2/esp-idf/components/hal /home/lain/.espressif/v6.0.2/esp-idf/components/heap /home/lain/.espressif/v6.0.2/esp-idf/components/http_parser /home/lain/.espressif/v6.0.2/esp-idf/components/idf_test /home/lain/.espressif/v6.0.2/esp-idf/components/ieee802154 /home/lain/.espressif/v6.0.2/esp-idf/components/log /home/lain/.espressif/v6.0.2/esp-idf/components/lwip /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main /home/lain/.espressif/v6.0.2/esp-idf/components/mbedtls /home/lain/.espressif/v6.0.2/esp-idf/components/nvs_flash /home/lain/.espressif/v6.0.2/esp-idf/components/nvs_sec_provider /home/lain/.espressif/v6.0.2/esp-idf/components/openthread /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table /home/lain/.espressif/v6.0.2/esp-idf/components/perfmon /home/lain/.espressif/v6.0.2/esp-idf/components/protobuf-c /home/lain/.espressif/v6.0.2/esp-idf/components/protocomm /home/lain/.espressif/v6.0.2/esp-idf/components/pthread /home/lain/.espressif/v6.0.2/esp-idf/components/rt /home/lain/.espressif/v6.0.2/esp-idf/components/sdmmc /home/lain/.espressif/v6.0.2/esp-idf/components/soc /home/lain/.espressif/v6.0.2/esp-idf/components/spi_flash /home/lain/.espressif/v6.0.2/esp-idf/components/spiffs /home/lain/.espressif/v6.0.2/esp-idf/components/tcp_transport /home/lain/.espressif/v6.0.2/esp-idf/components/ulp /home/lain/.espressif/v6.0.2/esp-idf/components/unity /home/lain/.espressif/v6.0.2/esp-idf/components/vfs /home/lain/.espressif/v6.0.2/esp-idf/components/wear_levelling /home/lain/.espressif/v6.0.2/esp-idf/components/wpa_supplicant /home/lain/.espressif/v6.0.2/esp-idf/components/xtensa
+-- Frame platform: IDF 7101770dc6db2667b3c477cc31365dd1acd6db4e, xtensa-esp-elf GCC 15.2.0, esp32s3
+-- Configuring done (8.5s)
+-- Generating done (0.7s)
+-- Build files have been written to: /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default
+BUILD_EXIT=1
+[31/1073] Building C object esp-idf/esp-tls/CMakeFiles/__idf_esp-tls.dir/esp_tls_error_capture.c.obj
+[735/1073] Building C object esp-idf/mbedtls/mbedtls/library/CMakeFiles/mbedx509.dir/error.c.obj
+/home/lain/.espressif/tools/xtensa-esp-elf/esp-15.2.0_20251204/xtensa-esp-elf/bin/xtensa-esp32s3-elf-g++ -DESP_PLATFORM -DIDF_VER=\"v6.0.2\" -DSOC_MMU_PAGE_SIZE=CONFIG_MMU_PAGE_SIZE -DSOC_XTAL_FREQ_MHZ=CONFIG_XTAL_FREQ -D_GLIBCXX_HAVE_POSIX_SEMAPHORE -D_GLIBCXX_USE_POSIX_SEMAPHORE -D_GNU_SOURCE -D_POSIX_READER_WRITER_LOCKS -I/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/config -I/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_libc/platform_include -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/config/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/config/include/freertos -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/config/xtensa/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/FreeRTOS-Kernel/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos -I/home/lain/.espressif/v6.0.2/esp-idf/components/freertos/esp_additions/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/include/soc -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/ldo/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/debug_probe/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/etm/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/mspi_timing_tuning/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/mspi_timing_tuning/tuning_scheme_impl/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/power_supply/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/modem/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/include/soc/esp32s3 -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/port/esp32s3/. -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/port/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/mspi_timing_tuning/port/esp32s3/. -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hw_support/mspi_timing_tuning/port/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/heap/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/heap/tlsf -I/home/lain/.espressif/v6.0.2/esp-idf/components/log/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/soc/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/soc/esp32s3 -I/home/lain/.espressif/v6.0.2/esp-idf/components/soc/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/soc/esp32s3/register -I/home/lain/.espressif/v6.0.2/esp-idf/components/hal/platform_port/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/hal/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/hal/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3/include/esp32s3 -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_rom/esp32s3 -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_common/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/port/soc -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_system/port/include/private -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_stdio/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/xtensa/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/xtensa/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/xtensa/deprecated_include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_gpio/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_gpio/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_usb/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_usb/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_pmu/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_pmu/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ana_conv/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_ana_conv/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_dma/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/esp_hal_dma/esp32s3/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/include/apps -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/lwip/src/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/port/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/port/freertos/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/port/esp32xx/include -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/port/esp32xx/include/arch -I/home/lain/.espressif/v6.0.2/esp-idf/components/lwip/port/esp32xx/include/sys -I/home/lain/.espressif/v6.0.2/esp-idf/components/console -I/home/lain/.espressif/v6.0.2/esp-idf/components/vfs/include -I/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/components/elf_loader/include -I/home/lain/Projects/esp_study/poc-a-wt/poc/common/components/frame_poc_runtime/include @"/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/toolchain/cxxflags" -std=c++26 -fdiagnostics-color=always -fdiagnostics-color=always -ffunction-sections -fdata-sections -Wall -Werror -Wno-error=unused-function -Wno-error=unused-variable -Wno-error=unused-but-set-variable -Wno-error=deprecated-declarations -Wextra -Wno-error=extra -Wno-unused-parameter -Wno-sign-compare -Wno-enum-conversion -gdwarf-4 -ggdb -Og -fno-shrink-wrap -fmacro-prefix-map=/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a=. -fmacro-prefix-map=/home/lain/.espressif/v6.0.2/esp-idf=/IDF -fstrict-volatile-bitfields -fno-jump-tables -fno-tree-switch-conversion -std=gnu++26 -fno-exceptions -fuse-cxa-atexit -std=c++26 -Wconversion -Werror=return-type -fno-rtti -fno-unwind-tables -DELF_LOADER_VER_MAJOR=1 -DELF_LOADER_VER_MINOR=3 -DELF_LOADER_VER_PATCH=3 -MD -MT esp-idf/main/CMakeFiles/__idf_main.dir/poca_console.cc.obj -MF esp-idf/main/CMakeFiles/__idf_main.dir/poca_console.cc.obj.d -o esp-idf/main/CMakeFiles/__idf_main.dir/poca_console.cc.obj -c /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main/poca_console.cc
+/home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/main/poca_console.cc:41:39: error: 'heap_caps_get_size' was not declared in this scope; did you mean 'heap_caps_get_info'?
+4
+[934/1073] Building C object esp-idf/elf_loader/CMakeFiles/__idf_elf_loader.dir/src/esp_elf_adapter.c.obj
+[937/1073] Building C object esp-idf/elf_loader/CMakeFiles/__idf_elf_loader.dir/src/arch/esp_elf_xtensa.c.obj
+[950/1073] Building C object esp-idf/elf_loader/CMakeFiles/__idf_elf_loader.dir/src/esp_elf_symbol.c.obj
+[953/1073] Building C object esp-idf/elf_loader/CMakeFiles/__idf_elf_loader.dir/src/esp_elf.c.obj
+-- Build files have been written to: /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/bootloader
+[1060/1073] Building C object esp-idf/spiffs/CMakeFiles/__idf_spiffs.dir/spiffs/src/spiffs_nucleus.c.obj
+[1061/1073] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/src/ff.c.obj
+ninja: build stopped: subcommand failed.
+
+=== STEP 5: final rebuild after format fix ===
+BUILD_EXIT=0
+warnings in build log: 0
+[9/9] cd /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default && python /home/lain/.espressif/v6.0.2/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/partition_table/partition-table.bin /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/build/default/frame_poc_a.bin
+frame_poc_a.bin binary size 0x320f0 bytes. Smallest app partition is 0x100000 bytes. 0xcdf10 bytes (80%) free.
+
+=== adversarial probe: misleading_success_output — elf_loader in final ELF ===
+-- map file mentions of elf_loader archive/symbols:
+2
+-- esp_elf entries (kept vs discarded, first 12):
+                0x3c020120                        __esp_elf_loader_got_plt_start = ABSOLUTE (.)
+                0x3c020120                        __esp_elf_loader_got_plt_end = ABSOLUTE (.)
+-- esp_elf symbols present in .elf via nm:
+-- sdkconfig loader flags actually in effect:
+CONFIG_ELF_LOADER_BUS_ADDRESS_MIRROR=y
+CONFIG_ELF_LOADER=y
+CONFIG_ELF_LOADER_CACHE_OFFSET=y
+CONFIG_ELF_LOADER_LOAD_PSRAM=y
+CONFIG_ELF_LOADER_LIBC_SYMBOLS=y
+CONFIG_ELF_LOADER_ESPIDF_SYMBOLS=y
+CONFIG_SPIRAM=y
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG_ENABLED=y
+
+=== STEP 6: rebuild with loader linkage proof ===
+BUILD_EXIT=0  warnings: 0
+frame_poc_a.bin binary size 0x4a8b0 bytes. Smallest app partition is 0x100000 bytes. 0xb5750 bytes (71%) free.
+-- re-probe: esp_elf symbols now in final ELF:
+4200d908 T esp_elf_init
+4200d944 T esp_elf_relocate
+-- map: esp_elf.c.obj contributions:
+100
+FMT_18_EXIT=0
+FINAL_BUILD_EXIT=0  warnings: 0
+frame_poc_a.bin binary size 0x4a8b0 bytes. Smallest app partition is 0x100000 bytes. 0xb5750 bytes (71%) free.
+11
+
+=== STEP 7: verify items ===
+-- vendored src/ non-empty:
+arch
+dlso
+esp_all_symbol.c
+esp_elf_adapter.c
+esp_elf.c
+esp_elf_symbol.c
+soc
+-- PATCHES.md contains upstream commit + tree.sha256 exists:
+1
+-rw-r--r-- 1 lain lain 2278 Aug 31 20:44 /home/lain/Projects/esp_study/poc-a-wt/poc/apps/poc_a/components/elf_loader/tree.sha256
+-- offline self-consistency: recompute manifest and diff
+TREE_HASH_CONSISTENT=yes
+-- poca command registered in binary strings:
+poca status | poca abi
+24
+-- git status (dirty_worktree probe):
+ M .github/workflows/ci.yml
+ M poc/apps/poc_a/main/CMakeLists.txt
+ M poc/apps/poc_a/main/poc_a_main.cc
+ M pyproject.toml
+ M uv.lock
+?? poc/apps/poc_a/components/
+?? poc/apps/poc_a/dependencies.lock
+?? poc/apps/poc_a/main/abi_smoke.cc
+?? poc/apps/poc_a/main/abi_smoke.hh
+?? poc/apps/poc_a/main/poca_console.cc
+?? poc/apps/poc_a/main/poca_console.hh
+?? poc/apps/poc_a/sdkconfig.defaults
+?? tools/frame_tools/manifest_builder.py
+
+=== STEP 8: commit (T1 scope only; pyproject/uv.lock/tools = T2's parallel work, left unstaged) ===
+M  .github/workflows/ci.yml
+A  poc/apps/poc_a/components/elf_loader/CHANGELOG.md
+A  poc/apps/poc_a/components/elf_loader/CMakeLists.txt
+A  poc/apps/poc_a/components/elf_loader/Kconfig
+A  poc/apps/poc_a/components/elf_loader/PATCHES.md
+A  poc/apps/poc_a/components/elf_loader/README.md
+A  poc/apps/poc_a/components/elf_loader/check_shared_object.cmake
+A  poc/apps/poc_a/components/elf_loader/elf_loader.cmake
+A  poc/apps/poc_a/components/elf_loader/idf_component.yml
+A  poc/apps/poc_a/components/elf_loader/include/esp_dlfcn.h
+A  poc/apps/poc_a/components/elf_loader/include/esp_elf.h
+A  poc/apps/poc_a/components/elf_loader/include/private/elf_platform.h
+A  poc/apps/poc_a/components/elf_loader/include/private/elf_symbol.h
+A  poc/apps/poc_a/components/elf_loader/include/private/elf_types.h
+A  poc/apps/poc_a/components/elf_loader/include/private/esp_dlmod.h
+A  poc/apps/poc_a/components/elf_loader/license.txt
+A  poc/apps/poc_a/components/elf_loader/linker.lf
+A  poc/apps/poc_a/components/elf_loader/project_include.cmake
+A  poc/apps/poc_a/components/elf_loader/src/arch/esp_elf_riscv.c
+A  poc/apps/poc_a/components/elf_loader/src/arch/esp_elf_xtensa.c
+A  poc/apps/poc_a/components/elf_loader/src/dlso/dlfcn.c
+A  poc/apps/poc_a/components/elf_loader/src/dlso/dlmod.c
+A  poc/apps/poc_a/components/elf_loader/src/esp_all_symbol.c
+A  poc/apps/poc_a/components/elf_loader/src/esp_elf.c
+A  poc/apps/poc_a/components/elf_loader/src/esp_elf_adapter.c
+A  poc/apps/poc_a/components/elf_loader/src/esp_elf_symbol.c
+A  poc/apps/poc_a/components/elf_loader/src/soc/esp_elf_esp32s2.c
+A  poc/apps/poc_a/components/elf_loader/tool/symbols.py
+A  poc/apps/poc_a/components/elf_loader/tree.sha256
+A  poc/apps/poc_a/dependencies.lock
+M  poc/apps/poc_a/main/CMakeLists.txt
+A  poc/apps/poc_a/main/abi_smoke.cc
+A  poc/apps/poc_a/main/abi_smoke.hh
+M  poc/apps/poc_a/main/poc_a_main.cc
+A  poc/apps/poc_a/main/poca_console.cc
+A  poc/apps/poc_a/main/poca_console.hh
+A  poc/apps/poc_a/sdkconfig.defaults
+ M pyproject.toml
+ M uv.lock
+COMMIT_EXIT=0
+4bb53f2 feat(poc-a): vendor elf_loader 1.3.3 and scaffold harness
+ M pyproject.toml
+ M uv.lock
+?? tools/frame_tools/manifest_builder.py
+
+=== STEP 9: post-commit probes ===
+-- commit stat:
+ poc/apps/poc_a/main/CMakeLists.txt                 |  24 +-
+ poc/apps/poc_a/main/abi_smoke.cc                   |  62 ++
+ poc/apps/poc_a/main/abi_smoke.hh                   |  10 +
+ poc/apps/poc_a/main/poc_a_main.cc                  |  52 +-
+ poc/apps/poc_a/main/poca_console.cc                |  97 ++
+ poc/apps/poc_a/main/poca_console.hh                |  11 +
+ poc/apps/poc_a/sdkconfig.defaults                  |  21 +
+ 37 files changed, 4919 insertions(+), 43 deletions(-)
+-- secret scan on commit (exit 1 = clean):
+SECRET_SCAN_DONE
+-- committed tree manifest self-consistency:
+-- CI yaml in commit parses:
+CI_YAML_PARSES=yes
+COMMITTED_TREE_CONSISTENT=yes
+
+=== TASK-1 SUMMARY ===
+commit: 4bb53f2 feat(poc-a): vendor elf_loader 1.3.3 and scaffold harness
+vendor: 26 upstream files verbatim (diff -r exit 0 vs 6526c5b1 checkout); tree.sha256 + PATCHES.md committed
+build : CONFIGURE_EXIT=0 BUILD_EXIT=0 warnings=0; frame_poc_a.bin 0x4a8b0 bytes (71% free)
+link  : esp_elf_init/esp_elf_relocate present in final ELF (nm T symbols; 100 map contributions)
+ci    : firmware-poc-a lane added (same pinned image digest), required-job wired; yaml.safe_load OK
+verify: src/ non-empty; PATCHES.md has full upstream commit; TREE_HASH_CONSISTENT=yes; COMMITTED_TREE_CONSISTENT=yes; poca status registered (elf strings)
+stale_state probe : commit pinned by full sha in PATCHES.md; upstream master may move, vendored tree self-consistent
+dirty_worktree    : post-commit = only T2 parallel files (pyproject.toml/uv.lock/tools), intended
+date: 2026-08-31T20:51:52+08:00

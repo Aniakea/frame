@@ -1,0 +1,462 @@
+{
+  "schema_version": 1,
+  "gate": "A",
+  "run_id": "poc-a-20260901T015343Z",
+  "verdict": "PASS",
+  "started_at": "2026-08-31T12:38:25Z",
+  "finished_at": "2026-09-01T02:43:42Z",
+  "source": {
+    "repository_commit": "f34dc72537912e9629dad482222e2159c98988ea",
+    "dirty": false,
+    "project_document_sha256": "8f15679c40b17308d90dcac3b2d8e31db1d3b0380460fa0bbc545cac9ef2d5bd"
+  },
+  "platform": {
+    "idf_tag": "v6.0.2",
+    "compiler": "gcc-15.2.0 (xtensa-esp-elf esp-15.2.0_20251204)",
+    "target": "esp32s3",
+    "sdkconfig_sha256": "85b339e4257ede8dc40122fbe3006875ead9cb70b5d59b0c04a3cae6e51ce8ed",
+    "loader_commit": "6526c5b18e156cfbda2c7ce48e282e384c43b485"
+  },
+  "hardware": {
+    "board_id": "c1810c76790e",
+    "board_revision": "N16R8 (Waveshare ESP32-S3-RLCD-4.2)",
+    "display_id": null,
+    "sd_card_id": null,
+    "power_fixture_id": null
+  },
+  "metrics": {
+    "todos_evidenced": 15,
+    "task_transcripts": 14,
+    "dev_plan_section4_items_pass": 9,
+    "test003_clauses_pass": 10,
+    "soak_cycles": 1000,
+    "soak_criteria_pass": "18/18",
+    "soak_largest_block_decline_pct": 0.0,
+    "soak_psram_min_ever_delta_bytes": 0,
+    "soak_iram_min_ever_delta_bytes": 88,
+    "soak_value_matches": 1030,
+    "capacity_pass_at": 8,
+    "capacity_per_instance_bytes": 3356,
+    "capacity_8peak_bytes": 26848,
+    "capacity_8peak_pool_pct": 0.32,
+    "coexist_per_instance_bytes": 3388,
+    "coexist_peak_bytes": 6776,
+    "coexist_old_gen_calls_during_candidate": 60,
+    "fc_classes_pre_exec_rejected": 14,
+    "fc_uploaded_attacker_fixtures_per_2round_run": 36,
+    "fc_embedded_negatives_per_2round_run": 24,
+    "fc_sentinel_touches_on_negatives": 0,
+    "reloc_allowlist_types": "0,2,3,4,5 (Xtensa)",
+    "cxx_features_rejected": 6,
+    "max_mpb_bytes_policy": 524288,
+    "epoch_virtual_floor": 1,
+    "fresh_build_warnings": 0,
+    "fresh_bin_bytes_hex": "0x73130",
+    "committed_mpb_count": 33
+  },
+  "artifacts": [
+    {
+      "name": "task-1-poc-a-dynamic-elf.log",
+      "uri": "task-1-poc-a-dynamic-elf.log",
+      "sha256": "2ef4b18288114eee799dc1ab5fec764d6707841b3a2de9c01187b20a4c548ee4",
+      "note": "T1 vendor: upstream fetch+verify (L7-L35), tree.sha256 manifest (L39-L66), CI lane jobs incl firmware-poc-a (L72)."
+    },
+    {
+      "name": "task-2-poc-a-dynamic-elf.log",
+      "uri": "task-2-poc-a-dynamic-elf.log",
+      "sha256": "3fbb4a9dd60ea41af07e5c74675973de15239b6e5afd540303c15a27cf1be579",
+      "note": "T2 manifest_builder: pytest 50 passed (L24), resource-only round-trip OK (L135-L142)."
+    },
+    {
+      "name": "task-3-poc-a-dynamic-elf.log",
+      "uri": "task-3-poc-a-dynamic-elf.log",
+      "sha256": "8d9742bf4d891b019e656d7b6de862c8861837c008f0ef3a7b766ada82a114c1",
+      "note": "T3 shared C parser: MpbParser 28/28 (L158), full host suite 52/52 (L221)."
+    },
+    {
+      "name": "task-4-poc-a-dynamic-elf.log",
+      "uri": "task-4-poc-a-dynamic-elf.log",
+      "sha256": "4bee043bd7f1061ff8ea58deb447961032520ea66d862a3ed9811eeaa3a2dcce",
+      "note": "T4 PSRAM first execution: PASS-load-psram-addr (L23), consumed=3324B (L31), PASS-magic (L32), PASS-10cycles (L38)."
+    },
+    {
+      "name": "task-5-poc-a-dynamic-elf.log",
+      "uri": "task-5-poc-a-dynamic-elf.log",
+      "sha256": "89a20963473dc72e4638d36bfe36dd7b84c6eaba0ef3d345c481467134848c35",
+      "note": "T5 allowlist matrix: GLOB_DAT pointer MATCH (L102), pre-p3 LoadStoreError crash (L110), p3 fix (L394), FULL MATRIX PASS 3 pos + 7 neg (L396), neg_phspan pre-load reject (L646)."
+    },
+    {
+      "name": "task-6-poc-a-dynamic-elf.log",
+      "uri": "task-6-poc-a-dynamic-elf.log",
+      "sha256": "2f7940628b8b40c6d317a5bc662b4703da66864b8c16b0d51cee41d6769d70ea",
+      "note": "T6 C++ rejection: pre-p4 LoadProhibited crash (L2023), post-p4 forbidden-section rejects (L2474,L2489), MATRIX PASS 3 pos + 10 neg (L2554)."
+    },
+    {
+      "name": "task-7-poc-a-dynamic-elf.log",
+      "uri": "task-7-poc-a-dynamic-elf.log",
+      "sha256": "b39ea25ac0cdb6f918db664392bd0b6bef7cd21543fe205d32bf99368c66e063",
+      "note": "T7 .plugin_iram p5: iram_mismatch -EINVAL (L386), watermark delta +0 (L509,L541), 100-cycle SOAK PASS (L758-L769)."
+    },
+    {
+      "name": "task-8-poc-a-dynamic-elf.log",
+      "uri": "task-8-poc-a-dynamic-elf.log",
+      "sha256": "2fce6b0007db720cd7691f956222e8de63a8c7ec9b034156e2b2d747a11e7324",
+      "note": "T8 coexistence: 6/6 PASS markers x2 runs (L21,L239-L278), budget table on-device (L278)."
+    },
+    {
+      "name": "task-9-poc-a-dynamic-elf.log",
+      "uri": "task-9-poc-a-dynamic-elf.log",
+      "sha256": "c8058dc2344d0838bb27f36261be118bec219c188387b730f03bc84eb4db9027",
+      "note": "T9 soak: 1000-cycle DONE (L1115,L1637), SOAK VERDICT PASS 18/18 (L609,L847,L1264), judge reproducibility (L2168)."
+    },
+    {
+      "name": "task-10-poc-a-dynamic-elf.log",
+      "uri": "task-10-poc-a-dynamic-elf.log",
+      "sha256": "984f10c2c4e6765ab62b33767132632e409692d4fb5dacb125e0b225cffc972f",
+      "note": "T10 capacity: per-instance 3356B (L150), PASS-cap-8-load/respond/unload (L195,L212,L223), PASS-capacity-8 (L226), 8-peak 26848B (L213)."
+    },
+    {
+      "name": "task-11-12-poc-a-dynamic-elf.log",
+      "uri": "task-11-12-poc-a-dynamic-elf.log",
+      "sha256": "b62e49fa13709451ec4c6ba5fc8a41fca8edd67ad93fb209124e2ea39ab2c01b",
+      "note": "T11+T12 host strand/completion: TSan suite 24/24 x3 (L450,L504,L558)."
+    },
+    {
+      "name": "task-13-poc-a-dynamic-elf.log",
+      "uri": "task-13-poc-a-dynamic-elf.log",
+      "sha256": "e747b454a66022d1211c89224676b477c4372fbf7142ebdfe1779d51a21989d1",
+      "note": "T13 on-target scheduler: 3x10 stability ALL GREEN (L573,L946), SCHED CONSISTENCY host==target PASS (L988)."
+    },
+    {
+      "name": "task-14-poc-a-dynamic-elf.log",
+      "uri": "task-14-poc-a-dynamic-elf.log",
+      "sha256": "539e39a5a8817ddb2321b426e30c25fea829b3aead8587990266f32a81f58eff",
+      "note": "T14 fail-closed corpus: order proof (L1216), 14/14 pre-exec reject x2 rounds (L2789-L2794), post-format round (L5566-L5567)."
+    },
+    {
+      "name": "task-15-poc-a-dynamic-elf.log",
+      "uri": "task-15-poc-a-dynamic-elf.log",
+      "sha256": "8d0b31dbf6884b8b9e50b164fb9c8bd3925f1e4c2d7f1b0115dbdd7b7d9052be",
+      "note": "T15 CI corpus lane: job list incl mpb-corpus-gates (L4), tamper negative control (L104)."
+    },
+    {
+      "name": "frame_poc_a.map",
+      "uri": "build/frame_poc_a.map",
+      "sha256": "260cc8997cf6d7237e5d640ae6aa199b46a3a18c1779ecec748af220b42a27d8",
+      "note": "GNU ld linker map (frame_poc_a.elf sha256 b88e766c3a72d78215acc6578471ea7ed7427e989c336e2d5b860cb0c8e8aedf) from the FRESH assembly-time rebuild at HEAD f34dc72537912e9629dad482222e2159c98988ea (build dir wiped first; 0 warnings, full log captured). Companion build outputs stay out of the repository: frame_poc_a.bin sha256 3a31ce578410b75ce76ea71a854d1953dedb1a130a3dd82de7fb3fcfa3a4d2de (0x73130 bytes, 55% app partition free), bootloader.bin sha256 bbaa0d07811ec17896bc8893c99e158f71800719fde8ced81b2d4dfc214cadc5, generated sdkconfig sha256 07c2716fa7f616a451773d36e5f76643963da776fc21664042827345a9efe8e5."
+    },
+    {
+      "name": "frame_poc_a_size_components.txt",
+      "uri": "build/frame_poc_a_size_components.txt",
+      "sha256": "dcc57c982ad79f58d4201e71b3e127e6710fd0b6d0eae76ed461e83f501b2fcb",
+      "note": "`idf.py size size-components` of the same fresh build (memory-type summary: DIRAM 141525/341760 B = 41.41%, IRAM 15356+1028/16384 B, flash image total 471227 B; per-archive breakdown incl. libelf_loader.a 3169 B and libframe_poc_mpb.a 2928 B)."
+    },
+    {
+      "name": "ALLOWLIST.md",
+      "uri": "poc/apps/poc_a/plugins/ALLOWLIST.md",
+      "sha256": "b96a2cb5bfbdc0b9cf4fb44b1c711c2e489eb7e0240a6bcd467de21a80cf859e",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Frozen relocation/import/program-header allowlist (PLUG-009 output, task T5)."
+    },
+    {
+      "name": "REJECT-MATRIX.md",
+      "uri": "poc/apps/poc_a/plugins/REJECT-MATRIX.md",
+      "sha256": "106299f037696d72388464298f36974e36dbf4439de7d8cb3cb9748c339fb5eb",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Frozen C++ feature rejection matrix (task T6, six variants, all rejected)."
+    },
+    {
+      "name": "ADMISSION-BUDGET.md",
+      "uri": "poc/apps/poc_a/plugins/ADMISSION-BUDGET.md",
+      "sha256": "71a57c08b07ca0579157463fd0cdd113dcc90b087a35ff399ca3bd9b22013d13",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Frozen measured admission + capacity budget (tasks T8+T10; MEM-001 caveat, signed capacity line)."
+    },
+    {
+      "name": "soak_samples_1000.csv",
+      "uri": "poc/apps/poc_a/plugins/soak_samples_1000.csv",
+      "sha256": "b1f1dcaf2a9c16ec24cb7ce04cec975671b312d79476b14556896350a35544af",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Raw 1000-cycle soak samples, 102 lines (header + 101 machine-parsable rows; task T9)."
+    },
+    {
+      "name": "PATCHES.md",
+      "uri": "poc/apps/poc_a/components/elf_loader/PATCHES.md",
+      "sha256": "a95c4a72ddabeb88a8c407ec8bf2965e495f5ac3e211cda53b777005218041d6",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Vendored elf_loader provenance + patch registry p1-p5 with per-patch tree.sha256."
+    },
+    {
+      "name": "tree.sha256",
+      "uri": "poc/apps/poc_a/components/elf_loader/tree.sha256",
+      "sha256": "3c7706cbec751d5dce06bd733d1b3452b5be712e9123b02f413e666936b49a81",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Sorted sha256 manifest of the 26 upstream files; recomputed at assembly: matches."
+    },
+    {
+      "name": "neg_abi.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_abi.mpb",
+      "sha256": "f6b9002aee6885719404b6feeb566a412a94e09d9d792bfb1b866998cac6f6dc",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_double_fault.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_double_fault.mpb",
+      "sha256": "b29fed6c397ed193fbc55b44cc957311d5e1e79946206f4cf51e498e3b9cde65",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_dup_required.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_dup_required.mpb",
+      "sha256": "1441b28ea2034e122919467efa7d76b6911ed093fbf5f0931d6f0ad267893494",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_epoch.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_epoch.mpb",
+      "sha256": "ec9297e6cb6507073287216e1f311e14f161fc4e711c564943005debc0c5c76b",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_key_id.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_key_id.mpb",
+      "sha256": "aa23322034e7502a9537eaa5af800fe5cfa435503d37f32a01a8af3f859e6e70",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_magic.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_magic.mpb",
+      "sha256": "edca005c4f67db79386c136f91caf7cc2c41964eab064cea2049a4acf5eafde2",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_mixed_elf_in_res.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_mixed_elf_in_res.mpb",
+      "sha256": "80cca8ba5dc83103436791913990747bfd677f0e60263de5fae1f339fc08d05e",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_mixed_res_in_elf.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_mixed_res_in_elf.mpb",
+      "sha256": "872ee8e818f0708bcc4be4c043ce3cb68878a2825078dfed7835ea51ea800c7e",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_offset_oob.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_offset_oob.mpb",
+      "sha256": "525065064fabe251b3ba1f96b8d6843e03c5c893e7901b99c07381e20f05ab49",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_overlap.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_overlap.mpb",
+      "sha256": "6c61b658fcdccc1ebbecaae90a81994aedad44039a9a7a90df15d205d23feec8",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_payload_hash.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_payload_hash.mpb",
+      "sha256": "191059b17c44e0a5c1ea52a7a17a3d7594fb37662b45e030e618a3f4d36e4fd1",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_signature.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_signature.mpb",
+      "sha256": "b7673bf613240bb6d596c53b83752ef4f2d0fc465bfd273ff0c4840c5c62a532",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_target.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_target.mpb",
+      "sha256": "8703e1b8cd9bd1e3d7afc857b618b3c50b14051bf3b5a37129153fae37252000",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_total_size.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_total_size.mpb",
+      "sha256": "e5fc8d7b2bb8d13dc7839692f70eda8e62bbeb9ef664c855533fbd4dc3d3edfe",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_unknown_required_tlv.mpb (fc_corpus)",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/neg_unknown_required_tlv.mpb",
+      "sha256": "0a6ba33bf7a6f3bc60687f4fabb1506b34fc46cd4d6d628438474dff1728cea6",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (fc_corpus)."
+    },
+    {
+      "name": "neg_abi.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_abi.mpb",
+      "sha256": "f6b9002aee6885719404b6feeb566a412a94e09d9d792bfb1b866998cac6f6dc",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_double_fault.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_double_fault.mpb",
+      "sha256": "b29fed6c397ed193fbc55b44cc957311d5e1e79946206f4cf51e498e3b9cde65",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_dup_required.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_dup_required.mpb",
+      "sha256": "1441b28ea2034e122919467efa7d76b6911ed093fbf5f0931d6f0ad267893494",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_epoch.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_epoch.mpb",
+      "sha256": "ec9297e6cb6507073287216e1f311e14f161fc4e711c564943005debc0c5c76b",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_features.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_features.mpb",
+      "sha256": "87fe364bf95aeb74a3dc05d59da79e14a63a4c34a941f480755e5c1b15f152ba",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_key_id.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_key_id.mpb",
+      "sha256": "aa23322034e7502a9537eaa5af800fe5cfa435503d37f32a01a8af3f859e6e70",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_magic.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_magic.mpb",
+      "sha256": "edca005c4f67db79386c136f91caf7cc2c41964eab064cea2049a4acf5eafde2",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_mixed_elf_in_res.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_mixed_elf_in_res.mpb",
+      "sha256": "80cca8ba5dc83103436791913990747bfd677f0e60263de5fae1f339fc08d05e",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_mixed_res_in_elf.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_mixed_res_in_elf.mpb",
+      "sha256": "872ee8e818f0708bcc4be4c043ce3cb68878a2825078dfed7835ea51ea800c7e",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_offset_oob.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_offset_oob.mpb",
+      "sha256": "525065064fabe251b3ba1f96b8d6843e03c5c893e7901b99c07381e20f05ab49",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_overlap.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_overlap.mpb",
+      "sha256": "6c61b658fcdccc1ebbecaae90a81994aedad44039a9a7a90df15d205d23feec8",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_payload_hash.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_payload_hash.mpb",
+      "sha256": "191059b17c44e0a5c1ea52a7a17a3d7594fb37662b45e030e618a3f4d36e4fd1",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_signature.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_signature.mpb",
+      "sha256": "b7673bf613240bb6d596c53b83752ef4f2d0fc465bfd273ff0c4840c5c62a532",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_target.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_target.mpb",
+      "sha256": "8703e1b8cd9bd1e3d7afc857b618b3c50b14051bf3b5a37129153fae37252000",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_total_size.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_total_size.mpb",
+      "sha256": "e5fc8d7b2bb8d13dc7839692f70eda8e62bbeb9ef664c855533fbd4dc3d3edfe",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "neg_unknown_required_tlv.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/neg_unknown_required_tlv.mpb",
+      "sha256": "0a6ba33bf7a6f3bc60687f4fabb1506b34fc46cd4d6d628438474dff1728cea6",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "pos_code.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/pos_code.mpb",
+      "sha256": "d86937e9540d3b188d31fbd6ba67b5319694923d0210db2b4383a4724f0101ef",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "pos_resource_only.mpb (mpb_corpus)",
+      "uri": "poc/host/tests/mpb_corpus/pos_resource_only.mpb",
+      "sha256": "318872c5ac2b50747d066e572c3d815688ec5c8fe74ab2147a5bfe1d8855b399",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Committed corpus container (mpb_corpus)."
+    },
+    {
+      "name": "run_matrix.py",
+      "uri": "poc/apps/poc_a/plugins/negative/run_matrix.py",
+      "sha256": "2baf74d05d652a74304c04cd746561a43bd2a8aba640a3bc7d40ebd321131ab6",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Board/host runner or generator (rerun commands in the task logs; committed at repository_commit)."
+    },
+    {
+      "name": "capacity_ladder.py",
+      "uri": "poc/apps/poc_a/plugins/capacity_ladder.py",
+      "sha256": "4e3fb4389adcc5593c7d5940563c7c8058c44fe773e1a4f8cdc9ed94d719d9ff",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Board/host runner or generator (rerun commands in the task logs; committed at repository_commit)."
+    },
+    {
+      "name": "soak_judge.py",
+      "uri": "poc/apps/poc_a/plugins/soak_judge.py",
+      "sha256": "335504fd3b76673cd9b4d89668647a161e2efb0cb5c5a22f8bac667baddf2dd2",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Board/host runner or generator (rerun commands in the task logs; committed at repository_commit)."
+    },
+    {
+      "name": "sched_runner.py",
+      "uri": "poc/apps/poc_a/plugins/sched_runner.py",
+      "sha256": "c7ae457c541e0fdcb408e0a6ac3ab421a19630fa271d7d073a4b530a25374d7c",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Board/host runner or generator (rerun commands in the task logs; committed at repository_commit)."
+    },
+    {
+      "name": "fc_runner.py",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/fc_runner.py",
+      "sha256": "6f6699e1c74873f34a0e606dce82d166620dd5ae93834d55937b5767973515af",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Board/host runner or generator (rerun commands in the task logs; committed at repository_commit)."
+    },
+    {
+      "name": "fc_manifest.py",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/fc_manifest.py",
+      "sha256": "d510953da33ead5afc1107c4ac64a94d4da3e93cb7be1d6070ec41365f7c0758",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Board/host runner or generator (rerun commands in the task logs; committed at repository_commit)."
+    },
+    {
+      "name": "MANIFEST.md",
+      "uri": "poc/apps/poc_a/plugins/fc_corpus/MANIFEST.md",
+      "sha256": "444615d074a9e82afc39b59313f4d84ee6018e69b2847c60c9751a85f99325fc",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Board/host runner or generator (rerun commands in the task logs; committed at repository_commit)."
+    },
+    {
+      "name": "manifest_builder.py",
+      "uri": "tools/frame_tools/manifest_builder.py",
+      "sha256": "294b628352e1ff99fb7e15d981baca7609c93109986d65ef3f3e42cfdff384a0",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Board/host runner or generator (rerun commands in the task logs; committed at repository_commit)."
+    },
+    {
+      "name": "gen_mpb_corpus.py",
+      "uri": "poc/host/tests/gen_mpb_corpus.py",
+      "sha256": "78e3ca153cea7254407299ae4e395e5e1ca0e266c248ced15fe80a6a42ae01f9",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Board/host runner or generator (rerun commands in the task logs; committed at repository_commit)."
+    },
+    {
+      "name": "check_plugin_policy.py",
+      "uri": "tools/frame_tools/check_plugin_policy.py",
+      "sha256": "5f07fa6f980e18ed4ee1e7fa18f2edd25f6202fddf9c1d34f8aabba1a21748c2",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). Board/host runner or generator (rerun commands in the task logs; committed at repository_commit)."
+    },
+    {
+      "name": "poc_a_test_signing_key.pem",
+      "uri": "tools/frame_tools/testdata/keys/poc_a_test_signing_key.pem",
+      "sha256": "5d9632acefe2ea44081de2733aac2aa5114f31c8c6f86f6da72c3afedc14a72b",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). TEST-ONLY ECDSA P-256 signing key (header-marked; never a production key)."
+    },
+    {
+      "name": "poc_a_test_signing_key.pub.pem",
+      "uri": "tools/frame_tools/testdata/keys/poc_a_test_signing_key.pub.pem",
+      "sha256": "2b9bf256c94f7098735a6976a946fda473dad82a501a307588d6e6ee7669075c",
+      "note": "In-repo frozen artifact, referenced by path+sha (not duplicated into the evidence dir). TEST-ONLY public half; key_id e5677a1c (first 4 B of sha256(SPKI DER), BE)."
+    }
+  ],
+  "notes": "Gate-A evidence assembly for PoC-A (dynamic ELF), todos T1..T15 of plan poc-a-dynamic-elf; assembled by the orchestrator session (operator: orchestrator-session) on 2026-09-01. Every sha256 in this manifest was recomputed at assembly time from the working tree at HEAD f34dc72537912e9629dad482222e2159c98988ea (tracked tree clean; the only untracked content was this evidence dir being assembled). Evidence window: started_at = T1 session start (task-1 log L4, 2026-08-31T20:38:25+08:00), finished_at = manifest write. Environment: ESP-IDF v6.0.2 exact tag, xtensa-esp-elf gcc-15.2.0 (esp-15.2.0_20251204), target esp32s3; loader = espressif/elf_loader v1.3.3 vendored from espressif/esp-iot-solution components/elf_loader @6526c5b18e156cfbda2c7ce48e282e384c43b485 (license Apache-2.0) + local patches p1..p5 registered in PATCHES.md; vendored-tree offline self-consistency recomputed at assembly (26 files, tree.sha256 match). sdkconfig_sha256 pins the committed poc/apps/poc_a/sdkconfig.defaults; the generated sdkconfig of the fresh build is 07c2716fa7f616a451773d36e5f76643963da776fc21664042827345a9efe8e5. Partition table unchanged/frozen: partitions.csv 261b5d3338a7785d048f12eedd26bbab535f6d8b273f29e529d196a04515e3a3 (identical to the M1-20260831 manifest-era value - zero partition drift). Firmware: frame_poc_a.bin sha256 3a31ce578410b75ce76ea71a854d1953dedb1a130a3dd82de7fb3fcfa3a4d2de from the fresh assembly-time rebuild (0 warnings); board sessions in the transcripts ran task-era builds whose per-artifact sha256 lines appear verbatim inside each task log (per-.mpb closed loop: build-time hash == device-printed hash). Hardware: single dev board, USB device id c1810c76790e (same board as M1; module ESP32-S3-WROOM-1-N16R8, 16 MiB flash / 8 MiB octal PSRAM). No new photos taken for Gate-A (display unused - PoC-B scope); hardware identity is evidenced by the existing M1 photo set: poc/evidence/m1-20260831/photos/board_front_20260831.jpg (sha 87d232943d4328a15d3f6047fc25d2acd53fea210e29989836df47c44b8c9dcf), board_back_module_20260831.jpg (marking N16R8; sha 6576c98d54097f85554f013c34f96922082de96cb7413f654d074d04fe376b60), status_page_20260831.jpg (sha 03817e0424452eba486768960645aa9e369bdfef08fe1da9883a7b9b035e82ec). One optional live environment touch was captured during assembly (poca status on /dev/ttyACM0: ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n; psram 8386280 B pool). source.project_document_sha256 pins _doc/requirements-v4.2.md (the v4.2 requirement baseline this gate is traced against; M1 pinned the v4.1 project.md by the same convention). Runner/test scripts are committed in-repo, so one commit (repository_commit) covers all test-script commits; per-script sha256 entries are included for identity. Verdict PASS per item: see GATE-A-REPORT.md in this directory (development-plan section 4 items 1-9 all evidenced; TEST-003 ten clauses mapped; owner sign-off pending - this manifest does not sign the gate)."
+}

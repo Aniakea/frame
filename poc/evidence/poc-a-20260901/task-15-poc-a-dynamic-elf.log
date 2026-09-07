@@ -1,0 +1,188 @@
+=== task-15 poc-a-dynamic-elf evidence ===
+started: 2026-08-31T15:28:57Z
+worktree: c5d6c6ce5cd88ffa634d7a5e23268875737f905a
+yaml parses; jobs: repository-gates, mpb-corpus-gates, host-clang-sanitizers, host-gcc, host-clang-tidy, host-coverage, secrets, firmware-dev, firmware-m1, firmware-poc-a, required
+mpb-corpus-gates steps:
+  - Check out repository
+  - Set up uv
+  - Install locked Python environment
+  - Build and run the MPB parser corpus suite
+  - Regenerate the MPB corpus and compare byte for byte
+  - Run plugin policy checker and stem drift guard tests
+pinned action SHAs: {'20cfd1bf945f4377ade1205e4dbc17946fc9a30d', '3d3c42e5aac5ba805825da76410c181273ba90b1'}
+format globs line: 'poc/apps/m1_hardware/main/**' 'poc/apps/poc_a/main/**' \
+format grep: 'poc/apps/poc_a/plugins/**' | grep -E '\.(c|cc|cpp|cxx|h|hh|hpp)$' | sort)
+YAML-LINT OK
+
+=== [1] lane cmd: poc/host build + ctest -R MpbParser ===
+
+=== [1] lane cmd: poc/host build + ctest -R MpbParser ===
+[100%] Built target mpb_parser_test
+      Start 31: MpbParser.ByteFlipFuzzNeverCrashes
+28/28 Test #31: MpbParser.ByteFlipFuzzNeverCrashes ........................   Passed    0.03 sec
+
+100% tests passed out of 28
+
+Total Test time (real) =   0.11 sec
+MpbParser.ByteFlipFuzzNeverCrashes
+MpbParser.CodePositiveVerifiesAndExposesView
+MpbParser.CorpusAbiMismatch
+MpbParser.CorpusDuplicateRequiredTlv
+MpbParser.CorpusEpochRollback
+MpbParser.CorpusFeaturesExceedDevice
+MpbParser.CorpusMagic
+MpbParser.CorpusMixedElfInResourceOnly
+MpbParser.CorpusMixedResourceInCode
+MpbParser.CorpusOffsetOutOfBounds
+MpbParser.CorpusPayloadHash
+MpbParser.CorpusRegionOverlap
+MpbParser.CorpusSignatureTamper
+MpbParser.CorpusTargetMismatch
+MpbParser.CorpusTotalSize
+MpbParser.CorpusUnknownRequiredTlv
+MpbParser.CorpusWrongKeyId
+MpbParser.DoubleFaultReportsSignatureBeforeHash
+MpbParser.EpochFloorEqualStillVerifies
+MpbParser.EveryFixtureMatchesItsExpectedErrorCode
+MpbParser.ManifestFieldAccessorRoundTrip
+MpbParser.MaxPackageBytesPolicyRejectsOversize
+MpbParser.NullArgumentsAreRejected
+MpbParser.RandomTruncationsFailClosed
+MpbParser.ResourceOnlyPositiveVerifiesWithWindowPadding
+MpbParser.SignatureRecordFieldsAreStructural
+MpbParser.TamperedElfPayloadByteRejectedAsHashMismatch
+MpbParser.TruncationFuzzAlwaysFailsClosed
+
+=== [2] lane cmd: regeneration check (run 1 of 2) ===
+wrote 18 fixtures + corpus_manifest.inc to /tmp/tmp.nyfY9NeNLO/poc/host/tests/mpb_corpus
+  pos_code.mpb                 expected=   0 positive-code
+  pos_resource_only.mpb        expected=   0 positive-resource-only
+  neg_magic.mpb                expected= -18 negative-magic
+  neg_total_size.mpb           expected= -18 negative-total-size
+  neg_offset_oob.mpb           expected= -18 negative-offset-oob
+  neg_overlap.mpb              expected= -18 negative-overlap
+  neg_dup_required.mpb         expected= -18 negative-dup-required
+  neg_unknown_required_tlv.mpb expected= -18 negative-unknown-required-tlv
+  neg_mixed_elf_in_res.mpb     expected= -18 negative-mixed-elf-in-res
+  neg_mixed_res_in_elf.mpb     expected= -18 negative-mixed-res-in-elf
+  neg_payload_hash.mpb         expected= -19 negative-payload-hash
+  neg_signature.mpb            expected= -17 negative-signature
+  neg_double_fault.mpb         expected= -17 negative-double-fault
+  neg_key_id.mpb               expected= -17 negative-key-id
+  neg_target.mpb               expected= -35 negative-target
+  neg_abi.mpb                  expected=  -7 negative-abi
+  neg_features.mpb             expected=  -7 negative-features
+  neg_epoch.mpb                expected= -34 negative-epoch
+f6b9002aee6885719404b6feeb566a412a94e09d9d792bfb1b866998cac6f6dc  poc/host/tests/mpb_corpus/neg_abi.mpb
+b29fed6c397ed193fbc55b44cc957311d5e1e79946206f4cf51e498e3b9cde65  poc/host/tests/mpb_corpus/neg_double_fault.mpb
+1441b28ea2034e122919467efa7d76b6911ed093fbf5f0931d6f0ad267893494  poc/host/tests/mpb_corpus/neg_dup_required.mpb
+ec9297e6cb6507073287216e1f311e14f161fc4e711c564943005debc0c5c76b  poc/host/tests/mpb_corpus/neg_epoch.mpb
+87fe364bf95aeb74a3dc05d59da79e14a63a4c34a941f480755e5c1b15f152ba  poc/host/tests/mpb_corpus/neg_features.mpb
+aa23322034e7502a9537eaa5af800fe5cfa435503d37f32a01a8af3f859e6e70  poc/host/tests/mpb_corpus/neg_key_id.mpb
+edca005c4f67db79386c136f91caf7cc2c41964eab064cea2049a4acf5eafde2  poc/host/tests/mpb_corpus/neg_magic.mpb
+80cca8ba5dc83103436791913990747bfd677f0e60263de5fae1f339fc08d05e  poc/host/tests/mpb_corpus/neg_mixed_elf_in_res.mpb
+872ee8e818f0708bcc4be4c043ce3cb68878a2825078dfed7835ea51ea800c7e  poc/host/tests/mpb_corpus/neg_mixed_res_in_elf.mpb
+525065064fabe251b3ba1f96b8d6843e03c5c893e7901b99c07381e20f05ab49  poc/host/tests/mpb_corpus/neg_offset_oob.mpb
+6c61b658fcdccc1ebbecaae90a81994aedad44039a9a7a90df15d205d23feec8  poc/host/tests/mpb_corpus/neg_overlap.mpb
+191059b17c44e0a5c1ea52a7a17a3d7594fb37662b45e030e618a3f4d36e4fd1  poc/host/tests/mpb_corpus/neg_payload_hash.mpb
+b7673bf613240bb6d596c53b83752ef4f2d0fc465bfd273ff0c4840c5c62a532  poc/host/tests/mpb_corpus/neg_signature.mpb
+8703e1b8cd9bd1e3d7afc857b618b3c50b14051bf3b5a37129153fae37252000  poc/host/tests/mpb_corpus/neg_target.mpb
+e5fc8d7b2bb8d13dc7839692f70eda8e62bbeb9ef664c855533fbd4dc3d3edfe  poc/host/tests/mpb_corpus/neg_total_size.mpb
+0a6ba33bf7a6f3bc60687f4fabb1506b34fc46cd4d6d628438474dff1728cea6  poc/host/tests/mpb_corpus/neg_unknown_required_tlv.mpb
+d86937e9540d3b188d31fbd6ba67b5319694923d0210db2b4383a4724f0101ef  poc/host/tests/mpb_corpus/pos_code.mpb
+318872c5ac2b50747d066e572c3d815688ec5c8fe74ab2147a5bfe1d8855b399  poc/host/tests/mpb_corpus/pos_resource_only.mpb
+committed corpus is byte-identical to a fresh regeneration
+run1-exit=0
+
+=== [3] regeneration check (run 2 of 2, determinism) ===
+run 2: byte-identical again (deterministic 2x)
+
+=== [4] NEGATIVE CONTROL: break one corpus byte ===
+-- regen check must FAIL now:
+Binary files poc/host/tests/mpb_corpus/pos_code.mpb and /tmp/tmp.5wIpnNJPXK/poc/host/tests/mpb_corpus/pos_code.mpb differ
+regen-diff-exit=1 (nonzero = gate bites)
+-- ctest must FAIL on tampered corpus:
+ 1/28 Test  #4: MpbParser.EveryFixtureMatchesItsExpectedErrorCode .........***Failed    0.00 sec
+ 2/28 Test  #5: MpbParser.CodePositiveVerifiesAndExposesView ..............***Failed    0.00 sec
+ 4/28 Test  #7: MpbParser.ManifestFieldAccessorRoundTrip ..................***Failed    0.00 sec
+ 5/28 Test  #8: MpbParser.NullArgumentsAreRejected ........................***Failed    0.00 sec
+22/28 Test #25: MpbParser.MaxPackageBytesPolicyRejectsOversize ............***Failed    0.00 sec
+-- restore:
+d86937e9540d3b188d31fbd6ba67b5319694923d0210db2b4383a4724f0101ef  poc/host/tests/mpb_corpus/pos_code.mpb
+0
+-- post-restore ctest:
+
+Total Test time (real) =   0.12 sec
+
+=== [5] post-restore corpus ctest (full) ===
+100% tests passed out of 28
+
+Total Test time (real) =   0.11 sec
+
+=== [6] lane cmd: pytest policy suite -v ===
+tests/test_check_plugin_policy.py::test_shape_failures_fail_closed[kwargs1] PASSED [ 86%]
+tests/test_check_plugin_policy.py::test_shape_failures_fail_closed[kwargs2] PASSED [ 89%]
+tests/test_check_plugin_policy.py::test_shape_failures_fail_closed[kwargs3] PASSED [ 91%]
+tests/test_check_plugin_policy.py::test_shape_failures_fail_closed[kwargs4] PASSED [ 94%]
+tests/test_check_plugin_policy.py::test_cli_accepts_a_policy_clean_elf PASSED [ 97%]
+tests/test_check_plugin_policy.py::test_cli_rejects_a_violating_elf_and_names_the_reasons PASSED [100%]
+
+============================== 37 passed in 0.03s ==============================
+
+=== [7] FULL uv run pytest ===
+tests/test_sbom.py ..                                                    [100%]
+
+============================== 87 passed in 0.40s ==============================
+
+=== [8] ruff format --check / ruff check / pyright (repository-gates scope) ===
+20 files already formatted
+All checks passed!
+0 errors, 0 warnings, 0 informations
+
+=== [9] widened format-glob dry-run (local clang-format 22.1.8; checked-in files verified 18-compatible per T5/T6 notes) ===
+files gated: 60
+
+=== [10] checker CLI smoke ===
+usage: check-plugin-policy [-h] [--entry ENTRY] [--allow-import ALLOW_IMPORT]
+                           [--allow-imports-file ALLOW_IMPORTS_FILE]
+                           elfs [elfs ...]
+ M .github/workflows/ci.yml
+ M poc/apps/poc_a/components/elf_loader/include/private/elf_platform.h
+ M poc/apps/poc_a/components/elf_loader/include/private/elf_types.h
+ M poc/apps/poc_a/components/elf_loader/src/esp_elf.c
+ M poc/apps/poc_a/components/elf_loader/src/esp_elf_adapter.c
+ M poc/apps/poc_a/plugins/check_plugin_elf.cmake
+ M poc/apps/poc_a/plugins/plugin_abi.h
+ M poc/apps/poc_a/plugins/plugins.cmake
+?? poc/apps/poc_a/plugins/iram_probe/
+?? tests/test_check_plugin_policy.py
+?? tools/frame_tools/check_plugin_policy.py
+
+=== [9b] widened format glob with REAL clang-format 18.1.8 (uvx clang-format==18.1.8) ===
+files gated: 60
+
+=== [11] commit ===
+[poc-a-dynamic-elf 796f9d2] ci(poc-a): host mpb corpus and policy lane
+ 3 files changed, 661 insertions(+), 1 deletion(-)
+ create mode 100644 tests/test_check_plugin_policy.py
+ create mode 100644 tools/frame_tools/check_plugin_policy.py
+796f9d2 ci(poc-a): host mpb corpus and policy lane
+c5d6c6c feat(poc-a): cxx feature rejection matrix
+ M poc/apps/poc_a/components/elf_loader/include/private/elf_platform.h
+ M poc/apps/poc_a/components/elf_loader/include/private/elf_types.h
+ M poc/apps/poc_a/components/elf_loader/src/esp_elf.c
+ M poc/apps/poc_a/components/elf_loader/src/esp_elf_adapter.c
+ M poc/apps/poc_a/main/CMakeLists.txt
+ M poc/apps/poc_a/main/poca_plugin.cc
+ M poc/apps/poc_a/main/poca_plugin.hh
+ M poc/apps/poc_a/plugins/check_plugin_elf.cmake
+ M poc/apps/poc_a/plugins/plugin_abi.h
+ M poc/apps/poc_a/plugins/plugins.cmake
+?? poc/apps/poc_a/plugins/iram_probe/
+
+=== post-commit re-verify of drift guard against in-flight tree ===
+37 passed in 0.03s
+
+=== task-15 complete ===
+finished: 2026-08-31T15:38:36Z
+commit: 796f9d2 ci(poc-a): host mpb corpus and policy lane (worktree poc-a-wt, not pushed)

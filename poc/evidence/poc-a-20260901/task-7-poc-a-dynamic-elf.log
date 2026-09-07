@@ -1,0 +1,1134 @@
+==== task-7 poc-a .plugin_iram patch — 2026-08-31T23:32:30+08:00 ====
+worktree HEAD: c5d6c6c
+board: /dev/ttyACM0
+clang-format version 22.1.8
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x4200fb80 esp_elf_relocate=0x4200fbc0
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 0 (execution canary)
+  iram cache syncs so far: 0 (p5 counter)
+heap internal  size=    427455 free=    378155 largest=    286720 min_ever=    373951
+heap iram-exec size=    363392 free=    314092 largest=    286720 min_ever=    309888
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8385920
+poca>  
+--- poca> poca iram
+poca iram
+[poca-iram] 1 iteration(s): load iram_probe -> IRAM proofs -> unload
+[poca-iram] iram free baseline=314076
+[poca-load] begin iram_probe (entry_queries=0)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2300 sha256=a50f11c55fd229009ea9468f66cd03938cd891dfd55d5b42158bc6138e09d881
+[poca] mpb digest MATCH
+[poca] view name=iram_probe version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=97B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (26666) ELF: ELF loader version: 1.3.3
+Guru Meditation Error: Core  1 panic'ed (LoadStoreError). Exception was unhandled.
+
+Core  1 register dump:
+PC      : 0x40056faf  PS      : 0x00060a30  A0      : 0x8200fafb  A1      : 0x3fceb590  
+A2      : 0x403dbef4  A3      : 0x3c060e60  A4      : 0x00000061  A5      : 0x403dbf54  
+A6      : 0x000000f0  A7      : 0x1d020c02  A8      : 0x00000000  A9      : 0x5a08ba45  
+A10     : 0x403dbef4  A11     : 0x00000001  A12     : 0x4202dff0  A13     : 0x00000029  
+A14     : 0x00000027  A15     : 0x00000801  SAR     : 0x00000008  EXCCAUSE: 0x00000003  
+EXCVADDR: 0x403dbf54  LBEG    : 0x40056f5c  LEND    : 0x40056f72  LCOUNT  : 0x00000000  
+
+
+Backtrace: 0x40056fac:0x3fceb590 0x4200faf8:0x3fceb5a0 0x4200fcb7:0x3fceb5e0 0x4200c317:0x3fceb640 0x4200c7b4:0x3fceb7e0 0x4200b770:0x3fceb820 0x4200cf27:0x3fceb840 0x4200d1d8:0x3fceb860 0x42035a0a:0x3fceb890
+
+
+
+
+ELF file SHA256: 687b5573d
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0xb (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40379402
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16bc
+load:0x403c8700,len:0xf00
+load:0x403cb700,len:0x31f0
+entry 0x403c892c
+I (24) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (24) boot: compile time Aug 31 2026 23:45:02
+I (24) boot: Multicore bootloader
+I (24) boot: chip revision: v0.2
+I (24) boot: efuse block revision: v1.4
+I (25) qio_mode: Enabling default flash chip QIO
+I (25) boot.esp32s3: Boot SPI Speed : 80MHz
+I (25) boot.esp32s3: SPI Mode       : QIO
+I (25) boot.esp32s3: SPI Flash Size : 16MB
+I (26) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (26) boot: ## Label            Usage          Type ST Offset   Length
+I (26) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (27) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (27) boot:  2 factory          factory app      00 00 00010000 00100000
+I (27) boot: End of partition table
+I (28) esp_image: segment 0: paddr=00010020 vaddr=3c040020 size=1b160h (110944) map
+I (45) esp_image: segment 1: paddr=0002b188 vaddr=3fc92900 size=03574h ( 13684) load
+I (48) esp_image: segment 2: paddr=0002e704 vaddr=40374000 size=01914h (  6420) load
+I (50) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=38114h (229652) map
+I (86) esp_image: segment 4: paddr=0006813c vaddr=40375914 size=0cfb4h ( 53172) load
+I (97) esp_image: segment 5: paddr=000750f8 vaddr=50000000 size=00024h (    36) load
+I (104) boot: Loaded app from partition at offset 0x10000
+I (104) boot: Disabling RNG early entropy source...
+I (105) octal_psram: vendor id    : 0x0d (AP)
+I (105) octal_psram: dev id       : 0x02 (generation 3)
+I (105) octal_psram: density      : 0x03 (64 Mbit)
+I (106) octal_psram: good-die     : 0x01 (Pass)
+I (106) octal_psram: Latency      : 0x01 (Fixed)
+I (106) octal_psram: VCC          : 0x01 (3V)
+I (106) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (106) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (107) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (107) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (107) octal_psram: DriveStrength: 0x00 (1/1)
+I (107) MSPI Timing: Enter psram timing tuning
+I (108) esp_psram: Found 8MB PSRAM device
+I (108) esp_psram: Speed: 80MHz
+I (109) cpu_start: Multicore app
+I (535) esp_psram: SPI SRAM memory test OK
+I (543) cpu_start: Pro cpu start user code
+I (543) cpu_start: cpu freq: 240000000 Hz
+I (544) app_init: Application information:
+I (544) app_init: Project name:     frame_poc_a
+I (544) app_init: App version:      796f9d2-dirty
+I (544) app_init: Compile time:     Aug 31 2026 23:45:06
+I (544) app_init: ELF file SHA256:  687b5573d...
+I (544) app_init: ESP-IDF:          v6.0.2
+I (544) efuse_init: Min chip rev:     v0.0
+I (545) efuse_init: Max chip rev:     v0.99 
+I (545) efuse_init: Chip rev:         v0.2
+I (545) heap_init: Initializing. RAM available for dynamic allocation:
+I (545) heap_init: At 3FC97670 len 000520A0 (328 KiB): RAM
+I (545) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (545) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (546) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+I (546) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (547) spi_flash: detected chip: generic
+I (547) spi_flash: flash io: qio
+I (547) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (548) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (548) main_task: Started on CPU0
+I (548) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+I (549) main_task: Calling app_main()
+I (549) poc-a: frame poc-a dynamic-elf harness; loader elf_loader 1.3.3 @6526c5b1
+[5n
+Type 'help' to get the list of commands.
+Use UP/DOWN arrows to navigate through command history.
+Press TAB when typing command name to auto-complete.
+
+Your terminal application does not support escape sequences.
+
+Line editing and history features are disabled.
+
+On Windows, try using Windows Terminal or Putty instead.
+I (1100) poc-a: console=ESP_OK
+poca>  I (1103) main_task: Returned from app_main()
+--- poca> poca iram
+poca iram
+[poca-iram] 1 iteration(s): load iram_probe -> IRAM proofs -> unload
+[poca-iram] iram free baseline=314092
+[poca-load] begin iram_probe (entry_queries=0)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2300 sha256=a50f11c55fd229009ea9468f66cd03938cd891dfd55d5b42158bc6138e09d881
+[poca] mpb digest MATCH
+[poca] view name=iram_probe version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=97B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (16167) ELF: ELF loader version: 1.3.3
+Guru Meditation Error: Core  1 panic'ed (LoadStoreError). Exception was unhandled.
+
+Core  1 register dump:
+PC      : 0x40056faf  PS      : 0x00060a30  A0      : 0x8200fafb  A1      : 0x3fceb590  
+A2      : 0x403dbee4  A3      : 0x3c060e60  A4      : 0x00000061  A5      : 0x403dbf44  
+A6      : 0x000000f0  A7      : 0x1d020c02  A8      : 0x00000000  A9      : 0x5a08ba45  
+A10     : 0x403dbee4  A11     : 0x00000001  A12     : 0x4202dff0  A13     : 0x00000029  
+A14     : 0x00000027  A15     : 0x00000801  SAR     : 0x00000008  EXCCAUSE: 0x00000003  
+EXCVADDR: 0x403dbf44  LBEG    : 0x40056f5c  LEND    : 0x40056f72  LCOUNT  : 0x00000000  
+
+
+Backtrace: 0x40056fac:0x3fceb590 0x4200faf8:0x3fceb5a0 0x4200fcb7:0x3fceb5e0 0x4200c317:0x3fceb640 0x4200c7b4:0x3fceb7e0 0x4200b770:0x3fceb820 0x4200cf27:0x3fceb840 0x4200d1d8:0x3fceb860 0x42035a0a:0x3fceb890
+
+
+
+
+ELF file SHA256: 687b5573d
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0xb (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40379402
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16bc
+load:0x403c8700,len:0xf00
+load:0x403cb700,len:0x31f0
+entry 0x403c892c
+I (24) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (24) boot: compile time Aug 31 2026 23:45:02
+I (24) boot: Multicore bootloader
+I (24) boot: chip revision: v0.2
+I (25) boot: efuse block revision: v1.4
+I (25) qio_mode: Enabling default flash chip QIO
+I (25) boot.esp32s3: Boot SPI Speed : 80MHz
+I (25) boot.esp32s3: SPI Mode       : QIO
+I (25) boot.esp32s3: SPI Flash Size : 16MB
+I (26) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (26) boot: ## Label            Usage          Type ST Offset   Length
+I (26) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (27) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (27) boot:  2 factory          factory app      00 00 00010000 00100000
+I (27) boot: End of partition table
+I (28) esp_image: segment 0: paddr=00010020 vaddr=3c040020 size=1b160h (110944) map
+I (45) esp_image: segment 1: paddr=0002b188 vaddr=3fc92900 size=03574h ( 13684) load
+I (49) esp_image: segment 2: paddr=0002e704 vaddr=40374000 size=01914h (  6420) load
+I (50) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=38114h (229652) map
+I (86) esp_image: segment 4: paddr=0006813c vaddr=40375914 size=0cfb4h ( 53172) load
+I (97) esp_image: segment 5: paddr=000750f8 vaddr=50000000 size=00024h (    36) load
+I (104) boot: Loaded app from partition at offset 0x10000
+I (104) boot: Disabling RNG early entropy source...
+I (105) octal_psram: vendor id    : 0x0d (AP)
+I (105) octal_psram: dev id       : 0x02 (generation 3)
+I (106) octal_psram: density      : 0x03 (64 Mbit)
+I (106) octal_psram: good-die     : 0x01 (Pass)
+I (106) octal_psram: Latency      : 0x01 (Fixed)
+I (106) octal_psram: VCC          : 0x01 (3V)
+I (106) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (107) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (107) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (107) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (107) octal_psram: DriveStrength: 0x00 (1/1)
+I (108) MSPI Timing: Enter psram timing tuning
+I (109) esp_psram: Found 8MB PSRAM device
+I (109) esp_psram: Speed: 80MHz
+I (109) cpu_start: Multicore app
+I (535) esp_psram: SPI SRAM memory test OK
+I (543) cpu_start: Pro cpu start user code
+I (543) cpu_start: cpu freq: 240000000 Hz
+I (544) app_init: Application information:
+I (544) app_init: Project name:     frame_poc_a
+I (544) app_init: App version:      796f9d2-dirty
+I (544) app_init: Compile time:     Aug 31 2026 23:45:06
+I (544) app_init: ELF file SHA256:  687b5573d...
+I (544) app_init: ESP-IDF:          v6.0.2
+I (544) efuse_init: Min chip rev:     v0.0
+I (545) efuse_init: Max chip rev:     v0.99 
+I (545) efuse_init: Chip rev:         v0.2
+I (545) heap_init: Initializing. RAM available for dynamic allocation:
+I (545) heap_init: At 3FC97670 len 000520A0 (328 KiB): RAM
+I (545) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (545) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (546) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+I (546) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (547) spi_flash: detected chip: generic
+I (547) spi_flash: flash io: qio
+I (547) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (547) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (548) main_task: Started on CPU0
+I (548) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+I (549) main_task: Calling app_main()
+I (549) poc-a: frame poc-a dynamic-elf harness; loader elf_loader 1.3.3 @6526c5b1
+[5n
+Type 'help' to get the list of commands.
+Use UP/DOWN arrows to navigate through command history.
+Press TAB when typing command name to auto-complete.
+
+Your terminal application does not support escape sequences.
+
+Line editing and history features are disabled.
+
+On Windows, try using Windows Terminal or Putty instead.
+I (1100) poc-a: console=ESP_OK
+poca>  I (1103) main_task: Returned from app_main()
+--- poca> poca iram
+poca iram
+[poca-iram] 1 iteration(s): load iram_probe -> IRAM proofs -> unload
+[poca-iram] iram free baseline=314092
+[poca-load] begin iram_probe (entry_queries=0)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2300 sha256=a50f11c55fd229009ea9468f66cd03938cd891dfd55d5b42158bc6138e09d881
+[poca] mpb digest MATCH
+[poca] view name=iram_probe version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=97B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (16167) ELF: ELF loader version: 1.3.3
+Guru Meditation Error: Core  1 panic'ed (LoadStoreError). Exception was unhandled.
+
+Core  1 register dump:
+PC      : 0x40056faf  PS      : 0x00060a30  A0      : 0x8200fafb  A1      : 0x3fceb590  
+A2      : 0x403dbee4  A3      : 0x3c060e60  A4      : 0x00000061  A5      : 0x403dbf44  
+A6      : 0x000000f0  A7      : 0x1d020c02  A8      : 0x00000000  A9      : 0x5a08ba45  
+A10     : 0x403dbee4  A11     : 0x00000001  A12     : 0x4202dff0  A13     : 0x00000029  
+A14     : 0x00000027  A15     : 0x00000801  SAR     : 0x00000008  EXCCAUSE: 0x00000003  
+EXCVADDR: 0x403dbf44  LBEG    : 0x40056f5c  LEND    : 0x40056f72  LCOUNT  : 0x00000000  
+
+
+Backtrace: 0x40056fac:0x3fceb590 0x4200faf8:0x3fceb5a0 0x4200fcb7:0x3fceb5e0 0x4200c317:0x3fceb640 0x4200c7b4:0x3fceb7e0 0x4200b770:0x3fceb820 0x4200cf27:0x3fceb840 0x4200d1d8:0x3fceb860 0x42035a0a:0x3fceb890
+
+
+
+
+ELF file SHA256: 687b5573d
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0xb (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40379402
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x16bc
+load:0x403c8700,len:0xf00
+load:0x403cb700,len:0x31f0
+entry 0x403c892c
+I (24) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (24) boot: compile time Aug 31 2026 23:45:02
+I (24) boot: Multicore bootloader
+I (24) boot: chip revision: v0.2
+I (24) boot: efuse block revision: v1.4
+I (25) qio_mode: Enabling default flash chip QIO
+I (25) boot.esp32s3: Boot SPI Speed : 80MHz
+I (25) boot.esp32s3: SPI Mode       : QIO
+I (25) boot.esp32s3: SPI Flash Size : 16MB
+I (26) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (26) boot: ## Label            Usage          Type ST Offset   Length
+I (26) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (27) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (27) boot:  2 factory          factory app      00 00 00010000 00100000
+I (27) boot: End of partition table
+I (28) esp_image: segment 0: paddr=00010020 vaddr=3c040020 size=1b160h (110944) map
+I (45) esp_image: segment 1: paddr=0002b188 vaddr=3fc92900 size=03574h ( 13684) load
+I (48) esp_image: segment 2: paddr=0002e704 vaddr=40374000 size=01914h (  6420) load
+I (50) esp_image: segment 3: paddr=00030020 vaddr=42000020 size=38114h (229652) map
+I (86) esp_image: segment 4: paddr=0006813c vaddr=40375914 size=0cfb4h ( 53172) load
+I (97) esp_image: segment 5: paddr=000750f8 vaddr=50000000 size=00024h (    36) load
+I (104) boot: Loaded app from partition at offset 0x10000
+I (104) boot: Disabling RNG early entropy source...
+I (105) octal_psram: vendor id    : 0x0d (AP)
+I (105) octal_psram: dev id       : 0x02 (generation 3)
+I (105) octal_psram: density      : 0x03 (64 Mbit)
+I (105) octal_psram: good-die     : 0x01 (Pass)
+I (106) octal_psram: Latency      : 0x01 (Fixed)
+I (106) octal_psram: VCC          : 0x01 (3V)
+I (106) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (106) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (107) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (107) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (107) octal_psram: DriveStrength: 0x00 (1/1)
+I (107) MSPI Timing: Enter psram timing tuning
+I (108) esp_psram: Found 8MB PSRAM device
+I (108) esp_psram: Speed: 80MHz
+I (109) cpu_start: Multicore app
+I (535) esp_psram: SPI SRAM memory test OK
+I (543) cpu_start: Pro cpu start user code
+I (543) cpu_start: cpu freq: 240000000 Hz
+I (543) app_init: Application information:
+I (543) app_init: Project name:     frame_poc_a
+I (544) app_init: App version:      796f9d2-dirty
+I (544) app_init: Compile time:     Aug 31 2026 23:45:06
+I (544) app_init: ELF file SHA256:  687b5573d...
+I (544) app_init: ESP-IDF:          v6.0.2
+I (544) efuse_init: Min chip rev:     v0.0
+I (544) efuse_init: Max chip rev:     v0.99 
+I (545) efuse_init: Chip rev:         v0.2
+I (545) heap_init: Initializing. RAM available for dynamic allocation:
+I (545) heap_init: At 3FC97670 len 000520A0 (328 KiB): RAM
+I (545) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (545) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (545) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+I (546) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (546) spi_flash: detected chip: generic
+I (546) spi_flash: flash io: qio
+I (547) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (547) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (548) main_task: Started on CPU0
+I (548) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+I (549) main_task: Calling app_main()
+I (549) poc-a: frame poc-a dynamic-elf harness; loader elf_loader 1.3.3 @6526c5b1
+[5n
+Type 'help' to get the list of commands.
+Use UP/DOWN arrows to navigate through command history.
+Press TAB when typing command name to auto-complete.
+
+Your terminal application does not support escape sequences.
+
+Line editing and history features are disabled.
+
+On Windows, try using Windows Terminal or Putty instead.
+I (1100) poc-a: console=ESP_OK
+poca>  I (1103) main_task: Returned from app_main()
+--- poca> poca load iram_mismatch
+poca load iram_mismatch
+[poca-load] begin iram_mismatch (entry_queries=0)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2304 sha256=81f05dd35c8e6020391d2826d07859024795dc9fc0986104878dd2af2df902cd
+[poca] mpb digest MATCH
+[poca] view name=iram_mismatch version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=113B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=212 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (16166) ELF: ELF loader version: 1.3.3
+E (16167) ELF: .plugin_iram budget mismatch: manifest=113 section=97; rejecting before allocation
+E (16168) ELF: Error to load elf file, ret=-22
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=0 (unchanged=yes)
+[poca-load] NEGATIVE iram_mismatch PASS (errno -22, expected -22)
+poca>  
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x4200fb80 esp_elf_relocate=0x4200fbc0
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 0 (execution canary)
+  iram cache syncs so far: 0 (p5 counter)
+heap internal  size=    427415 free=    376871 largest=    286720 min_ever=    369075
+heap iram-exec size=    363352 free=    312808 largest=    286720 min_ever=    305012
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8383612
+poca>  
+
+SESSION FAILURES:
+  - iram run 1: missing 'iram [0x40'
+  - iram run 1: missing ' window0x40=PASS'
+  - iram run 1: missing 'cache-sync counter='
+  - iram run 1: missing '(>0=PASS)'
+  - iram run 1: missing 'iram_check returned=0x'
+  - iram run 1: missing 'write-probe .data=0x3c'
+  - iram run 1: missing ' (psram=PASS)'
+  - iram run 1: missing ' read_text='
+  - iram run 1: missing '[poca-unload] PASS'
+  - iram run 1: missing 'final iram free='
+  - iram run 1: missing 'no leak'
+  - iram run 1: missing '[poca-iram] PASS (1 cycle(s))'
+  - iram run 2: missing 'iram [0x40'
+  - iram run 2: missing ' window0x40=PASS'
+  - iram run 2: missing 'cache-sync counter='
+  - iram run 2: missing '(>0=PASS)'
+  - iram run 2: missing 'iram_check returned=0x'
+  - iram run 2: missing 'write-probe .data=0x3c'
+  - iram run 2: missing ' (psram=PASS)'
+  - iram run 2: missing ' read_text='
+  - iram run 2: missing '[poca-unload] PASS'
+  - iram run 2: missing 'final iram free='
+  - iram run 2: missing 'no leak'
+  - iram run 2: missing '[poca-iram] PASS (1 cycle(s))'
+  - iram run 3: missing 'iram [0x40'
+  - iram run 3: missing ' window0x40=PASS'
+  - iram run 3: missing 'cache-sync counter='
+  - iram run 3: missing '(>0=PASS)'
+  - iram run 3: missing 'iram_check returned=0x'
+  - iram run 3: missing 'write-probe .data=0x3c'
+  - iram run 3: missing ' (psram=PASS)'
+  - iram run 3: missing ' read_text='
+  - iram run 3: missing '[poca-unload] PASS'
+  - iram run 3: missing 'final iram free='
+  - iram run 3: missing 'no leak'
+  - iram run 3: missing '[poca-iram] PASS (1 cycle(s))'
+  - status2: missing 'iram cache syncs so far: 3 (p5 counter)'
+warning: `VIRTUAL_ENV=/home/lain/.espressif/tools/python/v6.0.2/venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+--- poca> poca status
+I (539) esp_psram: SPI SRAM memory test OK
+I (547) cpu_start: Pro cpu start user code
+I (547) cpu_start: cpu freq: 240000000 Hz
+I (547) app_init: Application information:
+I (547) app_init: Project name:     frame_poc_a
+I (547) app_init: App version:      796f9d2-dirty
+I (548) app_init: Compile time:     Aug 31 2026 23:45:06
+I (548) app_init: ELF file SHA256:  757a9b238...
+I (548) app_init: ESP-IDF:          v6.0.2
+I (548) efuse_init: Min chip rev:     v0.0
+I (548) efuse_init: Max chip rev:     v0.99 
+I (548) efuse_init: Chip rev:         v0.2
+I (548) heap_init: Initializing. RAM available for dynamic allocation:
+I (549) heap_init: At 3FC97670 len 000520A0 (328 KiB): RAM
+I (549) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (549) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (549) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+I (549) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (550) spi_flash: detected chip: generic
+I (550) spi_flash: flash io: qio
+I (551) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (551) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (552) main_task: Started on CPU0
+I (552) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+I (553) main_task: Calling app_main()
+I (553) poc-a: frame poc-a dynamic-elf harness; loader elf_loader 1.3.3 @6526c5b1
+[5n
+Type 'help' to get the list of commands.
+Use UP/DOWN arrows to navigate through command history.
+Press TAB when typing command name to auto-complete.
+I (1104) poc-a: console=ESP_OK
+
+Your terminal application does not support escape sequences.
+
+Line editing and history features are disabled.
+
+On Windows, try using Windows Terminal or Putty instead.
+I (1106) main_task: Returned from app_main()
+poca>  
+--- poca> poca iram
+poca iram
+[poca-iram] 1 iteration(s): load iram_probe -> IRAM proofs -> unload
+[poca-iram] iram free baseline=314092
+[poca-load] begin iram_probe (entry_queries=0)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2300 sha256=a50f11c55fd229009ea9468f66cd03938cd891dfd55d5b42158bc6138e09d881
+[poca] mpb digest MATCH
+[poca] view name=iram_probe version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=97B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (2638) ELF: ELF loader version: 1.3.3
+I (2639) ELF: .plugin_iram copied to 0x403dbee4 size 97
+I (2639) ELF: elf->entry=0x42061450
+[poca-load] entry sym frame_plugin_entry vaddr=0x0000029c mapped=0x3c061450 exec=0x42061450 delta=0x06000000
+[poca-load] query fn ptr=0x42061450
+[poca-load] table ptr=0x3c0614a8 struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061388 .. +0xd7) data [0x3c061464 .. +0x78) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] iram [0x403dbee4 .. +0x61) window0x40=PASS
+[poca-load] psram free after=8382236 consumed=3684
+[poca-load] PASS
+[poca-iram] iram_check fn=0x403dbee4 window0x40=PASS
+[poca-iram] cache-sync counter=1 (>0=PASS)
+[poca-iram] iram_check returned=0xc0ae7429 expected=0xc0ae7429 MATCH
+[poca-iram] write-probe .data=0x3c061464 (psram=PASS) wrote=0x5ca1ab1e read_text=0x5ca1ab1e read_host=0x5ca1ab1e MATCH
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[poca-iram] watermark iter=1 iram_free=312824 (baseline=314092 delta=-1268)
+[poca-iram] final iram free=312824 drift=-1268 (LEAK)
+Command returned non-zero error code: 0x1 (ERROR)
+poca>  
+--- poca> poca iram
+poca iram
+[poca-iram] 1 iteration(s): load iram_probe -> IRAM proofs -> unload
+[poca-iram] iram free baseline=312824
+[poca-load] begin iram_probe (entry_queries=1)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2300 sha256=a50f11c55fd229009ea9468f66cd03938cd891dfd55d5b42158bc6138e09d881
+[poca] mpb digest MATCH
+[poca] view name=iram_probe version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=97B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (4438) ELF: ELF loader version: 1.3.3
+I (4439) ELF: .plugin_iram copied to 0x403dbee4 size 97
+I (4439) ELF: elf->entry=0x42061450
+[poca-load] entry sym frame_plugin_entry vaddr=0x0000029c mapped=0x3c061450 exec=0x42061450 delta=0x06000000
+[poca-load] query fn ptr=0x42061450
+[poca-load] table ptr=0x3c0614a8 struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061388 .. +0xd7) data [0x3c061464 .. +0x78) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] iram [0x403dbee4 .. +0x61) window0x40=PASS
+[poca-load] psram free after=8382236 consumed=3684
+[poca-load] PASS
+[poca-iram] iram_check fn=0x403dbee4 window0x40=PASS
+[poca-iram] cache-sync counter=2 (>0=PASS)
+[poca-iram] iram_check returned=0xc0ae7429 expected=0xc0ae7429 MATCH
+[poca-iram] write-probe .data=0x3c061464 (psram=PASS) wrote=0x5ca1ab1e read_text=0x5ca1ab1e read_host=0x5ca1ab1e MATCH
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[poca-iram] watermark iter=1 iram_free=312824 (baseline=312824 delta=+0)
+[poca-iram] final iram free=312824 drift=+0 (no leak)
+[poca-iram] PASS (1 cycle(s))
+poca>  
+--- poca> poca iram
+poca iram
+[poca-iram] 1 iteration(s): load iram_probe -> IRAM proofs -> unload
+[poca-iram] iram free baseline=312824
+[poca-load] begin iram_probe (entry_queries=2)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2300 sha256=a50f11c55fd229009ea9468f66cd03938cd891dfd55d5b42158bc6138e09d881
+[poca] mpb digest MATCH
+[poca] view name=iram_probe version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=97B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (6240) ELF: ELF loader version: 1.3.3
+I (6240) ELF: .plugin_iram copied to 0x403dbee4 size 97
+I (6241) ELF: elf->entry=0x42061450
+[poca-load] entry sym frame_plugin_entry vaddr=0x0000029c mapped=0x3c061450 exec=0x42061450 delta=0x06000000
+[poca-load] query fn ptr=0x42061450
+[poca-load] table ptr=0x3c0614a8 struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061388 .. +0xd7) data [0x3c061464 .. +0x78) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] iram [0x403dbee4 .. +0x61) window0x40=PASS
+[poca-load] psram free after=8382236 consumed=3684
+[poca-load] PASS
+[poca-iram] iram_check fn=0x403dbee4 window0x40=PASS
+[poca-iram] cache-sync counter=3 (>0=PASS)
+[poca-iram] iram_check returned=0xc0ae7429 expected=0xc0ae7429 MATCH
+[poca-iram] write-probe .data=0x3c061464 (psram=PASS) wrote=0x5ca1ab1e read_text=0x5ca1ab1e read_host=0x5ca1ab1e MATCH
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[poca-iram] watermark iter=1 iram_free=312824 (baseline=312824 delta=+0)
+[poca-iram] final iram free=312824 drift=+0 (no leak)
+[poca-iram] PASS (1 cycle(s))
+poca>  
+--- poca> poca load iram_mismatch
+poca load iram_mismatch
+[poca-load] begin iram_mismatch (entry_queries=3)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2304 sha256=81f05dd35c8e6020391d2826d07859024795dc9fc0986104878dd2af2df902cd
+[poca] mpb digest MATCH
+[poca] view name=iram_mismatch version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=113B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=212 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (8041) ELF: ELF loader version: 1.3.3
+E (8041) ELF: .plugin_iram budget mismatch: manifest=113 section=97; rejecting before allocation
+E (8042) ELF: Error to load elf file, ret=-22
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=3 (unchanged=yes)
+[poca-load] NEGATIVE iram_mismatch PASS (errno -22, expected -22)
+poca>  
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x4200fbc4 esp_elf_relocate=0x4200fc04
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 3 (execution canary)
+  iram cache syncs so far: 3 (p5 counter)
+heap internal  size=    427411 free=    376843 largest=    286720 min_ever=    369051
+heap iram-exec size=    363348 free=    312780 largest=    286720 min_ever=    304988
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8382236
+poca>  
+
+SESSION FAILURES:
+  - status: missing 'iram cache syncs so far: 0 (p5 counter)'
+  - status: missing 'iram-exec'
+  - iram run 1: missing 'no leak'
+  - iram run 1: missing '[poca-iram] PASS (1 cycle(s))'
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x4200fbc4 esp_elf_relocate=0x4200fc04
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 3 (execution canary)
+  iram cache syncs so far: 3 (p5 counter)
+heap internal  size=    427411 free=    376843 largest=    286720 min_ever=    369051
+heap iram-exec size=    363348 free=    312780 largest=    286720 min_ever=    304988
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8382236
+poca>  
+--- poca> poca iram
+poca iram
+[poca-iram] 1 iteration(s): load iram_probe -> IRAM proofs -> unload
+[poca-iram] iram free baseline=312764
+[poca-load] begin iram_probe (entry_queries=3)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2300 sha256=a50f11c55fd229009ea9468f66cd03938cd891dfd55d5b42158bc6138e09d881
+[poca] mpb digest MATCH
+[poca] view name=iram_probe version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=97B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (35629) ELF: ELF loader version: 1.3.3
+I (35630) ELF: .plugin_iram copied to 0x403dbf20 size 97
+I (35630) ELF: elf->entry=0x42061450
+[poca-load] entry sym frame_plugin_entry vaddr=0x0000029c mapped=0x3c061450 exec=0x42061450 delta=0x06000000
+[poca-load] query fn ptr=0x42061450
+[poca-load] table ptr=0x3c0614a8 struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061388 .. +0xd7) data [0x3c061464 .. +0x78) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] iram [0x403dbf20 .. +0x61) window0x40=PASS
+[poca-load] psram free after=8382236 consumed=3684
+[poca-load] PASS
+[poca-iram] iram_check fn=0x403dbf20 window0x40=PASS
+[poca-iram] cache-sync counter=4 (>0=PASS)
+[poca-iram] iram_check returned=0xc0ae7429 expected=0xc0ae7429 MATCH
+[poca-iram] write-probe .data=0x3c061464 (psram=PASS) wrote=0x5ca1ab1e read_text=0x5ca1ab1e read_host=0x5ca1ab1e MATCH
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[poca-iram] watermark iter=1 iram_free=312764 (baseline=312764 delta=+0)
+[poca-iram] final iram free=312764 drift=+0 (no leak)
+[poca-iram] PASS (1 cycle(s))
+poca>  
+--- poca> poca iram
+poca iram
+[poca-iram] 1 iteration(s): load iram_probe -> IRAM proofs -> unload
+[poca-iram] iram free baseline=312764
+[poca-load] begin iram_probe (entry_queries=4)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2300 sha256=a50f11c55fd229009ea9468f66cd03938cd891dfd55d5b42158bc6138e09d881
+[poca] mpb digest MATCH
+[poca] view name=iram_probe version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=97B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (37630) ELF: ELF loader version: 1.3.3
+I (37631) ELF: .plugin_iram copied to 0x403dbf20 size 97
+I (37631) ELF: elf->entry=0x42061450
+[poca-load] entry sym frame_plugin_entry vaddr=0x0000029c mapped=0x3c061450 exec=0x42061450 delta=0x06000000
+[poca-load] query fn ptr=0x42061450
+[poca-load] table ptr=0x3c0614a8 struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061388 .. +0xd7) data [0x3c061464 .. +0x78) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] iram [0x403dbf20 .. +0x61) window0x40=PASS
+[poca-load] psram free after=8382236 consumed=3684
+[poca-load] PASS
+[poca-iram] iram_check fn=0x403dbf20 window0x40=PASS
+[poca-iram] cache-sync counter=5 (>0=PASS)
+[poca-iram] iram_check returned=0xc0ae7429 expected=0xc0ae7429 MATCH
+[poca-iram] write-probe .data=0x3c061464 (psram=PASS) wrote=0x5ca1ab1e read_text=0x5ca1ab1e read_host=0x5ca1ab1e MATCH
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[poca-iram] watermark iter=1 iram_free=312764 (baseline=312764 delta=+0)
+[poca-iram] final iram free=312764 drift=+0 (no leak)
+[poca-iram] PASS (1 cycle(s))
+poca>  
+--- poca> poca iram
+poca iram
+[poca-iram] 1 iteration(s): load iram_probe -> IRAM proofs -> unload
+[poca-iram] iram free baseline=312764
+[poca-load] begin iram_probe (entry_queries=5)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2300 sha256=a50f11c55fd229009ea9468f66cd03938cd891dfd55d5b42158bc6138e09d881
+[poca] mpb digest MATCH
+[poca] view name=iram_probe version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=97B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (39631) ELF: ELF loader version: 1.3.3
+I (39632) ELF: .plugin_iram copied to 0x403dbf20 size 97
+I (39633) ELF: elf->entry=0x42061450
+[poca-load] entry sym frame_plugin_entry vaddr=0x0000029c mapped=0x3c061450 exec=0x42061450 delta=0x06000000
+[poca-load] query fn ptr=0x42061450
+[poca-load] table ptr=0x3c0614a8 struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061388 .. +0xd7) data [0x3c061464 .. +0x78) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] iram [0x403dbf20 .. +0x61) window0x40=PASS
+[poca-load] psram free after=8382236 consumed=3684
+[poca-load] PASS
+[poca-iram] iram_check fn=0x403dbf20 window0x40=PASS
+[poca-iram] cache-sync counter=6 (>0=PASS)
+[poca-iram] iram_check returned=0xc0ae7429 expected=0xc0ae7429 MATCH
+[poca-iram] write-probe .data=0x3c061464 (psram=PASS) wrote=0x5ca1ab1e read_text=0x5ca1ab1e read_host=0x5ca1ab1e MATCH
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+[poca-iram] watermark iter=1 iram_free=312764 (baseline=312764 delta=+0)
+[poca-iram] final iram free=312764 drift=+0 (no leak)
+[poca-iram] PASS (1 cycle(s))
+poca>  
+--- poca> poca load iram_mismatch
+poca load iram_mismatch
+[poca-load] begin iram_mismatch (entry_queries=6)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2304 sha256=81f05dd35c8e6020391d2826d07859024795dc9fc0986104878dd2af2df902cd
+[poca] mpb digest MATCH
+[poca] view name=iram_mismatch version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=113B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=212 length=2020
+[poca] phdr loads=2 memsz=2069 pad=4131 budget=6200 manifest max_mem=262144
+I (41633) ELF: ELF loader version: 1.3.3
+E (41633) ELF: .plugin_iram budget mismatch: manifest=113 section=97; rejecting before allocation
+E (41634) ELF: Error to load elf file, ret=-22
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=6 (unchanged=yes)
+[poca-load] NEGATIVE iram_mismatch PASS (errno -22, expected -22)
+poca>  
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x4200fbc4 esp_elf_relocate=0x4200fc04
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 6 (execution canary)
+  iram cache syncs so far: 6 (p5 counter)
+heap internal  size=    427399 free=    376783 largest=    286720 min_ever=    368987
+heap iram-exec size=    363336 free=    312720 largest=    286720 min_ever=    304924
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8382236
+poca>  
+
+SESSION PASS (status + iram x3 + mismatch negative + counter==3)
+[poca-iram] watermark iter=20 iram_free=312700 (baseline=312700 delta=+0)
+[poca-iram] watermark iter=40 iram_free=312700 (baseline=312700 delta=+0)
+[poca-iram] watermark iter=60 iram_free=312700 (baseline=312700 delta=+0)
+[poca-iram] watermark iter=80 iram_free=312700 (baseline=312700 delta=+0)
+[poca-iram] watermark iter=100 iram_free=312700 (baseline=312700 delta=+0)
+[poca-iram] final iram free=312700 drift=+0 (no leak)
+[poca-iram] PASS (100 cycle(s))
+counts: loads=100 unloads=100 value_match=100 window_pass=200 write_probe=100
+SOAK FAIL
+[poca-iram] watermark iter=20 iram_free=312700 (baseline=312700 delta=+0)
+[poca-iram] watermark iter=40 iram_free=312700 (baseline=312700 delta=+0)
+[poca-iram] watermark iter=60 iram_free=312700 (baseline=312700 delta=+0)
+[poca-iram] watermark iter=80 iram_free=312700 (baseline=312700 delta=+0)
+[poca-iram] watermark iter=100 iram_free=312700 (baseline=312700 delta=+0)
+[poca-iram] final iram free=312700 drift=+0 (no leak)
+[poca-iram] PASS (100 cycle(s))
+counts: {'loads': 100, 'unloads': 100, 'value_match': 100, 'window_pass': 200, 'write_probe': 100}
+SOAK PASS
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x4200fbc4 esp_elf_relocate=0x4200fc04
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 206 (execution canary)
+  iram cache syncs so far: 206 (p5 counter)
+heap internal  size=    427391 free=    376747 largest=    286720 min_ever=    368943
+heap iram-exec size=    363328 free=    312684 largest=    286720 min_ever=    304880
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8382236
+poca>  
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x4200fbc4 esp_elf_relocate=0x4200fc04
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 206 (execution canary)
+  iram cache syncs so far: 206 (p5 counter)
+heap internal  size=    427391 free=    376747 largest=    286720 min_ever=    368943
+heap iram-exec size=    363328 free=    312684 largest=    286720 min_ever=    304880
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8382236
+poca>  
+--- poca> poca verify baseline
+poca verify baseline
+[poca-verify] baseline size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+[poca-verify] PASS
+poca>  
+--- poca> poca load baseline
+poca load baseline
+[poca-load] begin baseline (entry_queries=206)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (140395) ELF: ELF loader version: 1.3.3
+I (140395) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+poca>  
+--- poca> poca activate
+poca activate
+[poca-activate] baseline activate fn ptr=0x420612f0
+[poca-activate] returned=0x1501e22e expected=0x1501e22e
+[poca-activate] MAGIC MATCH
+[poca-activate] PASS
+poca>  
+--- poca> poca unload
+poca unload
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+poca>  
+--- poca> poca verify globdat
+poca verify globdat
+[poca-verify] globdat size=2052 sha256=2d51698e19fc8aa636745577923c467d6103dd3e3e36d6e3b9a7ad67998a37f5
+[poca] mpb digest MATCH
+[poca] view name=globdat version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=204 length=1776
+[poca] phdr loads=2 memsz=1971 pad=4121 budget=6092 manifest max_mem=262144
+[poca-verify] PASS
+poca>  
+--- poca> poca load globdat
+poca load globdat
+[poca-load] begin globdat (entry_queries=207)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2052 sha256=2d51698e19fc8aa636745577923c467d6103dd3e3e36d6e3b9a7ad67998a37f5
+[poca] mpb digest MATCH
+[poca] view name=globdat version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=204 length=1776
+[poca] phdr loads=2 memsz=1971 pad=4121 budget=6092 manifest max_mem=262144
+I (146800) ELF: ELF loader version: 1.3.3
+I (146801) ELF: elf->entry=0x4206138c
+[poca-load] entry sym frame_plugin_entry vaddr=0x0000029c mapped=0x3c06138c exec=0x4206138c delta=0x06000000
+[poca-load] query fn ptr=0x4206138c
+[poca-load] table ptr=0x3c0613e0 struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] GLOB_DAT host_sentinel=0x4200b884 expected=0x4200b884 MATCH
+[poca-load] text [0x3c0612c8 .. +0xd3) data [0x3c0613a0 .. +0x74) bss 0x408 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382432 consumed=3488
+[poca-load] PASS
+poca>  
+--- poca> poca activate
+poca activate
+[poca-activate] globdat activate fn ptr=0x42061310
+[poca-activate] returned=0x4bec22f0 expected=0x4bec22f0
+[poca-activate] MAGIC MATCH
+[poca-activate] PASS
+poca>  
+--- poca> poca unload
+poca unload
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+poca>  
+--- poca> poca verify plt
+poca verify plt
+[poca-verify] plt size=2180 sha256=3afc184c27b2cd6d37d53940d014c83fa72e260cb457e3505a5e107b63cc5be4
+[poca] mpb digest MATCH
+[poca] view name=plt version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=200 length=1908
+[poca] phdr loads=2 memsz=2023 pad=4129 budget=6152 manifest max_mem=262144
+[poca-verify] PASS
+poca>  
+--- poca> poca load plt
+poca load plt
+[poca-load] begin plt (entry_queries=208)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=2180 sha256=3afc184c27b2cd6d37d53940d014c83fa72e260cb457e3505a5e107b63cc5be4
+[poca] mpb digest MATCH
+[poca] view name=plt version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=200 length=1908
+[poca] phdr loads=2 memsz=2023 pad=4129 budget=6152 manifest max_mem=262144
+I (153205) ELF: ELF loader version: 1.3.3
+I (153206) ELF: elf->entry=0x42061424
+[poca-load] entry sym frame_plugin_entry vaddr=0x000002bc mapped=0x3c061424 exec=0x42061424 delta=0x06000000
+[poca-load] query fn ptr=0x42061424
+[poca-load] table ptr=0x3c061478 struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] GLOB_DAT host_add=0x42031e1c expected=0x42031e1c MATCH
+[poca-load] text [0x3c061348 .. +0xeb) data [0x3c061438 .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382280 consumed=3640
+[poca-load] PASS
+poca>  
+--- poca> poca activate
+poca activate
+[poca-activate] plt activate fn ptr=0x42061398
+[poca-activate] returned=0xf027ea65 expected=0xf027ea65
+[poca-activate] MAGIC MATCH
+[poca-activate] PASS
+poca>  
+--- poca> poca unload
+poca unload
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+poca>  
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x4200fbc4 esp_elf_relocate=0x4200fc04
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 209 (execution canary)
+  iram cache syncs so far: 206 (p5 counter)
+heap internal  size=    427339 free=    376475 largest=    286720 min_ever=    368699
+heap iram-exec size=    363276 free=    312412 largest=    286720 min_ever=    304636
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8382236
+poca>  
+--- poca> poca load import_neg
+poca load import_neg
+[poca-load] begin import_neg (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1800 sha256=422eb0050d5cd7f0e688237b2609099c2bbf46344400341a9ca0e7de811b66de
+[poca] mpb digest MATCH
+[poca] view name=import_neg version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1520
+[poca] phdr loads=2 memsz=739 pad=4121 budget=4860 manifest max_mem=262144
+I (159611) ELF: ELF loader version: 1.3.3
+I (159611) ELF: elf->entry=0x420611ec
+E (159612) ELF: Can't find symbol frame_unknown_symbol
+[poca-load] FAIL esp_elf_relocate err=-88
+[poca-load] entry_queries=209 (unchanged=yes)
+[poca-load] NEGATIVE import_neg PASS (errno -88, expected -88)
+poca>  
+--- poca> poca load neg_r32
+poca load neg_r32
+[poca-load] begin neg_r32 (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1984 sha256=857b211ef2f2b3c1b7dbdc2173d5b255b8d51b016e91563ca5de1c5d8e33a0b9
+[poca] mpb digest MATCH
+[poca] view name=neg_r32 version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=204 length=1708
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (161213) ELF: ELF loader version: 1.3.3
+I (161213) ELF: elf->entry=0x420612e4
+E (161214) elf_arch: info=1 is not supported
+E (161214) ELF: Failed to relocate type=1 offset=0x198 ret=-22
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=209 (unchanged=yes)
+[poca-load] NEGATIVE neg_r32 PASS (errno -22, expected -22)
+poca>  
+--- poca> poca load neg_s0op
+poca load neg_s0op
+[poca-load] begin neg_s0op (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=4863f40c4e347dbea34e189f1271ea40d5e78be32d56a072a48a755f0908ae76
+[poca] mpb digest MATCH
+[poca] view name=neg_s0op version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (162814) ELF: ELF loader version: 1.3.3
+I (162815) ELF: elf->entry=0x42061304
+E (162815) elf_arch: info=20 is not supported
+E (162816) ELF: Failed to relocate type=20 offset=0x198 ret=-22
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=209 (unchanged=yes)
+[poca-load] NEGATIVE neg_s0op PASS (errno -22, expected -22)
+poca>  
+--- poca> poca load neg_phbe
+poca load neg_phbe
+[poca-load] begin neg_phbe (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=def19837dbdf39ffbc4304e5e3dee7b07e9e9240255810c1527269f59b3cd83f
+[poca] mpb digest MATCH
+[poca] view name=neg_phbe version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (164416) ELF: ELF loader version: 1.3.3
+E (164416) ELF: Invalid ELF image: magic/class/data/machine mismatch (class=1 data=2 machine=94)
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=209 (unchanged=yes)
+[poca-load] NEGATIVE neg_phbe PASS (errno -22, expected -22)
+poca>  
+--- poca> poca load neg_ph64
+poca load neg_ph64
+[poca-load] begin neg_ph64 (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=044006b88065d587c43d41ccac222947a8e10f233130c679aabe9ee70eb56c3d
+[poca] mpb digest MATCH
+[poca] view name=neg_ph64 version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (166016) ELF: ELF loader version: 1.3.3
+E (166017) ELF: Invalid ELF image: magic/class/data/machine mismatch (class=2 data=1 machine=94)
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=209 (unchanged=yes)
+[poca-load] NEGATIVE neg_ph64 PASS (errno -22, expected -22)
+poca>  
+--- poca> poca load neg_phmach
+poca load neg_phmach
+[poca-load] begin neg_phmach (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=dda290678c4f7c8cb51901cc3e2e406a15efe0bf207b96dbeb9103508edd9ebf
+[poca] mpb digest MATCH
+[poca] view name=neg_phmach version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (167617) ELF: ELF loader version: 1.3.3
+E (167618) ELF: Invalid ELF image: magic/class/data/machine mismatch (class=1 data=1 machine=40)
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=209 (unchanged=yes)
+[poca-load] NEGATIVE neg_phmach PASS (errno -22, expected -22)
+poca>  
+--- poca> poca load neg_phspan
+poca load neg_phspan
+[poca-load] begin neg_phspan (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=84b8c820513f798d5b3840b844e4f62c6478253aec05ec9bc279fdeab1cd38e5
+[poca] mpb digest MATCH
+[poca] view name=neg_phspan version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca] phdr loads=2 memsz=15729860 pad=0 budget=15729860 manifest max_mem=262144
+[poca-load] NEGATIVE neg_phspan PASS (phdr admission rejected before load)
+[poca-load] entry_queries=209 (unchanged=yes)
+poca>  
+--- poca> poca load cxx_ctor
+poca load cxx_ctor
+[poca-load] begin cxx_ctor (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=3472 sha256=f42b201b2437b25a84ece2a5c60c9e7d67b7ad2ad537d7c1906d64d125049e36
+[poca] mpb digest MATCH
+[poca] view name=cxx_ctor version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=3192
+[poca] phdr loads=2 memsz=1936 pad=4096 budget=6032 manifest max_mem=262144
+I (170820) ELF: ELF loader version: 1.3.3
+E (170821) ELF: Forbidden C++ feature section '.ctors' (appendix C 11.2); rejecting image before load
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=209 (unchanged=yes)
+[poca-load] NEGATIVE cxx_ctor PASS (errno -22, expected -22)
+poca>  
+--- poca> poca load cxx_tls
+poca load cxx_tls
+[poca-load] begin cxx_tls (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=3724 sha256=9ecfc63689709f9af00751f860926d6ecd92ab28cacd9d4ed237f48a934c2a4f
+[poca] mpb digest MATCH
+[poca] view name=cxx_tls version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=204 length=3448
+[poca] phdr loads=2 memsz=2088 pad=4096 budget=6184 manifest max_mem=262144
+I (172422) ELF: ELF loader version: 1.3.3
+E (172422) ELF: Forbidden C++ feature section '.tdata' (appendix C 11.2); rejecting image before load
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=209 (unchanged=yes)
+[poca-load] NEGATIVE cxx_tls PASS (errno -22, expected -22)
+poca>  
+--- poca> poca load neg_tls_nosect
+poca load neg_tls_nosect
+[poca-load] begin neg_tls_nosect (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=3732 sha256=63dff93d4555cc9382dd8059f5b53be97c8f4d53b19ead0a377d5c74b0551928
+[poca] mpb digest MATCH
+[poca] view name=neg_tls_nosect version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=212 length=3448
+[poca] phdr loads=2 memsz=2088 pad=4096 budget=6184 manifest max_mem=262144
+I (174024) ELF: ELF loader version: 1.3.3
+I (174024) ELF: elf->entry=0x42061a50
+E (174025) elf_arch: info=51 is not supported
+E (174025) ELF: Failed to relocate type=51 offset=0x1f8 ret=-22
+[poca-load] FAIL esp_elf_relocate err=-22
+[poca-load] entry_queries=209 (unchanged=yes)
+[poca-load] NEGATIVE neg_tls_nosect PASS (errno -22, expected -22)
+poca>  
+--- poca> poca status
+poca status
+elf_loader: vendored espressif 1.3.3 @6526c5b1 (esp-iot-solution)
+  ELF_LOADER=y LOAD_PSRAM=y CACHE_OFFSET=y SET_MMU=n DLSO=n
+  esp_elf_t state size: 116 bytes
+  loader entries: esp_elf_init=0x4200fbc4 esp_elf_relocate=0x4200fc04
+  registered host imports: poca_host_sentinel poca_host_add
+  entry queries so far: 209 (execution canary)
+  iram cache syncs so far: 206 (p5 counter)
+heap internal  size=    427295 free=    376199 largest=    286720 min_ever=    368411
+heap iram-exec size=    363232 free=    312136 largest=    286720 min_ever=    304348
+heap psram     size=   8386280 free=   8385920 largest=   8257536 min_ever=   8380692
+poca>  
+--- poca> poca load baseline
+poca load baseline
+[poca-load] begin baseline (entry_queries=209)
+[poca-load] psram free before=8385920
+[poca-load] mpb size=1988 sha256=e5b0a63199cd6ba7e8f54d3cf75a8121e037c5c9aa477a2d8082bfa6c4791f64
+[poca] mpb digest MATCH
+[poca] view name=baseline version=1.0.0 epoch=1 key_id=e5677a1c abi=1.0 iram=0B max_mem=262144B payloads=1
+[poca] view payload[0] span offset=208 length=1708
+[poca] phdr loads=2 memsz=1900 pad=4120 budget=6020 manifest max_mem=262144
+I (177225) ELF: ELF loader version: 1.3.3
+I (177225) ELF: elf->entry=0x42061304
+[poca-load] entry sym frame_plugin_entry vaddr=0x00000234 mapped=0x3c061304 exec=0x42061304 delta=0x06000000
+[poca-load] query fn ptr=0x42061304
+[poca-load] table ptr=0x3c06137c struct_size=52 abi=1.2
+[poca-load] prepare()=0 OK
+[poca-load] text [0x3c061268 .. +0xd0) data [0x3c06133c .. +0x74) bss 0x404 rodata 0x40 drlro 0x34
+[poca-load] psram free after=8382532 consumed=3388
+[poca-load] PASS
+poca>  
+--- poca> poca activate
+poca activate
+[poca-activate] baseline activate fn ptr=0x420612f0
+[poca-activate] returned=0x1501e22e expected=0x1501e22e
+[poca-activate] MAGIC MATCH
+[poca-activate] PASS
+poca>  
+--- poca> poca unload
+poca unload
+[poca-unload] psram free after=8385920 (before-load=8385920 delta=+0)
+[poca-unload] PASS
+poca>  
+
+MATRIX PASS (positives=3, negatives=10, canary=209 unchanged across all negatives, canary_start=206)
+==== task-7 closing summary 2026-08-31T23:59:42+08:00 ====
+commit: 2f67b4f feat(poc-a): plugin_iram loader patch with budget consistency
+tree.sha256 self-consistent: OK
+18

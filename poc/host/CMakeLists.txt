@@ -76,6 +76,10 @@ endif()
 
 enable_testing()
 
+add_library(frame_poc_strand STATIC src/frame_strand.cc)
+target_include_directories(frame_poc_strand PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries(frame_poc_strand PUBLIC frame_poc_contract)
+
 add_executable(frame_abi_test tests/frame_abi_test.cc)
 target_link_libraries(frame_abi_test PRIVATE frame_poc_contract GTest::gtest_main)
 gtest_discover_tests(frame_abi_test)
@@ -92,9 +96,30 @@ add_executable(lifecycle_state_test tests/lifecycle_state_test.cc)
 target_link_libraries(lifecycle_state_test PRIVATE frame_poc_contract GTest::gtest_main)
 gtest_discover_tests(lifecycle_state_test)
 
+add_executable(mpb_parser_test
+    tests/mpb_parser_test.cc
+    tests/sha256_ref.c
+    ../common/components/frame_poc_mpb/src/mpb_parser.c)
+target_include_directories(mpb_parser_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../common/components/frame_poc_mpb/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+target_compile_definitions(mpb_parser_test PRIVATE
+    MPB_CORPUS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/mpb_corpus")
+target_link_libraries(mpb_parser_test PRIVATE frame_poc_contract GTest::gtest_main)
+gtest_discover_tests(mpb_parser_test)
+
+add_executable(frame_strand_test tests/frame_strand_test.cc)
+target_link_libraries(frame_strand_test PRIVATE frame_poc_strand GTest::gtest_main)
+gtest_discover_tests(frame_strand_test)
+
+add_executable(frame_completion_test tests/frame_completion_test.cc)
+target_link_libraries(frame_completion_test PRIVATE frame_poc_strand GTest::gtest_main)
+gtest_discover_tests(frame_completion_test)
+
 if(ENABLE_CLANG_TIDY)
     find_program(CLANG_TIDY_EXECUTABLE NAMES clang-tidy-18 clang-tidy REQUIRED)
-    foreach(target frame_abi_test frame_handle_test lifecycle_state_test)
+    foreach(target frame_abi_test frame_handle_test lifecycle_state_test frame_strand_test
+            frame_completion_test)
         set_property(TARGET ${target} PROPERTY CXX_CLANG_TIDY "${CLANG_TIDY_EXECUTABLE}")
     endforeach()
 endif()

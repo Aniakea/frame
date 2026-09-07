@@ -1,0 +1,719 @@
+=== task-11-12 poc-a host strand + completion === 2026-08-31T21:18:45+08:00
+=== worktree: 4793cc2 branch poc-a-dynamic-elf ===
+-- The C compiler identification is GNU 16.2.1
+-- The CXX compiler identification is GNU 16.2.1
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Configuring done (23.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host
+[1/22] Building C object CMakeFiles/frame_abi_c_test.dir/tests/frame_abi_c_test.c.o
+[2/22] Linking C executable frame_abi_c_test
+[3/22] Building CXX object CMakeFiles/frame_poc_strand.dir/src/frame_strand.cc.o
+[4/22] Linking CXX static library libframe_poc_strand.a
+[5/22] Building CXX object CMakeFiles/frame_abi_test.dir/tests/frame_abi_test.cc.o
+[6/22] Building CXX object CMakeFiles/frame_handle_test.dir/tests/frame_handle_test.cc.o
+[7/22] Building CXX object CMakeFiles/lifecycle_state_test.dir/tests/lifecycle_state_test.cc.o
+[8/22] Building CXX object _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[9/22] Building CXX object CMakeFiles/frame_strand_test.dir/tests/frame_strand_test.cc.o
+FAILED: [code=1] CMakeFiles/frame_strand_test.dir/tests/frame_strand_test.cc.o 
+/usr/bin/c++  -I/home/lain/Projects/esp_study/poc-a-wt/poc/host/include -I/home/lain/Projects/esp_study/poc-a-wt/poc/host/../common/components/frame_poc_runtime/include -isystem /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host/_deps/googletest-src/googletest/include -isystem /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host/_deps/googletest-src/googletest -std=c++26 -Wall -Wextra -Werror -Wpedantic -MD -MT CMakeFiles/frame_strand_test.dir/tests/frame_strand_test.cc.o -MF CMakeFiles/frame_strand_test.dir/tests/frame_strand_test.cc.o.d -o CMakeFiles/frame_strand_test.dir/tests/frame_strand_test.cc.o -c /home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc: In lambda function:
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc:125:27: error: expected primary-expression before ‘(’ token
+  125 |         return std::thread([this_slot = slot, this_count = count, &] {
+      |                           ^
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc:125:68: error: expected identifier before ‘]’ token
+  125 |         return std::thread([this_slot = slot, this_count = count, &] {
+      |                                                                    ^
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc: In lambda function:
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc:126:30: error: ‘strands’ is not captured
+  126 |             strand& target = strands[this_slot];
+      |                              ^~~~~~~
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc:125:68: note: the lambda has no capture-default
+  125 |         return std::thread([this_slot = slot, this_count = count, &] {
+      |                                                                    ^
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc:120:12: note: ‘frame::poc::strand strands [2]’ declared here
+  120 |     strand strands[2]{strand(core, 512), strand(core, 512)};
+      |            ^~~~~~~
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc:127:35: error: ‘guard’ is not captured
+  127 |             slot_payload payload{&guard, this_slot};
+      |                                   ^~~~~
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc:125:68: note: the lambda has no capture-default
+  125 |         return std::thread([this_slot = slot, this_count = count, &] {
+      |                                                                    ^
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc:121:23: note: ‘{anonymous}::concurrency_guard guard’ declared here
+  121 |     concurrency_guard guard;
+      |                       ^~~~~
+[10/22] Building CXX object _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[11/22] Building CXX object CMakeFiles/frame_completion_test.dir/tests/frame_completion_test.cc.o
+[12/22] Building CXX object _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[13/22] Building CXX object _deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+ninja: build stopped: subcommand failed.
+[1/10] Linking CXX static library lib/libgtest.a
+[2/10] Linking CXX static library lib/libgtest_main.a
+[3/10] Linking CXX static library lib/libgmock.a
+[4/10] Linking CXX static library lib/libgmock_main.a
+[5/10] Linking CXX executable frame_handle_test
+[6/10] Linking CXX executable frame_abi_test
+[7/10] Linking CXX executable lifecycle_state_test
+[8/10] Linking CXX executable frame_completion_test
+[9/10] Building CXX object CMakeFiles/frame_strand_test.dir/tests/frame_strand_test.cc.o
+[10/10] Linking CXX executable frame_strand_test
+=== ctest run #1 (default build) ===
+Test project /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host
+      Start  1: FrameAbi.AcceptsCompatibleExtension
+ 1/24 Test  #1: FrameAbi.AcceptsCompatibleExtension ......................   Passed    0.00 sec
+      Start  2: FrameAbi.RejectsIncompatibleOffer
+ 2/24 Test  #2: FrameAbi.RejectsIncompatibleOffer ........................   Passed    0.00 sec
+      Start  3: FrameAbi.PinsStableErrorValues
+ 3/24 Test  #3: FrameAbi.PinsStableErrorValues ...........................   Passed    0.00 sec
+      Start  4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType
+ 4/24 Test  #4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType ...   Passed    0.00 sec
+      Start  5: FrameHandle.ReuseInvalidatesStaleHandle
+ 5/24 Test  #5: FrameHandle.ReuseInvalidatesStaleHandle ..................   Passed    0.00 sec
+      Start  6: FrameHandle.RejectsInvalidArguments
+ 6/24 Test  #6: FrameHandle.RejectsInvalidArguments ......................   Passed    0.00 sec
+      Start  7: LifecycleState.FollowsColdStartAndUnload
+ 7/24 Test  #7: LifecycleState.FollowsColdStartAndUnload .................   Passed    0.00 sec
+      Start  8: LifecycleState.SupportsPauseResumeAndCommittedUpdate
+ 8/24 Test  #8: LifecycleState.SupportsPauseResumeAndCommittedUpdate .....   Passed    0.00 sec
+      Start  9: LifecycleState.RejectsEveryUnspecifiedTransition
+ 9/24 Test  #9: LifecycleState.RejectsEveryUnspecifiedTransition .........   Passed    0.00 sec
+      Start 10: LifecycleState.RestartRequiredIsTerminal
+10/24 Test #10: LifecycleState.RestartRequiredIsTerminal .................   Passed    0.00 sec
+      Start 11: FrameStrand.StrictFifoOrderAcrossProducers
+11/24 Test #11: FrameStrand.StrictFifoOrderAcrossProducers ...............   Passed    0.02 sec
+      Start 12: FrameStrand.SameStrandHandlersNeverConcurrent
+12/24 Test #12: FrameStrand.SameStrandHandlersNeverConcurrent ............***Exception: SegFault  0.16 sec
+Running main() from /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host/_deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = FrameStrand.SameStrandHandlersNeverConcurrent
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameStrand
+[ RUN      ] FrameStrand.SameStrandHandlersNeverConcurrent
+
+      Start 13: FrameStrand.ReadyQueueNeverDuplicatesStrand
+13/24 Test #13: FrameStrand.ReadyQueueNeverDuplicatesStrand ..............   Passed    0.11 sec
+      Start 14: FrameStrand.NoLostWakeupUnderProducerStorm
+14/24 Test #14: FrameStrand.NoLostWakeupUnderProducerStorm ...............***Failed   60.15 sec
+Running main() from /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host/_deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = FrameStrand.NoLostWakeupUnderProducerStorm
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameStrand
+[ RUN      ] FrameStrand.NoLostWakeupUnderProducerStorm
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc:239: Failure
+Value of: wait_until([&] { return s.invoked_count() == kTotal; }, std::chrono::seconds{60})
+  Actual: false
+Expected: true
+
+[  FAILED  ] FrameStrand.NoLostWakeupUnderProducerStorm (60147 ms)
+[----------] 1 test from FrameStrand (60147 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (60147 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] FrameStrand.NoLostWakeupUnderProducerStorm
+
+ 1 FAILED TEST
+
+      Start 15: FrameStrand.QueueFullRejectKeepsCallerOwnership
+15/24 Test #15: FrameStrand.QueueFullRejectKeepsCallerOwnership ..........   Passed    0.00 sec
+      Start 16: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+16/24 Test #16: FrameStrand.OverrunCounterIncrementsOnSlowHandler ........   Passed    0.01 sec
+      Start 17: FrameStrand.ClosingRejectsPostsAndCleansUp
+17/24 Test #17: FrameStrand.ClosingRejectsPostsAndCleansUp ...............   Passed    0.00 sec
+      Start 18: FrameCompletion.CompleteVsCancelRaceExactlyOnce
+18/24 Test #18: FrameCompletion.CompleteVsCancelRaceExactlyOnce ..........   Passed   10.51 sec
+      Start 19: FrameCompletion.CancelAfterCompleteKeepsOriginalErr
+19/24 Test #19: FrameCompletion.CancelAfterCompleteKeepsOriginalErr ......   Passed    0.00 sec
+      Start 20: FrameCompletion.ReserveFailureStartsNothing
+20/24 Test #20: FrameCompletion.ReserveFailureStartsNothing ..............   Passed    0.00 sec
+      Start 21: FrameCompletion.QuiescingCleanupRunsOnWorkerThread
+21/24 Test #21: FrameCompletion.QuiescingCleanupRunsOnWorkerThread .......   Passed    0.00 sec
+      Start 22: FrameCompletion.StaleGenerationDroppedButDestroyed
+22/24 Test #22: FrameCompletion.StaleGenerationDroppedButDestroyed .......   Passed    0.00 sec
+      Start 23: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+23/24 Test #23: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce ........   Passed    2.14 sec
+      Start 24: frame_abi_c_test
+24/24 Test #24: frame_abi_c_test .........................................   Passed    0.00 sec
+
+92% tests passed, 2 tests failed out of 24
+
+Total Test time (real) =  73.15 sec
+
+The following tests FAILED:
+	 12 - FrameStrand.SameStrandHandlersNeverConcurrent (SEGFAULT)
+	 14 - FrameStrand.NoLostWakeupUnderProducerStorm (Failed)
+Errors while running CTest
+[0/1] Re-running CMake...
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host
+[1/7] Building C object CMakeFiles/mpb_parser_test.dir/tests/sha256_ref.c.o
+[2/7] Building C object CMakeFiles/mpb_parser_test.dir/home/lain/Projects/esp_study/poc-a-wt/poc/common/components/frame_poc_mpb/src/mpb_parser.c.o
+[3/7] Building CXX object CMakeFiles/mpb_parser_test.dir/tests/mpb_parser_test.cc.o
+FAILED: [code=1] CMakeFiles/mpb_parser_test.dir/tests/mpb_parser_test.cc.o 
+/usr/bin/c++ -DMPB_CORPUS_DIR=\"/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/mpb_corpus\" -I/home/lain/Projects/esp_study/poc-a-wt/poc/host/../common/components/frame_poc_mpb/include -I/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests -I/home/lain/Projects/esp_study/poc-a-wt/poc/host/../common/components/frame_poc_runtime/include -isystem /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host/_deps/googletest-src/googletest/include -isystem /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host/_deps/googletest-src/googletest -std=c++26 -Wall -Wextra -Werror -Wpedantic -MD -MT CMakeFiles/mpb_parser_test.dir/tests/mpb_parser_test.cc.o -MF CMakeFiles/mpb_parser_test.dir/tests/mpb_parser_test.cc.o.d -o CMakeFiles/mpb_parser_test.dir/tests/mpb_parser_test.cc.o -c /home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/mpb_parser_test.cc
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/mpb_parser_test.cc: In member function ‘virtual void {anonymous}::MpbParser_ByteFlipFuzzNeverCrashes_Test::TestBody()’:
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/mpb_parser_test.cc:553:74: error: taking address of rvalue [-fpermissive]
+  553 |                 mpb_parse(flipped.data(), flipped.size(), &default_policy(), &crypto, &view);
+      |                                                            ~~~~~~~~~~~~~~^~
+[4/7] Building CXX object CMakeFiles/frame_strand_test.dir/tests/frame_strand_test.cc.o
+ninja: build stopped: subcommand failed.
+Test project /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host
+    Start 12: FrameStrand.StrictFifoOrderAcrossProducers
+1/7 Test #12: FrameStrand.StrictFifoOrderAcrossProducers ..........   Passed    0.02 sec
+    Start 13: FrameStrand.SameStrandHandlersNeverConcurrent
+2/7 Test #13: FrameStrand.SameStrandHandlersNeverConcurrent .......***Exception: SegFault  0.15 sec
+Running main() from /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host/_deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = FrameStrand.SameStrandHandlersNeverConcurrent
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameStrand
+[ RUN      ] FrameStrand.SameStrandHandlersNeverConcurrent
+
+    Start 14: FrameStrand.ReadyQueueNeverDuplicatesStrand
+3/7 Test #14: FrameStrand.ReadyQueueNeverDuplicatesStrand .........   Passed    0.11 sec
+    Start 15: FrameStrand.NoLostWakeupUnderProducerStorm
+4/7 Test #15: FrameStrand.NoLostWakeupUnderProducerStorm ..........***Failed   60.12 sec
+Running main() from /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host/_deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = FrameStrand.NoLostWakeupUnderProducerStorm
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameStrand
+[ RUN      ] FrameStrand.NoLostWakeupUnderProducerStorm
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_strand_test.cc:239: Failure
+Value of: wait_until([&] { return s.invoked_count() == kTotal; }, std::chrono::seconds{60})
+  Actual: false
+Expected: true
+
+[  FAILED  ] FrameStrand.NoLostWakeupUnderProducerStorm (60113 ms)
+[----------] 1 test from FrameStrand (60113 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (60113 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] FrameStrand.NoLostWakeupUnderProducerStorm
+
+ 1 FAILED TEST
+
+    Start 16: FrameStrand.QueueFullRejectKeepsCallerOwnership
+5/7 Test #16: FrameStrand.QueueFullRejectKeepsCallerOwnership .....   Passed    0.00 sec
+    Start 17: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+6/7 Test #17: FrameStrand.OverrunCounterIncrementsOnSlowHandler ...   Passed    0.01 sec
+    Start 18: FrameStrand.ClosingRejectsPostsAndCleansUp
+7/7 Test #18: FrameStrand.ClosingRejectsPostsAndCleansUp ..........   Passed    0.00 sec
+
+71% tests passed, 2 tests failed out of 7
+
+Total Test time (real) =  60.42 sec
+
+The following tests FAILED:
+	 13 - FrameStrand.SameStrandHandlersNeverConcurrent (SEGFAULT)
+	 15 - FrameStrand.NoLostWakeupUnderProducerStorm (Failed)
+Errors while running CTest
+ninja: Entering directory `.build/poc-host'
+[1/1] Linking CXX executable frame_strand_test
+Test project /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host
+      Start 12: FrameStrand.StrictFifoOrderAcrossProducers
+ 1/13 Test #12: FrameStrand.StrictFifoOrderAcrossProducers ............   Passed    0.02 sec
+      Start 13: FrameStrand.SameStrandHandlersNeverConcurrent
+ 2/13 Test #13: FrameStrand.SameStrandHandlersNeverConcurrent .........   Passed    0.12 sec
+      Start 14: FrameStrand.ReadyQueueNeverDuplicatesStrand
+ 3/13 Test #14: FrameStrand.ReadyQueueNeverDuplicatesStrand ...........   Passed    0.08 sec
+      Start 15: FrameStrand.NoLostWakeupUnderProducerStorm
+ 4/13 Test #15: FrameStrand.NoLostWakeupUnderProducerStorm ............   Passed    0.12 sec
+      Start 16: FrameStrand.QueueFullRejectKeepsCallerOwnership
+ 5/13 Test #16: FrameStrand.QueueFullRejectKeepsCallerOwnership .......   Passed    0.00 sec
+      Start 17: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+ 6/13 Test #17: FrameStrand.OverrunCounterIncrementsOnSlowHandler .....   Passed    0.01 sec
+      Start 18: FrameStrand.ClosingRejectsPostsAndCleansUp
+ 7/13 Test #18: FrameStrand.ClosingRejectsPostsAndCleansUp ............   Passed    0.00 sec
+      Start 19: FrameCompletion.CompleteVsCancelRaceExactlyOnce
+ 8/13 Test #19: FrameCompletion.CompleteVsCancelRaceExactlyOnce .......***Failed   10.52 sec
+Running main() from /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host/_deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = FrameCompletion.CompleteVsCancelRaceExactlyOnce
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameCompletion
+[ RUN      ] FrameCompletion.CompleteVsCancelRaceExactlyOnce
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_completion_test.cc:141: Failure
+Expected equality of these values:
+  rec.deliveries()
+    Which is: 100001
+  kRounds
+    Which is: 100000
+
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_completion_test.cc:142: Failure
+Expected equality of these values:
+  rec.complete_delivered.load() + rec.cancel_delivered.load()
+    Which is: 100001
+  kRounds
+    Which is: 100000
+
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_completion_test.cc:143: Failure
+Expected equality of these values:
+  rec.destroyed.load()
+    Which is: 100001
+  kRounds
+    Which is: 100000
+
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_completion_test.cc:144: Failure
+Expected equality of these values:
+  s.destroyed_count()
+    Which is: 100001
+  kRounds
+    Which is: 100000
+
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_completion_test.cc:145: Failure
+Expected equality of these values:
+  rec.delivered_errs.size()
+    Which is: 100001
+  kRounds
+    Which is: 100000
+
+[  FAILED  ] FrameCompletion.CompleteVsCancelRaceExactlyOnce (10516 ms)
+[----------] 1 test from FrameCompletion (10516 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (10516 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] FrameCompletion.CompleteVsCancelRaceExactlyOnce
+
+ 1 FAILED TEST
+
+      Start 20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr
+ 9/13 Test #20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr ...   Passed    0.00 sec
+      Start 21: FrameCompletion.ReserveFailureStartsNothing
+10/13 Test #21: FrameCompletion.ReserveFailureStartsNothing ...........   Passed    0.00 sec
+      Start 22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread
+11/13 Test #22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread ....   Passed    0.00 sec
+      Start 23: FrameCompletion.StaleGenerationDroppedButDestroyed
+12/13 Test #23: FrameCompletion.StaleGenerationDroppedButDestroyed ....   Passed    0.00 sec
+      Start 24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+13/13 Test #24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce .....***Failed    2.12 sec
+Running main() from /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host/_deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameCompletion
+[ RUN      ] FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_completion_test.cc:359: Failure
+Expected equality of these values:
+  rec.deliveries()
+    Which is: 20001
+  kRounds
+    Which is: 20000
+
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_completion_test.cc:360: Failure
+Expected equality of these values:
+  rec.complete_delivered.load() + rec.cancel_delivered.load()
+    Which is: 20001
+  kRounds
+    Which is: 20000
+
+/home/lain/Projects/esp_study/poc-a-wt/poc/host/tests/frame_completion_test.cc:361: Failure
+Expected equality of these values:
+  rec.destroyed.load()
+    Which is: 20001
+  kRounds
+    Which is: 20000
+
+[  FAILED  ] FrameCompletion.ThreeWayRaceCompleteCancelQuiesce (2122 ms)
+[----------] 1 test from FrameCompletion (2122 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2122 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+
+ 1 FAILED TEST
+
+
+85% tests passed, 2 tests failed out of 13
+
+Total Test time (real) =  13.02 sec
+
+The following tests FAILED:
+	 19 - FrameCompletion.CompleteVsCancelRaceExactlyOnce (Failed)
+	 24 - FrameCompletion.ThreeWayRaceCompleteCancelQuiesce (Failed)
+Errors while running CTest
+ninja: Entering directory `.build/poc-host'
+[1/2] Building CXX object CMakeFiles/frame_completion_test.dir/tests/frame_completion_test.cc.o
+[2/2] Linking CXX executable frame_completion_test
+Test project /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host
+      Start 12: FrameStrand.StrictFifoOrderAcrossProducers
+ 1/13 Test #12: FrameStrand.StrictFifoOrderAcrossProducers ............   Passed    0.02 sec
+      Start 13: FrameStrand.SameStrandHandlersNeverConcurrent
+ 2/13 Test #13: FrameStrand.SameStrandHandlersNeverConcurrent .........   Passed    0.12 sec
+      Start 14: FrameStrand.ReadyQueueNeverDuplicatesStrand
+ 3/13 Test #14: FrameStrand.ReadyQueueNeverDuplicatesStrand ...........   Passed    0.10 sec
+      Start 15: FrameStrand.NoLostWakeupUnderProducerStorm
+ 4/13 Test #15: FrameStrand.NoLostWakeupUnderProducerStorm ............   Passed    0.12 sec
+      Start 16: FrameStrand.QueueFullRejectKeepsCallerOwnership
+ 5/13 Test #16: FrameStrand.QueueFullRejectKeepsCallerOwnership .......   Passed    0.00 sec
+      Start 17: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+ 6/13 Test #17: FrameStrand.OverrunCounterIncrementsOnSlowHandler .....   Passed    0.01 sec
+      Start 18: FrameStrand.ClosingRejectsPostsAndCleansUp
+ 7/13 Test #18: FrameStrand.ClosingRejectsPostsAndCleansUp ............   Passed    0.00 sec
+      Start 19: FrameCompletion.CompleteVsCancelRaceExactlyOnce
+ 8/13 Test #19: FrameCompletion.CompleteVsCancelRaceExactlyOnce .......   Passed   10.51 sec
+      Start 20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr
+ 9/13 Test #20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr ...   Passed    0.00 sec
+      Start 21: FrameCompletion.ReserveFailureStartsNothing
+10/13 Test #21: FrameCompletion.ReserveFailureStartsNothing ...........   Passed    0.00 sec
+      Start 22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread
+11/13 Test #22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread ....   Passed    0.00 sec
+      Start 23: FrameCompletion.StaleGenerationDroppedButDestroyed
+12/13 Test #23: FrameCompletion.StaleGenerationDroppedButDestroyed ....   Passed    0.00 sec
+      Start 24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+13/13 Test #24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce .....   Passed    2.14 sec
+
+100% tests passed out of 13
+
+Total Test time (real) =  13.04 sec
+=== TSan configure (clang) ===
+-- Configuring done (21.9s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host-tsan
+=== TSan build (task targets only; parallel WIP mpb target excluded) ===
+[16/18] Linking CXX executable frame_completion_test
+[17/18] Linking CXX executable frame_strand_test
+[18/18] Linking CXX executable lifecycle_state_test
+=== TSan ctest run #1 ===
+Test project /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host-tsan
+      Start  1: FrameAbi.AcceptsCompatibleExtension
+ 1/24 Test  #1: FrameAbi.AcceptsCompatibleExtension ......................   Passed    0.01 sec
+      Start  2: FrameAbi.RejectsIncompatibleOffer
+ 2/24 Test  #2: FrameAbi.RejectsIncompatibleOffer ........................   Passed    0.01 sec
+      Start  3: FrameAbi.PinsStableErrorValues
+ 3/24 Test  #3: FrameAbi.PinsStableErrorValues ...........................   Passed    0.01 sec
+      Start  4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType
+ 4/24 Test  #4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType ...   Passed    0.01 sec
+      Start  5: FrameHandle.ReuseInvalidatesStaleHandle
+ 5/24 Test  #5: FrameHandle.ReuseInvalidatesStaleHandle ..................   Passed    0.01 sec
+      Start  6: FrameHandle.RejectsInvalidArguments
+ 6/24 Test  #6: FrameHandle.RejectsInvalidArguments ......................   Passed    0.01 sec
+      Start  7: LifecycleState.FollowsColdStartAndUnload
+ 7/24 Test  #7: LifecycleState.FollowsColdStartAndUnload .................   Passed    0.01 sec
+      Start  8: LifecycleState.SupportsPauseResumeAndCommittedUpdate
+ 8/24 Test  #8: LifecycleState.SupportsPauseResumeAndCommittedUpdate .....   Passed    0.01 sec
+      Start  9: LifecycleState.RejectsEveryUnspecifiedTransition
+ 9/24 Test  #9: LifecycleState.RejectsEveryUnspecifiedTransition .........   Passed    0.01 sec
+      Start 10: LifecycleState.RestartRequiredIsTerminal
+10/24 Test #10: LifecycleState.RestartRequiredIsTerminal .................   Passed    0.01 sec
+      Start 12: FrameStrand.StrictFifoOrderAcrossProducers
+11/24 Test #12: FrameStrand.StrictFifoOrderAcrossProducers ...............   Passed    0.13 sec
+      Start 13: FrameStrand.SameStrandHandlersNeverConcurrent
+12/24 Test #13: FrameStrand.SameStrandHandlersNeverConcurrent ............   Passed    0.14 sec
+      Start 14: FrameStrand.ReadyQueueNeverDuplicatesStrand
+13/24 Test #14: FrameStrand.ReadyQueueNeverDuplicatesStrand ..............   Passed    0.68 sec
+      Start 15: FrameStrand.NoLostWakeupUnderProducerStorm
+14/24 Test #15: FrameStrand.NoLostWakeupUnderProducerStorm ...............   Passed    0.88 sec
+      Start 16: FrameStrand.QueueFullRejectKeepsCallerOwnership
+15/24 Test #16: FrameStrand.QueueFullRejectKeepsCallerOwnership ..........   Passed    0.02 sec
+      Start 17: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+16/24 Test #17: FrameStrand.OverrunCounterIncrementsOnSlowHandler ........   Passed    0.03 sec
+      Start 18: FrameStrand.ClosingRejectsPostsAndCleansUp
+17/24 Test #18: FrameStrand.ClosingRejectsPostsAndCleansUp ...............   Passed    0.01 sec
+      Start 19: FrameCompletion.CompleteVsCancelRaceExactlyOnce
+18/24 Test #19: FrameCompletion.CompleteVsCancelRaceExactlyOnce ..........   Passed   10.84 sec
+      Start 20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr
+19/24 Test #20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr ......   Passed    0.01 sec
+      Start 21: FrameCompletion.ReserveFailureStartsNothing
+20/24 Test #21: FrameCompletion.ReserveFailureStartsNothing ..............   Passed    0.01 sec
+      Start 22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread
+21/24 Test #22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread .......   Passed    0.01 sec
+      Start 23: FrameCompletion.StaleGenerationDroppedButDestroyed
+22/24 Test #23: FrameCompletion.StaleGenerationDroppedButDestroyed .......   Passed    0.01 sec
+      Start 24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+23/24 Test #24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce ........   Passed    2.30 sec
+      Start 25: frame_abi_c_test
+24/24 Test #25: frame_abi_c_test .........................................   Passed    0.01 sec
+
+100% tests passed out of 24
+
+Total Test time (real) =  15.24 sec
+=== default ctest run #2 ===
+Test project /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host
+      Start  1: FrameAbi.AcceptsCompatibleExtension
+ 1/24 Test  #1: FrameAbi.AcceptsCompatibleExtension ......................   Passed    0.00 sec
+      Start  2: FrameAbi.RejectsIncompatibleOffer
+ 2/24 Test  #2: FrameAbi.RejectsIncompatibleOffer ........................   Passed    0.00 sec
+      Start  3: FrameAbi.PinsStableErrorValues
+ 3/24 Test  #3: FrameAbi.PinsStableErrorValues ...........................   Passed    0.00 sec
+      Start  4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType
+ 4/24 Test  #4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType ...   Passed    0.00 sec
+      Start  5: FrameHandle.ReuseInvalidatesStaleHandle
+ 5/24 Test  #5: FrameHandle.ReuseInvalidatesStaleHandle ..................   Passed    0.00 sec
+      Start  6: FrameHandle.RejectsInvalidArguments
+ 6/24 Test  #6: FrameHandle.RejectsInvalidArguments ......................   Passed    0.00 sec
+      Start  7: LifecycleState.FollowsColdStartAndUnload
+ 7/24 Test  #7: LifecycleState.FollowsColdStartAndUnload .................   Passed    0.00 sec
+      Start  8: LifecycleState.SupportsPauseResumeAndCommittedUpdate
+ 8/24 Test  #8: LifecycleState.SupportsPauseResumeAndCommittedUpdate .....   Passed    0.00 sec
+      Start  9: LifecycleState.RejectsEveryUnspecifiedTransition
+ 9/24 Test  #9: LifecycleState.RejectsEveryUnspecifiedTransition .........   Passed    0.00 sec
+      Start 10: LifecycleState.RestartRequiredIsTerminal
+10/24 Test #10: LifecycleState.RestartRequiredIsTerminal .................   Passed    0.00 sec
+      Start 12: FrameStrand.StrictFifoOrderAcrossProducers
+11/24 Test #12: FrameStrand.StrictFifoOrderAcrossProducers ...............   Passed    0.02 sec
+      Start 13: FrameStrand.SameStrandHandlersNeverConcurrent
+12/24 Test #13: FrameStrand.SameStrandHandlersNeverConcurrent ............   Passed    0.12 sec
+      Start 14: FrameStrand.ReadyQueueNeverDuplicatesStrand
+13/24 Test #14: FrameStrand.ReadyQueueNeverDuplicatesStrand ..............   Passed    0.10 sec
+      Start 15: FrameStrand.NoLostWakeupUnderProducerStorm
+14/24 Test #15: FrameStrand.NoLostWakeupUnderProducerStorm ...............   Passed    0.12 sec
+      Start 16: FrameStrand.QueueFullRejectKeepsCallerOwnership
+15/24 Test #16: FrameStrand.QueueFullRejectKeepsCallerOwnership ..........   Passed    0.00 sec
+      Start 17: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+16/24 Test #17: FrameStrand.OverrunCounterIncrementsOnSlowHandler ........   Passed    0.01 sec
+      Start 18: FrameStrand.ClosingRejectsPostsAndCleansUp
+17/24 Test #18: FrameStrand.ClosingRejectsPostsAndCleansUp ...............   Passed    0.00 sec
+      Start 19: FrameCompletion.CompleteVsCancelRaceExactlyOnce
+18/24 Test #19: FrameCompletion.CompleteVsCancelRaceExactlyOnce ..........   Passed   10.52 sec
+      Start 20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr
+19/24 Test #20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr ......   Passed    0.00 sec
+      Start 21: FrameCompletion.ReserveFailureStartsNothing
+20/24 Test #21: FrameCompletion.ReserveFailureStartsNothing ..............   Passed    0.00 sec
+      Start 22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread
+21/24 Test #22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread .......   Passed    0.00 sec
+      Start 23: FrameCompletion.StaleGenerationDroppedButDestroyed
+22/24 Test #23: FrameCompletion.StaleGenerationDroppedButDestroyed .......   Passed    0.00 sec
+      Start 24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+23/24 Test #24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce ........   Passed    2.15 sec
+      Start 25: frame_abi_c_test
+24/24 Test #25: frame_abi_c_test .........................................   Passed    0.00 sec
+
+100% tests passed out of 24
+
+Total Test time (real) =  13.08 sec
+=== default ctest run #3 ===
+Test project /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host
+      Start  1: FrameAbi.AcceptsCompatibleExtension
+ 1/24 Test  #1: FrameAbi.AcceptsCompatibleExtension ......................   Passed    0.00 sec
+      Start  2: FrameAbi.RejectsIncompatibleOffer
+ 2/24 Test  #2: FrameAbi.RejectsIncompatibleOffer ........................   Passed    0.00 sec
+      Start  3: FrameAbi.PinsStableErrorValues
+ 3/24 Test  #3: FrameAbi.PinsStableErrorValues ...........................   Passed    0.00 sec
+      Start  4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType
+ 4/24 Test  #4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType ...   Passed    0.00 sec
+      Start  5: FrameHandle.ReuseInvalidatesStaleHandle
+ 5/24 Test  #5: FrameHandle.ReuseInvalidatesStaleHandle ..................   Passed    0.00 sec
+      Start  6: FrameHandle.RejectsInvalidArguments
+ 6/24 Test  #6: FrameHandle.RejectsInvalidArguments ......................   Passed    0.00 sec
+      Start  7: LifecycleState.FollowsColdStartAndUnload
+ 7/24 Test  #7: LifecycleState.FollowsColdStartAndUnload .................   Passed    0.00 sec
+      Start  8: LifecycleState.SupportsPauseResumeAndCommittedUpdate
+ 8/24 Test  #8: LifecycleState.SupportsPauseResumeAndCommittedUpdate .....   Passed    0.00 sec
+      Start  9: LifecycleState.RejectsEveryUnspecifiedTransition
+ 9/24 Test  #9: LifecycleState.RejectsEveryUnspecifiedTransition .........   Passed    0.00 sec
+      Start 10: LifecycleState.RestartRequiredIsTerminal
+10/24 Test #10: LifecycleState.RestartRequiredIsTerminal .................   Passed    0.00 sec
+      Start 12: FrameStrand.StrictFifoOrderAcrossProducers
+11/24 Test #12: FrameStrand.StrictFifoOrderAcrossProducers ...............   Passed    0.02 sec
+      Start 13: FrameStrand.SameStrandHandlersNeverConcurrent
+12/24 Test #13: FrameStrand.SameStrandHandlersNeverConcurrent ............   Passed    0.12 sec
+      Start 14: FrameStrand.ReadyQueueNeverDuplicatesStrand
+13/24 Test #14: FrameStrand.ReadyQueueNeverDuplicatesStrand ..............   Passed    0.10 sec
+      Start 15: FrameStrand.NoLostWakeupUnderProducerStorm
+14/24 Test #15: FrameStrand.NoLostWakeupUnderProducerStorm ...............   Passed    0.12 sec
+      Start 16: FrameStrand.QueueFullRejectKeepsCallerOwnership
+15/24 Test #16: FrameStrand.QueueFullRejectKeepsCallerOwnership ..........   Passed    0.00 sec
+      Start 17: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+16/24 Test #17: FrameStrand.OverrunCounterIncrementsOnSlowHandler ........   Passed    0.01 sec
+      Start 18: FrameStrand.ClosingRejectsPostsAndCleansUp
+17/24 Test #18: FrameStrand.ClosingRejectsPostsAndCleansUp ...............   Passed    0.00 sec
+      Start 19: FrameCompletion.CompleteVsCancelRaceExactlyOnce
+18/24 Test #19: FrameCompletion.CompleteVsCancelRaceExactlyOnce ..........   Passed   10.54 sec
+      Start 20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr
+19/24 Test #20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr ......   Passed    0.00 sec
+      Start 21: FrameCompletion.ReserveFailureStartsNothing
+20/24 Test #21: FrameCompletion.ReserveFailureStartsNothing ..............   Passed    0.00 sec
+      Start 22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread
+21/24 Test #22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread .......   Passed    0.00 sec
+      Start 23: FrameCompletion.StaleGenerationDroppedButDestroyed
+22/24 Test #23: FrameCompletion.StaleGenerationDroppedButDestroyed .......   Passed    0.00 sec
+      Start 24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+23/24 Test #24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce ........   Passed    2.14 sec
+      Start 25: frame_abi_c_test
+24/24 Test #25: frame_abi_c_test .........................................   Passed    0.00 sec
+
+100% tests passed out of 24
+
+Total Test time (real) =  13.08 sec
+=== TSan ctest run #2 ===
+Test project /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host-tsan
+      Start  1: FrameAbi.AcceptsCompatibleExtension
+ 1/24 Test  #1: FrameAbi.AcceptsCompatibleExtension ......................   Passed    0.01 sec
+      Start  2: FrameAbi.RejectsIncompatibleOffer
+ 2/24 Test  #2: FrameAbi.RejectsIncompatibleOffer ........................   Passed    0.01 sec
+      Start  3: FrameAbi.PinsStableErrorValues
+ 3/24 Test  #3: FrameAbi.PinsStableErrorValues ...........................   Passed    0.01 sec
+      Start  4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType
+ 4/24 Test  #4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType ...   Passed    0.01 sec
+      Start  5: FrameHandle.ReuseInvalidatesStaleHandle
+ 5/24 Test  #5: FrameHandle.ReuseInvalidatesStaleHandle ..................   Passed    0.01 sec
+      Start  6: FrameHandle.RejectsInvalidArguments
+ 6/24 Test  #6: FrameHandle.RejectsInvalidArguments ......................   Passed    0.01 sec
+      Start  7: LifecycleState.FollowsColdStartAndUnload
+ 7/24 Test  #7: LifecycleState.FollowsColdStartAndUnload .................   Passed    0.01 sec
+      Start  8: LifecycleState.SupportsPauseResumeAndCommittedUpdate
+ 8/24 Test  #8: LifecycleState.SupportsPauseResumeAndCommittedUpdate .....   Passed    0.01 sec
+      Start  9: LifecycleState.RejectsEveryUnspecifiedTransition
+ 9/24 Test  #9: LifecycleState.RejectsEveryUnspecifiedTransition .........   Passed    0.01 sec
+      Start 10: LifecycleState.RestartRequiredIsTerminal
+10/24 Test #10: LifecycleState.RestartRequiredIsTerminal .................   Passed    0.01 sec
+      Start 12: FrameStrand.StrictFifoOrderAcrossProducers
+11/24 Test #12: FrameStrand.StrictFifoOrderAcrossProducers ...............   Passed    0.13 sec
+      Start 13: FrameStrand.SameStrandHandlersNeverConcurrent
+12/24 Test #13: FrameStrand.SameStrandHandlersNeverConcurrent ............   Passed    0.14 sec
+      Start 14: FrameStrand.ReadyQueueNeverDuplicatesStrand
+13/24 Test #14: FrameStrand.ReadyQueueNeverDuplicatesStrand ..............   Passed    0.64 sec
+      Start 15: FrameStrand.NoLostWakeupUnderProducerStorm
+14/24 Test #15: FrameStrand.NoLostWakeupUnderProducerStorm ...............   Passed    0.81 sec
+      Start 16: FrameStrand.QueueFullRejectKeepsCallerOwnership
+15/24 Test #16: FrameStrand.QueueFullRejectKeepsCallerOwnership ..........   Passed    0.01 sec
+      Start 17: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+16/24 Test #17: FrameStrand.OverrunCounterIncrementsOnSlowHandler ........   Passed    0.02 sec
+      Start 18: FrameStrand.ClosingRejectsPostsAndCleansUp
+17/24 Test #18: FrameStrand.ClosingRejectsPostsAndCleansUp ...............   Passed    0.01 sec
+      Start 19: FrameCompletion.CompleteVsCancelRaceExactlyOnce
+18/24 Test #19: FrameCompletion.CompleteVsCancelRaceExactlyOnce ..........   Passed   10.86 sec
+      Start 20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr
+19/24 Test #20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr ......   Passed    0.01 sec
+      Start 21: FrameCompletion.ReserveFailureStartsNothing
+20/24 Test #21: FrameCompletion.ReserveFailureStartsNothing ..............   Passed    0.01 sec
+      Start 22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread
+21/24 Test #22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread .......   Passed    0.01 sec
+      Start 23: FrameCompletion.StaleGenerationDroppedButDestroyed
+22/24 Test #23: FrameCompletion.StaleGenerationDroppedButDestroyed .......   Passed    0.01 sec
+      Start 24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+23/24 Test #24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce ........   Passed    2.32 sec
+      Start 25: frame_abi_c_test
+24/24 Test #25: frame_abi_c_test .........................................   Passed    0.01 sec
+
+100% tests passed out of 24
+
+Total Test time (real) =  15.17 sec
+=== TSan ctest run #3 ===
+Test project /home/lain/Projects/esp_study/poc-a-wt/.build/poc-host-tsan
+      Start  1: FrameAbi.AcceptsCompatibleExtension
+ 1/24 Test  #1: FrameAbi.AcceptsCompatibleExtension ......................   Passed    0.01 sec
+      Start  2: FrameAbi.RejectsIncompatibleOffer
+ 2/24 Test  #2: FrameAbi.RejectsIncompatibleOffer ........................   Passed    0.01 sec
+      Start  3: FrameAbi.PinsStableErrorValues
+ 3/24 Test  #3: FrameAbi.PinsStableErrorValues ...........................   Passed    0.01 sec
+      Start  4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType
+ 4/24 Test  #4: FrameHandle.EnforcesCapacityOwnershipGenerationAndType ...   Passed    0.01 sec
+      Start  5: FrameHandle.ReuseInvalidatesStaleHandle
+ 5/24 Test  #5: FrameHandle.ReuseInvalidatesStaleHandle ..................   Passed    0.01 sec
+      Start  6: FrameHandle.RejectsInvalidArguments
+ 6/24 Test  #6: FrameHandle.RejectsInvalidArguments ......................   Passed    0.01 sec
+      Start  7: LifecycleState.FollowsColdStartAndUnload
+ 7/24 Test  #7: LifecycleState.FollowsColdStartAndUnload .................   Passed    0.01 sec
+      Start  8: LifecycleState.SupportsPauseResumeAndCommittedUpdate
+ 8/24 Test  #8: LifecycleState.SupportsPauseResumeAndCommittedUpdate .....   Passed    0.01 sec
+      Start  9: LifecycleState.RejectsEveryUnspecifiedTransition
+ 9/24 Test  #9: LifecycleState.RejectsEveryUnspecifiedTransition .........   Passed    0.01 sec
+      Start 10: LifecycleState.RestartRequiredIsTerminal
+10/24 Test #10: LifecycleState.RestartRequiredIsTerminal .................   Passed    0.01 sec
+      Start 12: FrameStrand.StrictFifoOrderAcrossProducers
+11/24 Test #12: FrameStrand.StrictFifoOrderAcrossProducers ...............   Passed    0.13 sec
+      Start 13: FrameStrand.SameStrandHandlersNeverConcurrent
+12/24 Test #13: FrameStrand.SameStrandHandlersNeverConcurrent ............   Passed    0.14 sec
+      Start 14: FrameStrand.ReadyQueueNeverDuplicatesStrand
+13/24 Test #14: FrameStrand.ReadyQueueNeverDuplicatesStrand ..............   Passed    0.62 sec
+      Start 15: FrameStrand.NoLostWakeupUnderProducerStorm
+14/24 Test #15: FrameStrand.NoLostWakeupUnderProducerStorm ...............   Passed    0.79 sec
+      Start 16: FrameStrand.QueueFullRejectKeepsCallerOwnership
+15/24 Test #16: FrameStrand.QueueFullRejectKeepsCallerOwnership ..........   Passed    0.01 sec
+      Start 17: FrameStrand.OverrunCounterIncrementsOnSlowHandler
+16/24 Test #17: FrameStrand.OverrunCounterIncrementsOnSlowHandler ........   Passed    0.02 sec
+      Start 18: FrameStrand.ClosingRejectsPostsAndCleansUp
+17/24 Test #18: FrameStrand.ClosingRejectsPostsAndCleansUp ...............   Passed    0.01 sec
+      Start 19: FrameCompletion.CompleteVsCancelRaceExactlyOnce
+18/24 Test #19: FrameCompletion.CompleteVsCancelRaceExactlyOnce ..........   Passed   11.01 sec
+      Start 20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr
+19/24 Test #20: FrameCompletion.CancelAfterCompleteKeepsOriginalErr ......   Passed    0.02 sec
+      Start 21: FrameCompletion.ReserveFailureStartsNothing
+20/24 Test #21: FrameCompletion.ReserveFailureStartsNothing ..............   Passed    0.02 sec
+      Start 22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread
+21/24 Test #22: FrameCompletion.QuiescingCleanupRunsOnWorkerThread .......   Passed    0.02 sec
+      Start 23: FrameCompletion.StaleGenerationDroppedButDestroyed
+22/24 Test #23: FrameCompletion.StaleGenerationDroppedButDestroyed .......   Passed    0.02 sec
+      Start 24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce
+23/24 Test #24: FrameCompletion.ThreeWayRaceCompleteCancelQuiesce ........   Passed    2.79 sec
+      Start 25: frame_abi_c_test
+24/24 Test #25: frame_abi_c_test .........................................   Passed    0.01 sec
+
+100% tests passed out of 24
+
+Total Test time (real) =  15.78 sec
+=== clang-format version (18 pinned in conventions; 22 is the available binary) ===
+clang-format version 22.1.8
+clang-format 22 agrees with checked-in formatting
+[5/6] Linking CXX executable frame_completion_test
+[6/6] Linking CXX executable frame_strand_test
+[5/6] Linking CXX executable frame_strand_test
+[6/6] Linking CXX executable frame_completion_test
+100% tests passed out of 13
+
+=== FINAL SUMMARY task-11-12 === 2026-08-31T21:28:24+08:00
+commits: 1c3ad59 feat(poc-a): completion-cancel cas and cleanup semantics 6198bca feat(poc-a): strand fifo prototype with tsan suite 
+files committed:
+ poc/host/CMakeLists.txt                    |  10 +-
+ poc/host/include/frame_poc/frame_strand.hh | 193 ++++++++++++++++
+ poc/host/src/frame_strand.cc               | 281 +++++++++++++++++++++++
+ poc/host/tests/frame_strand_test.cc        | 356 +++++++++++++++++++++++++++++
+ poc/host/CMakeLists.txt                        |   7 +-
+ poc/host/include/frame_poc/frame_completion.hh |  95 +++++++
+ poc/host/tests/frame_completion_test.cc        | 366 +++++++++++++++++++++++++
+
+--- per-test pass counts (default build, final run) ---
+
+Total Tests: 13
+strand tests: 7 (StrictFifoOrder / SameStrandNeverConcurrent / ReadyQueueNoDuplicate / NoLostWakeup 1e5 / QueueFull ownership / Overrun counter / ClosingReject+Cleanup)
+completion tests: 6 (CompleteVsCancelRace 1e5 / CancelAfterComplete original-err / ReserveFailure starts-nothing / QuiescingCleanup on worker / StaleGeneration drop / ThreeWayRace 2e4)
+
+--- stability matrix ---
+100% tests passed out of 13
+=== TSan ctest run #1 ===
+100% tests passed out of 24
+=== default ctest run #2 ===
+100% tests passed out of 24
+=== default ctest run #3 ===
+100% tests passed out of 24
+=== TSan ctest run #2 ===
+100% tests passed out of 24
+=== TSan ctest run #3 ===
+100% tests passed out of 24
+100% tests passed out of 13
+
+--- TSan warnings check ---
+0
+0 TSan warnings in evidence log
+
+scope check: committed diff touches only poc/host/** :
+poc/host/CMakeLists.txt
+poc/host/include/frame_poc/frame_completion.hh
+poc/host/include/frame_poc/frame_strand.hh
+poc/host/src/frame_strand.cc
+poc/host/tests/frame_completion_test.cc
+poc/host/tests/frame_strand_test.cc

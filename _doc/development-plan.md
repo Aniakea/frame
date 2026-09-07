@@ -75,6 +75,8 @@ External blockers:
 
 顺序要求：M1 sign-off 后才能给 loader candidate 加入目标板 runtime evidence。更新 [ADR-0002](decisions/0002-elf-loader.md) 的 candidate matrix，先评审选择规则，再运行 PoC-A；ADR 只有全部 required evidence 通过后才能 Accepted。
 
+L1 executed 2026-08-31→09-01: Gate-A PASS per [poc/evidence/poc-a-20260901/GATE-A-REPORT.md](../poc/evidence/poc-a-20260901/GATE-A-REPORT.md); [ADR-0002](decisions/0002-elf-loader.md) → Accepted (owner sign-off pending).
+
 Exact acceptance:
 
 1. 固定 loader repository URL、full commit SHA、license、bundled licenses 和全部 local patch hash。
