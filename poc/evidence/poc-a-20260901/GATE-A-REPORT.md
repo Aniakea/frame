@@ -162,8 +162,8 @@ evidence passes **and** the owner records the decision. Until then Gate-A stays 
 
 ```
 Repository Owner: Aniakea
-Decision:         ( PENDING — not recorded )
-Date:             ( — )
+Decision:         Gate-A Pass recorded (owner confirmed in work session, 2026-09-07 UTC)
+Date:             2026-09-07 (UTC)
 Notes:            read section (f) limitations before confirming; capacity value 8 and the
                   global-sum admission note are PoC-derived proposals for ADR-0002 (T17).
 ```
