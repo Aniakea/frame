@@ -81,7 +81,7 @@ Button | KEY | GPIO18, active-low, pull-up
 - [x] machine-readable lab config 固定上述 pin、SPI/I2C/SDMMC 参数、board_id、ESP-IDF tag 和 firmware hash。（[lab config](../lab/board-c1810c76790e.json)；firmware hash 取自 M1 与 PoC-A 两个 manifest 的 artifact notes）
 - [ ] ST7305 在 SPI3 mode 0、10 MHz 完成 init 和 landscape 400x300 black/white/checkerboard/border/static core status page；driver 按面板原生列顺序打包，logic analyzer 保存 SCK/MOSI/DC/CS/RESET/TE trace。
 - [x] PCF85063 `0x51`、SHTC3 `0x70`、KEY GPIO18 active-low 分别通过 [M1](../requirements-v4.2.md) 规定的 normal 10 秒 cadence 与显式 selftest 样本。（[M1 PASS record M1-004](../../poc/evidence/m1-20260831/M1-PASS-RECORD.md)：RTC read/write + 跨软复位保持 + SNTP resync，SHTC3 CRC-valid 合理样本，KEY/BOOT +2/+2 无 spurious；[manifest](../../poc/evidence/m1-20260831/manifest.json) metrics key_short/key_long）
-- [ ] SDMMC 1-bit/FAT32 `/frame` 完成 boot absent、insert to READY、runtime remove、reinsert to READY 四转换和每次 READY read/write/fsync/hash health check；记录 TF model/capacity。（四转换 + health checks 已由 [M1 PASS record M1-005](../../poc/evidence/m1-20260831/M1-PASS-RECORD.md) 证明；TF model/capacity 记录仍缺 —— M1 证据无 card name/CID，[lab config](../lab/board-c1810c76790e.json) `tf.tf_card` 标记 pending-visual-read，本条在补齐前保持未勾）
+- [x] SDMMC 1-bit/FAT32 `/frame` 完成 boot absent、insert to READY、runtime remove、reinsert to READY 四转换和每次 READY read/write/fsync/hash health check；记录 TF model/capacity。（四转换 + health checks 已由 [M1 PASS record M1-005](../../poc/evidence/m1-20260831/M1-PASS-RECORD.md) 证明；TF model/capacity 已由 M1 固件 `storage info` 命令从实机 `sdmmc_card_t` CID/CSD 读取并记录在 [lab config](../lab/board-c1810c76790e.json) `tf.tf_card`：`SD16G` / 14910 MiB / serial `0x00000024`，两次读取一致；transcript 见 [tf-info evidence](../../poc/evidence/tf-info-20260907/tf-cid-transcript-20260907.log)）
 - [ ] 当前开发板的 Wi-Fi UART configuration 只驻留 RAM 并脱敏；专用 security board 上另行验证 encrypted NVS。UART 与 TF `/frame/logs` JSONL 在一小时 M1 soak 中符合连续性要求。
 - [x] Flash/PSRAM mode/frequency 由 exact sdkconfig 和 runtime log 证明，不由 N16R8 名称推断。（[boot.log](../../poc/evidence/m1-20260831/raw-history/boot.log) L17-L42：`SPI Mode : QIO`、`Boot SPI Speed : 80MHz`、octal_psram vendor AP / density 64 Mbit；exact sdkconfig 由 [manifest](../../poc/evidence/m1-20260831/manifest.json) `platform.sdkconfig_sha256` = `7d094856…cbf` 钉住）
 - [ ] power-cut fixture 能由外部 controller 真正移除并恢复 board power，记录切断点、off duration、voltage measurement 和 fixture firmware/config revision；`esp_restart()` 不算。Current board preliminary cuts 不超过 20。
@@ -90,7 +90,7 @@ Button | KEY | GPIO18, active-low, pull-up
 
 ## Current Blockers
 
-- M1（一小时 soak、boot identity、PCF85063/SHTC3/KEY、TF 四转换、Flash/PSRAM mode）与 PoC-A 的 runtime evidence 已归档并由 owner 确认（见上方已勾项引用）；本 ADR 剩余的 runtime 缺口：ST7305 logic-analyzer trace、TF model/capacity 记录、power-cut fixture 与 spare board 相关项。
+- M1（一小时 soak、boot identity、PCF85063/SHTC3/KEY、TF 四转换、Flash/PSRAM mode）与 PoC-A 的 runtime evidence 已归档并由 owner 确认（见上方已勾项引用）；TF model/capacity 已通过 `storage info` CID/CSD 读取补齐（2026-09-07）。本 ADR 剩余的 runtime 缺口：ST7305 logic-analyzer trace、power-cut fixture 与 spare board 相关项。
 - power-cut fixture、外部控制器和 measurement method 尚未完成，阻塞 PoC-E。
 - destructive Secure Boot V2、Flash Encryption release mode 和 eFuse epoch 使用的 spare board 尚未保留，阻塞 PoC-E。
 - 没有官方 PCB revision；接受时必须显式批准以 `board_id + SKU + N16R8 marking + photos` 作为替代识别，不得伪造 revision。

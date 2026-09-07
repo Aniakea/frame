@@ -75,7 +75,7 @@ esp_err_t console_service::start() {
     };
     const esp_console_cmd_t storage_cmd{
         .command = "storage",
-        .help = "storage probe | storage status",
+        .help = "storage probe | storage status | storage info (TF card CID/CSD)",
         .hint = nullptr,
         .func = &console_service::storage_command,
         .argtable = nullptr,
@@ -248,7 +248,11 @@ int console_service::storage_command(int argc, char** argv) {
         instance_->print_status(false);
         return 0;
     }
-    std::printf("usage: storage probe | storage status\n");
+    if (argc == 2 && std::strcmp(argv[1], "info") == 0) {
+        instance_->storage_.print_card_info();
+        return 0;
+    }
+    std::printf("usage: storage probe | storage status | storage info\n");
     return 1;
 }
 

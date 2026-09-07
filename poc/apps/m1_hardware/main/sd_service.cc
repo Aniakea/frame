@@ -30,6 +30,10 @@ constexpr int64_t kLogIntervalUs = 10LL * 1000LL * 1000LL;
 sd_service::~sd_service() { unmount(); }
 
 esp_err_t sd_service::start() {
+    card_lock_ = xSemaphoreCreateMutex();
+    if (card_lock_ == nullptr) {
+        return ESP_ERR_NO_MEM;
+    }
     const BaseType_t created =
         xTaskCreatePinnedToCore(&sd_service::task_entry, "frame-sd", 6144, this, 7, &task_, 1);
     return created == pdPASS ? ESP_OK : ESP_ERR_NO_MEM;
@@ -65,9 +69,16 @@ esp_err_t sd_service::mount_and_check() {
     mount.max_files = 8;
     mount.allocation_unit_size = 16 * 1024;
 
+    // Hold card_lock_ across the mount call: esp_vfs_fat_sdmmc_mount writes card_ via the
+    // out-param while the card struct is still initializing, and print_card_info must not
+    // observe that half-built state.
+    xSemaphoreTake(card_lock_, portMAX_DELAY);
     esp_err_t result = esp_vfs_fat_sdmmc_mount(board::kSdMount, &host, &slot, &mount, &card_);
     if (result != ESP_OK) {
         card_ = nullptr;
+    }
+    xSemaphoreGive(card_lock_);
+    if (result != ESP_OK) {
         const bool card_absent = result == ESP_ERR_NOT_FOUND || result == ESP_ERR_TIMEOUT;
         status_.update([&](status_snapshot& value) {
             value.storage = card_absent ? sd_state::absent : sd_state::failed;
@@ -135,10 +146,54 @@ esp_err_t sd_service::health_check() {
 }
 
 void sd_service::unmount() {
+    if (card_lock_ != nullptr) {
+        xSemaphoreTake(card_lock_, portMAX_DELAY);
+    }
     if (card_ != nullptr) {
         esp_vfs_fat_sdcard_unmount(board::kSdMount, card_);
         card_ = nullptr;
     }
+    if (card_lock_ != nullptr) {
+        xSemaphoreGive(card_lock_);
+    }
+}
+
+void sd_service::print_card_info() const {
+    if (card_lock_ == nullptr) {
+        std::printf("storage: no card\n");
+        return;
+    }
+    sdmmc_cid_t cid{};
+    sdmmc_csd_t csd{};
+    bool mounted = false;
+    xSemaphoreTake(card_lock_, portMAX_DELAY);
+    if (card_ != nullptr) {
+        cid = card_->cid;
+        csd = card_->csd;
+        mounted = true;
+    }
+    xSemaphoreGive(card_lock_);
+    if (!mounted) {
+        std::printf("storage: no card\n");
+        return;
+    }
+
+    char name[sizeof(cid.name) + 1]{};
+    std::memcpy(name, cid.name, sizeof(cid.name));
+    const unsigned oem_high = static_cast<unsigned>(cid.oem_id >> 8) & 0xFFU;
+    const unsigned oem_low = static_cast<unsigned>(cid.oem_id) & 0xFFU;
+    const unsigned serial = static_cast<unsigned>(static_cast<uint32_t>(cid.serial));
+    const unsigned long long sectors = static_cast<unsigned long long>(csd.capacity);
+    const unsigned long long capacity_mib =
+        sectors * static_cast<unsigned long long>(csd.sector_size) / (1024ULL * 1024ULL);
+    std::printf(
+        "cid: mfg=0x%02X oem=%c%c name=\"%s\" rev=%u.%u serial=0x%08X date=%u/%u\n",
+        static_cast<unsigned>(cid.mfg_id) & 0xFFU, oem_high != 0U ? oem_high : '?',
+        oem_low != 0U ? oem_low : '?', name, (static_cast<unsigned>(cid.revision) >> 4U) & 0xFU,
+        static_cast<unsigned>(cid.revision) & 0xFU, serial, static_cast<unsigned>(cid.date) & 0xFU,
+        2000U + ((static_cast<unsigned>(cid.date) >> 4U) & 0xFFU));
+    std::printf("csd: capacity=%llu MiB (%llu sectors × %u B)\n", capacity_mib, sectors,
+                static_cast<unsigned>(csd.sector_size));
 }
 
 esp_err_t sd_service::append_status_log() {

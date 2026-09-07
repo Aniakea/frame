@@ -85,8 +85,15 @@
     "card_detect": "none",
     "filesystem": "FAT32/FatFs",
     "tf_card": {
-      "status": "pending-visual-read",
-      "howto": "read label or `sdmmc` CID via M1 firmware reflash"
+      "status": "read",
+      "manufacturer_hex": "0x00",
+      "oem": "42",
+      "product_name": "SD16G",
+      "revision": "2.0",
+      "serial_hex": "0x00000024",
+      "mfg_date": "2026-05",
+      "capacity_mib": 14910,
+      "evidence": "poc/evidence/tf-info-20260907/tf-cid-transcript-20260907.log L188-L189 and L192-L193 (M1 `storage info` x2, identical output; 30535680 sectors x 512 B)"
     }
   },
   "software_locks": {
