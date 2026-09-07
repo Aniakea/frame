@@ -2,6 +2,7 @@
 
 #include "esp_err.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 #include "freertos/task.h"
 #include "sdmmc_cmd.h"
 
@@ -19,6 +20,7 @@ class sd_service {
 
     esp_err_t start();
     void request_probe();
+    void print_card_info() const;
 
   private:
     static void task_entry(void* context);
@@ -30,6 +32,9 @@ class sd_service {
 
     hardware_status& status_;
     sdmmc_card_t* card_{};
+    // Serializes card_ mutations (sd task mount/unmount) against print_card_info copy-out
+    // (console task); CID/CSD are copied under the lock, printed outside it.
+    SemaphoreHandle_t card_lock_{};
     TaskHandle_t task_{};
     uint64_t log_sequence_{};
 };
