@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "board_id": "c1810c76790e",
+  "identity": {
+    "product": "Waveshare ESP32-S3-RLCD-4.2",
+    "module": "ESP32-S3-WROOM-1-N16R8",
+    "soc": "ESP32-S3",
+    "flash_bytes": 16777216,
+    "psram_bytes": 8388608,
+    "pcb_revision": null,
+    "pcb_revision_note": "official sources publish no freezable PCB revision; identity is board_id + module marking + photos (ADR-0003)",
+    "purchase_sku": null
+  },
+  "photos": [
+    {
+      "name": "board_front_20260831.jpg",
+      "uri": "poc/evidence/m1-20260831/photos/board_front_20260831.jpg",
+      "sha256": "87d232943d4328a15f3d6047fc25d2acd53fea210e29889836df47c44b8c9dcf"
+    },
+    {
+      "name": "board_back_module_20260831.jpg",
+      "uri": "poc/evidence/m1-20260831/photos/board_back_module_20260831.jpg",
+      "sha256": "6576c98d54097f85554f013c34f96922082de96cb7413f654d074d04fe376b60"
+    },
+    {
+      "name": "status_page_20260831.jpg",
+      "uri": "poc/evidence/m1-20260831/photos/status_page_20260831.jpg",
+      "sha256": "03817e0424452eba786768960645aa9e369bdfef08fe1da9883a7b9b035e82ec"
+    }
+  ],
+  "display": {
+    "controller": "ST7305",
+    "physical_px": {
+      "width": 300,
+      "height": 400
+    },
+    "logical_landscape_px": {
+      "width": 400,
+      "height": 300
+    },
+    "interface": {
+      "type": "SPI",
+      "host": "SPI3_HOST",
+      "mode": 0,
+      "safe_start_clock_hz": 10000000
+    },
+    "pins": {
+      "sck": 11,
+      "mosi": 12,
+      "dc": 5,
+      "cs": 40,
+      "reset": 41,
+      "te": 6
+    }
+  },
+  "i2c": {
+    "sda": 13,
+    "scl": 14,
+    "devices": [
+      {
+        "name": "PCF85063",
+        "function": "rtc",
+        "address": "0x51"
+      },
+      {
+        "name": "SHTC3",
+        "function": "temperature_humidity_sensor",
+        "address": "0x70"
+      }
+    ]
+  },
+  "key": {
+    "gpio": 18,
+    "active_level": "low",
+    "pull": "up"
+  },
+  "tf": {
+    "controller": "SDMMC",
+    "bus_width_bit": 1,
+    "pins": {
+      "clk": 38,
+      "cmd": 21,
+      "d0": 39
+    },
+    "card_detect": "none",
+    "filesystem": "FAT32/FatFs",
+    "tf_card": {
+      "status": "pending-visual-read",
+      "howto": "read label or `sdmmc` CID via M1 firmware reflash"
+    }
+  },
+  "software_locks": {
+    "idf_tag": "v6.0.2",
+    "xtensa_gcc": "15.2.0 (xtensa-esp-elf esp-15.2.0_20251204)",
+    "clang_format": "CI authority: clang-format-18 on ubuntu-24.04 (behaves as 18.1.3); local pre-check: 18.1.8 via `uv tool run clang-format==18.1.8`"
+  },
+  "current_firmware": {
+    "m1_final": {
+      "app": "poc/apps/m1_hardware",
+      "binary": "frame_m1_hardware.bin",
+      "binary_sha256": "a0e937ba7e4a0bd51b9c74f6e6ed25acb8fc42d78087da2ed2810085a3f2c4bc",
+      "device_reported_image_sha256": "81292cb968343b8b672f59fc4dacad7b3c2e6d9d337d5b804b4d90571028526a",
+      "built_from": "main@61a0167 (identical tree merged via PR evidence/m1-008-final, squash e8ac2c1)",
+      "evidence": "poc/evidence/m1-20260831/manifest.json (m1_frame_m1_hardware.map and m1_metrics_samples artifact notes)"
+    },
+    "poc_a_final": {
+      "app": "poc/apps/poc_a",
+      "binary": "frame_poc_a.bin",
+      "binary_sha256": "3a31ce578410b75ce76ea71a854d1953dedb1a130a3dd82de7fb3fcfa3a4d2de",
+      "source_commit": "f34dc72537912e9629dad482222e2159c98988ea",
+      "merged_to_main": "e71842aa8a6f5408270faba253df9f515b1d213c (PR #13 squash; identical firmware tree at d644b89)",
+      "evidence": "poc/evidence/poc-a-20260901/manifest.json (frame_poc_a.map artifact note and manifest notes)"
+    },
+    "main_head_at_record": "d644b895fa5062330c8882be98d8a7f5e176ef08"
+  },
+  "references": {
+    "adr": "_doc/decisions/0003-waveshare-rlcd42-hardware.md",
+    "m1_manifest": "poc/evidence/m1-20260831/manifest.json",
+    "m1_pass_record": "poc/evidence/m1-20260831/M1-PASS-RECORD.md",
+    "poc_a_manifest": "poc/evidence/poc-a-20260901/manifest.json"
+  }
+}
