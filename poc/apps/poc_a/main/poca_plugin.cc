@@ -144,14 +144,11 @@ struct EmbeddedPackage {
 };
 
 #define POCAPKG(build_name, mpb_name, magic_value)                                                 \
-    {#build_name,                                                                                  \
-     _binary_##build_name##_mpb_start,                                                             \
-     _binary_##build_name##_mpb_end,                                                               \
-     POCA_##mpb_name##_MPB_SIZE,                                                                   \
-     POCA_##mpb_name##_MPB_SHA256,                                                                 \
-     POCA_##mpb_name##_NAME,                                                                       \
-     POCA_##mpb_name##_VERSION,                                                                    \
-     (magic_value)}
+    {                                                                                              \
+        #build_name, _binary_##build_name##_mpb_start, _binary_##build_name##_mpb_end,             \
+            POCA_##mpb_name##_MPB_SIZE, POCA_##mpb_name##_MPB_SHA256, POCA_##mpb_name##_NAME,      \
+            POCA_##mpb_name##_VERSION, (magic_value)                                               \
+    }
 
 const EmbeddedPackage k_packages[] = {
     POCAPKG(baseline, BASELINE, POCA_PLUGIN_MAGIC),

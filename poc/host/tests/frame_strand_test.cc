@@ -79,6 +79,7 @@ TEST(FrameStrand, StrictFifoOrderAcrossProducers) {
     core.start();
 
     std::vector<std::thread> producers;
+    producers.reserve(kProducers);
     for (int producer = 0; producer < kProducers; ++producer) {
         producers.emplace_back([&, producer] {
             for (uint64_t ticket = 0; ticket < kPerProducer; ++ticket) {
@@ -191,6 +192,7 @@ TEST(FrameStrand, ReadyQueueNeverDuplicatesStrand) {
         }
     };
     std::vector<std::thread> threads;
+    threads.reserve(kProducers);
     for (int index = 0; index < kProducers; ++index) {
         threads.emplace_back(producer);
     }
@@ -231,6 +233,7 @@ TEST(FrameStrand, NoLostWakeupUnderProducerStorm) {
         }
     };
     std::vector<std::thread> threads;
+    threads.reserve(kProducers);
     for (int index = 0; index < kProducers; ++index) {
         threads.emplace_back(producer);
     }
