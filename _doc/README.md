@@ -8,6 +8,7 @@
 [project-v4.2-draft.md](project-v4.2-draft.md) | Draft | 相对 v4.1 的 concise architecture delta
 [development-plan.md](development-plan.md) | Draft | 严格 milestone/gate 顺序和 exact acceptance
 [project.md](project.md) | `v4.1-draft` historical | 保留的历史架构，不就地更新
+[clock-digit-theme](design/clock-digit-theme.md) | Design | 「花火」花式数字字体设计(UI-004):归一化几何、LOD 缩放、区域合成、生成与验证
 [ADR-0001](decisions/0001-poc-hardware.md) | Blocked | 原始 PoC hardware baseline 要求
 [ADR-0002](decisions/0002-elf-loader.md) | Blocked | Dynamic ELF Loader selection
 [ADR-0003](decisions/0003-waveshare-rlcd42-hardware.md) | Blocked | Waveshare RLCD 4.2 N16R8 候选硬件基线

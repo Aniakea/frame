@@ -18,6 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
+frame-clock-digits = "frame_tools.clock_digits:main"
 frame-coverage = "frame_tools.coverage:main"
 frame-doc-links = "frame_tools.doc_links:main"
 frame-evidence = "frame_tools.evidence:main"
