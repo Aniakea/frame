@@ -67,7 +67,7 @@ jobs:
           uv run frame-doc-links
           uv run frame-sbom --output .build/reports/sbom.cdx.json
       - name: Upload repository reports
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: repository-reports
           path: .build/reports/
@@ -270,7 +270,7 @@ jobs:
           cmake --preset dev
           cmake --build --preset dev --parallel 2
       - name: Upload dev firmware
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: firmware-dev
           path: |
@@ -302,7 +302,7 @@ jobs:
           cmake --preset default
           cmake --build --preset default --parallel 2
       - name: Upload M1 firmware
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: firmware-m1
           path: |
@@ -334,7 +334,7 @@ jobs:
           cmake --preset default
           cmake --build --preset default --parallel 2
       - name: Upload PoC-A firmware
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: firmware-poc-a
           path: |
