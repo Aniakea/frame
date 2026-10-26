@@ -55,4 +55,4 @@ jobs:
           cmake -S poc/host -B .build/codeql-host
           cmake --build .build/codeql-host --parallel 2
       - name: Analyze
-        uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938
+        uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
